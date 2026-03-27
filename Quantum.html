@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Portal - Advanced 3D Web Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            background: radial-gradient(ellipse at center, #0a0a23 0%, #000 70%);
+            height: 100vh;
+        }
+
+        /* Floating Particles Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+        }
+
+        /* Main 3D Portal */
+        .portal-container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .portal {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .portal-ring {
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top-color: #00f5ff;
+            border-image: linear-gradient(45deg, #00f5ff, #ff00ff, #00f5ff) 1;
+            border-radius: 50%;
+            position: relative;
+            animation: rotate 8s linear infinite, glow 2s ease-in-out infinite alternate;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotateZ(0deg) rotateX(0deg); }
+            100% { transform: rotateZ(360deg) rotateX(360deg); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 50px #00f5ff, inset 0 0 50px rgba(0, 245, 255, 0.3); }
+            100% { box-shadow: 0 0 100px #ff00ff, inset 0 0 100px rgba(255, 0, 255, 0.3); }
+        }
+
+        /* Inner Energy Core */
+        .energy-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: 120px;
+            margin: -60px 0 0 -60px;
+            background: radial-gradient(circle, #fff 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 50px #00f5ff;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        /* Floating Text Elements */
+        .floating-text {
+            position: absolute;
+            color: #00f5ff;
+            font-size: clamp(18px, 4vw, 32px);
+            font-weight: 900;
+            text-shadow: 0 0 20px #00f5ff;
+            animation: textFloat 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .text-1 { top: 20%; left: 10%; animation-delay: 0s; }
+        .text-2 { top: 60%; right: 10%; animation-delay: 1s; }
+        .text-3 { bottom: 20%; left: 20%; animation-delay: 2s; }
+
+        @keyframes textFloat {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* Interactive Control Panel */
+        .control-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 40px;
+            border-radius: 50px;
+            border: 2px solid #00f5ff;
+            backdrop-filter: blur(20px);
+            display: flex;
+            gap: 15px;
+            z-index: 20;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #00f5ff, #ff00ff);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 245, 255, 0.5);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Particles Effect on Click */
+        .click-particles {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .click-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff00ff;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .portal { width: 300px; height: 300px; }
+            .control-panel { flex-direction: column; padding: 15px; }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 1s ease;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 245, 255, 0.3);
+            border-top: 4px solid #00f5ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main Portal -->
+    <div class="portal-container">
+        <div class="portal">
+            <div class="portal-ring" id="portalRing"></div>
+            <div class="energy-core"></div>
+        </div>
+
+        <!-- Floating Text -->
+        <div class="floating-text text-1">QUANTUM</div>
+        <div class="floating-text text-2">PORTAL</div>
+        <div class="floating-text text-3">2026</div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <button class="control-btn" onclick="toggleParticles()">Particles</button>
+            <button class="control-btn" onclick="changeTheme()">Theme</button>
+            <button class="control-btn" onclick="createExplosion(event)">EXPLODE</button>
+        </div>
+    </div>
+
+    <!-- Click Particles Container -->
+    <div class="click-particles" id="clickParticles"></div>
+
+    <script>
+        // Hide loader after 2 seconds
+        setTimeout(() => {
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('loader').style.display = 'none', 1000);
+        }, 2000);
+
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = particle.style.height = (Math.random() * 4 + 2) + 'px';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Toggle particles
+        function toggleParticles() {
+            const particles = document.querySelectorAll('.particle');
+            particles.forEach(p => {
+                p.style.display = p.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        // Theme changer
+        let themeIndex = 0;
+        const themes = [
+            { glow1: '#00f5ff', glow2: '#ff00ff', bg1: '#0a0a23', bg2: '#000' },
+            { glow1: '#ff6b6b', glow2: '#4ecdc4', bg1: '#1a0033', bg2: '#000' },
+            { glow1: '#ffd23f', glow2: '#00d4ff', bg1: '#0c0c1a', bg2: '#000' }
+        ];
+
+        function changeTheme() {
+            themeIndex = (themeIndex + 1) % themes.length;
+            const theme = themes[themeIndex];
+            document.body.style.background = `radial-gradient(ellipse at center, ${theme.bg1} 0%, ${theme.bg2} 70%)`;
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.style.background = `linear-gradient(45deg, ${theme.glow1}, ${theme.glow2})`;
+            });
+        }
+
+        // Explosion effect on click
+        function createExplosion(e) {
+            const particlesContainer = document.getElementById('clickParticles');
+            const rect = document.body.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'click-particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                const angle = (i / 30) * Math.PI * 2;
+                const velocity = 100 + Math.random() * 200;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity;
+                
+                particle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${vx}px, ${vy}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800 + Math.random() * 400,
+                    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                }).onfinish = () => particle.remove();
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Mouse trail effect
+        document.addEventListener('mousemove', (e) => {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.left = e.clientX + 'px';
+            particle.style.top = e.clientY + 'px';
+            particle.style.width = '4px';
+            particle.style.height = '4px';
+            particle.style.background = '#00f5ff';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '999';
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 300);
+        });
+
+        // Initialize
+        createParticles();
+        document.addEventListener('click', createExplosion);
+
+        // Parallax effect for floating text
+        document.addEventListener('mousemove', (e) => {
+            const texts = document.querySelectorAll('.floating-text');
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            
+            texts.forEach((text, index) => {
+                const delay = index * 0.1;
+                text.style.transform = `translate(${x * (1 + index * 0.2)}px, ${y * (1 + index * 0.2)}px)`;
+            });
+        });
+
+        // Performance optimization
+        window.addEventListener('load', () => {
+            // Preload critical resources
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = 'data:image/svg+xml;base64,...'; // Critical assets
+            document.head.appendChild(link);
+        });
+    </script>
+</body>
+</html>
