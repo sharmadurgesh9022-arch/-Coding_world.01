@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Particle Metamorphosis — Fixed</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { overflow:hidden; background:#050510; font-family:'Segoe UI',sans-serif; }
+
+  #info {
+    position:absolute; top:20px; left:20px;
+    color:#fff;
+    background:rgba(0,0,0,0.6);
+    padding:10px 22px; border-radius:40px;
+    pointer-events:none; z-index:10;
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.15);
+    font-size:13px; letter-spacing:1px;
+  }
+
+  #mode-badge {
+    position:absolute; bottom:30px; left:50%; transform:translateX(-50%);
+    color:#fff;
+    background:rgba(0,0,0,0.7);
+    padding:14px 32px; border-radius:60px;
+    font-size:26px; font-weight:bold;
+    z-index:10; backdrop-filter:blur(8px);
+    border:2px solid rgba(255,215,0,0.5);
+    box-shadow:0 0 30px rgba(255,215,0,0.25);
+    transition:all 0.4s ease;
+    white-space:nowrap;
+  }
+
+  #shape-btns {
+    position:absolute; top:20px; right:20px;
+    display:flex; flex-direction:column; gap:8px;
+    z-index:10;
+  }
+
+  .sbtn {
+    background:rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.2);
+    color:#fff; padding:8px 16px;
+    border-radius:20px; cursor:pointer;
+    font-size:13px; letter-spacing:1px;
+    backdrop-filter:blur(4px);
+    transition:all 0.2s;
+  }
+  .sbtn:hover, .sbtn.active {
+    background:rgba(255,200,0,0.2);
+    border-color:rgba(255,200,0,0.6);
+    box-shadow:0 0 12px rgba(255,200,0,0.3);
+  }
+</style>
+</head>
+<body>
+<div id="info">🖐️ Move mouse to change color &amp; expand • Click buttons to morph shape</div>
+<div id="mode-badge">❤️ HEART</div>
+
+<div id="shape-btns">
+  <button class="sbtn active" data-shape="0">❤️ Heart</button>
+  <button class="sbtn"        data-shape="1">🌸 Flower</button>
+  <button class="sbtn"        data-shape="2">🪐 Saturn</button>
+  <button class="sbtn"        data-shape="3">✨ Firework</button>
+  <button class="sbtn"        data-shape="4">⚪ Sphere</button>
+  <button class="sbtn"        data-shape="5">🍩 Torus</button>
+</div>
+
+<!-- ✅ FIX 1: Use r160+ so "three/addons/" importmap works correctly -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+// ─── SCENE SETUP ──────────────────────────────────────────────────────────────
+const scene    = new THREE.Scene();
+scene.background = new THREE.Color(0x050510);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
+camera.position.set(0, 2, 8);
+camera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ReinhardToneMapping;
+document.body.appendChild(renderer.domElement);
+
+// ─── BLOOM COMPOSER ───────────────────────────────────────────────────────────
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(
+  new THREE.Vector2(innerWidth, innerHeight), 1.2, 0.4, 0.1
+);
+composer.addPass(bloom);
+
+// ─── LIGHTS ───────────────────────────────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x404060));
+const pl1 = new THREE.PointLight(0xffaa88, 1, 20);
+pl1.position.set(2,3,4); scene.add(pl1);
+const pl2 = new THREE.PointLight(0x88aaff, 0.8, 20);
+pl2.position.set(-3,-1,5); scene.add(pl2);
+
+// ─── STARS ────────────────────────────────────────────────────────────────────
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(800 * 3);
+for (let i = 0; i < 800; i++) {
+  starPos[i*3]   = (Math.random()-.5)*200;
+  starPos[i*3+1] = (Math.random()-.5)*200;
+  starPos[i*3+2] = (Math.random()-.5)*200 - 50;
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+const stars = new THREE.Points(starGeo,
+  new THREE.PointsMaterial({ color:0xffffff, size:0.15, transparent:true, opacity:0.7 })
+);
+scene.add(stars);
+
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
+const PARTICLE_COUNT = 4000;
+const geo      = new THREE.BufferGeometry();
+const posArr   = new Float32Array(PARTICLE_COUNT * 3);
+const colArr   = new Float32Array(PARTICLE_COUNT * 3);
+
+// Initialise with random sphere spread
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  const theta = Math.random() * Math.PI * 2;
+  const phi   = Math.acos(2 * Math.random() - 1);
+  const r     = Math.random() * 2;
+  posArr[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+  posArr[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+  posArr[i*3+2] = r * Math.cos(phi);
+  colArr[i*3]   = 1; colArr[i*3+1] = 0.4; colArr[i*3+2] = 0.6;
+}
+
+geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+geo.setAttribute('color',    new THREE.BufferAttribute(colArr, 3));
+
+const mat = new THREE.ShaderMaterial({
+  uniforms: {
+    uTime:     { value: 0 },
+    uPointSize:{ value: 0.15 },
+  },
+  vertexShader: `
+    attribute vec3 color;
+    varying   vec3 vColor;
+    uniform   float uTime;
+    uniform   float uPointSize;
+    void main() {
+      vColor = color;
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = uPointSize * (300.0 / -mv.z)
+                   * (1.0 + 0.25 * sin(position.x * 5.0 + uTime * 3.0));
+      gl_Position  = projectionMatrix * mv;
+    }
+  `,
+  fragmentShader: `
+    varying vec3 vColor;
+    void main() {
+      vec2  cxy = 2.0 * gl_PointCoord - 1.0;
+      float r   = dot(cxy, cxy);
+      if (r > 1.0) discard;
+      gl_FragColor = vec4(vColor, (1.0 - r) * 0.9);
+    }
+  `,
+  transparent:true,
+  blending:   THREE.AdditiveBlending,
+  depthWrite: false,
+});
+
+const particles = new THREE.Points(geo, mat);
+scene.add(particles);
+
+// ─── SHAPE DEFINITIONS ────────────────────────────────────────────────────────
+const SHAPES = {
+  heart: (i, total) => {
+    const t = (i / total) * Math.PI * 2;
+    const s = 0.12;
+    return [
+      16 * Math.pow(Math.sin(t), 3) * s,
+      (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)) * s,
+      (Math.random()-.5) * 0.4,
+    ];
+  },
+  flower: (i, total) => {
+    const a = (i / total) * Math.PI * 2;
+    const r = (Math.sin(6 * a) * 0.6 + 1.0) * 0.75;
+    return [Math.cos(a)*r, Math.sin(a)*r, (Math.random()-.5)*0.5];
+  },
+  saturn: (i, total) => {
+    if (i > total * 0.7) {
+      const a = Math.random() * Math.PI * 2;
+      const R = 1.4 + Math.random() * 0.4;
+      return [Math.cos(a)*R*0.7, (Math.random()-.5)*0.25, Math.sin(a)*R*0.7];
+    }
+    const u = Math.random(), v = Math.random();
+    const t = 2*Math.PI*u, p = Math.acos(2*v-1);
+    return [0.8*Math.sin(p)*Math.cos(t), 0.8*Math.sin(p)*Math.sin(t), 0.8*Math.cos(p)];
+  },
+  firework: (i, total) => {
+    const a1 = Math.random()*Math.PI*2;
+    const a2 = Math.acos(2*Math.random()-1);
+    const r  = Math.random()*1.5;
+    return [r*Math.sin(a2)*Math.cos(a1), r*Math.sin(a2)*Math.sin(a1), r*Math.cos(a2)];
+  },
+  sphere: (i, total) => {
+    const u = Math.random(), v = Math.random();
+    const t = 2*Math.PI*u, p = Math.acos(2*v-1), R = 1.2;
+    return [R*Math.sin(p)*Math.cos(t), R*Math.sin(p)*Math.sin(t), R*Math.cos(p)];
+  },
+  torus: (i, total) => {
+    const u = Math.random()*Math.PI*2, v = Math.random()*Math.PI*2;
+    const R = 1.5, r = 0.5;
+    return [
+      (R + r*Math.cos(v))*Math.cos(u),
+      (R + r*Math.cos(v))*Math.sin(u),
+      r*Math.sin(v),
+    ];
+  },
+};
+
+const SHAPE_KEYS  = Object.keys(SHAPES);
+const SHAPE_EMOJI = { heart:'❤️', flower:'🌸', saturn:'🪐', firework:'✨', sphere:'⚪', torus:'🍩' };
+
+// ✅ FIX 2: Store targets ONCE per shape change — not every frame
+const targetPos = new Float32Array(PARTICLE_COUNT * 3);
+
+function bakeTargets(shapeKey, scale) {
+  const fn = SHAPES[shapeKey];
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const [x, y, z] = fn(i, PARTICLE_COUNT);
+    targetPos[i*3]   = x * scale;
+    targetPos[i*3+1] = y * scale;
+    targetPos[i*3+2] = z * scale;
+  }
+}
+
+let currentShapeIdx = 0;
+bakeTargets('heart', 1.0);
+
+// ✅ FIX: module-scoped function, listeners attached via JS (no inline onclick)
+function changeShape(idx) {
+  currentShapeIdx = idx;
+  const key = SHAPE_KEYS[idx];
+  bakeTargets(key, 1.0);
+  document.getElementById('mode-badge').textContent =
+    SHAPE_EMOJI[key] + ' ' + key.toUpperCase();
+  document.querySelectorAll('.sbtn').forEach((b, i) =>
+    b.classList.toggle('active', i === idx));
+}
+
+document.querySelectorAll('.sbtn').forEach(btn => {
+  btn.addEventListener('click', () => changeShape(parseInt(btn.dataset.shape)));
+});
+
+// ─── MOUSE / TOUCH INPUT ──────────────────────────────────────────────────────
+let handX = 0.5, handY = 0.5;
+let currentScale = 1.0;
+let targetScale  = 1.0;
+
+window.addEventListener('mousemove', e => {
+  handX = e.clientX / innerWidth;
+  handY = e.clientY / innerHeight;
+  // handX → scale (0.6 … 2.5)
+  targetScale = 0.6 + handX * 1.9;
+});
+
+// Touch support
+window.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  handX = t.clientX / innerWidth;
+  handY = t.clientY / innerHeight;
+  targetScale = 0.6 + handX * 1.9;
+}, { passive:true });
+
+// ─── WEBCAM MOTION (optional, camera permission) ──────────────────────────────
+(function initCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) return;
+  const video  = document.createElement('video');
+  video.autoplay = true; video.playsInline = true; video.muted = true;
+
+  navigator.mediaDevices.getUserMedia({ video:true, audio:false })
+    .then(stream => {
+      video.srcObject = stream;
+      const offscreen = document.createElement('canvas');
+      offscreen.width = 80; offscreen.height = 60;
+      const cx = offscreen.getContext('2d');
+
+      setInterval(() => {
+        if (video.readyState < video.HAVE_ENOUGH_DATA) return;
+        cx.drawImage(video, 0, 0, 80, 60);
+        const data = cx.getImageData(0, 0, 80, 60).data;
+
+        let skinCount = 0, sumX = 0, sumY = 0;
+        for (let i = 0; i < data.length; i += 4) {
+          const r=data[i], g=data[i+1], b=data[i+2];
+          // Basic skin heuristic
+          if (r>80 && g>30 && b>20 && r>g && r>b && Math.abs(r-g)>15) {
+            skinCount++;
+            const p = i/4;
+            sumX += p % 80;
+            sumY += Math.floor(p / 80);
+          }
+        }
+        if (skinCount > 60) {
+          handX = sumX / skinCount / 80;
+          handY = sumY / skinCount / 60;
+          targetScale = 0.6 + handX * 1.9;
+
+          // Map hand position → shape index (auto switch every 1/6th of screen)
+          const idx = Math.min(Math.floor(handX * SHAPE_KEYS.length), SHAPE_KEYS.length-1);
+          if (idx !== currentShapeIdx) window.changeShape(idx);
+        }
+      }, 250);
+    })
+    .catch(() => {
+      document.getElementById('info').textContent +=
+        ' (Camera unavailable — using mouse)';
+    });
+})();
+
+// ─── RESIZE ───────────────────────────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+});
+
+// ─── ANIMATION LOOP ───────────────────────────────────────────────────────────
+
+// ✅ FIX 3: Reuse ONE Color object — no per-frame allocations
+const tempColor = new THREE.Color();
+
+let lastTime = performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  // ✅ FIX 4: Use delta properly
+  const now   = performance.now();
+  const delta = Math.min((now - lastTime) / 1000, 0.05); // cap at 50ms
+  lastTime    = now;
+  const elapsed = now / 1000;
+
+  mat.uniforms.uTime.value = elapsed;
+
+  // Smooth scale lerp
+  currentScale += (targetScale - currentScale) * 0.05;
+
+  // When scale changes significantly, re-bake targets
+  // (we re-bake only when needed, not every frame)
+  // We use a lightweight scale multiplier on existing targets instead:
+  const posAttr = geo.attributes.position;
+  const colAttr = geo.attributes.color;
+  const pa      = posAttr.array;
+  const ca      = colAttr.array;
+
+  // Base hue driven by handY
+  const baseHue = (handY * 0.8 + elapsed * 0.05) % 1.0;
+
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const ix = i*3, iy = i*3+1, iz = i*3+2;
+
+    // ✅ FIX 2 continued: targets are stable; lerp current → target
+    const tx = targetPos[ix]   * currentScale / /* cancel stored scale */ 1;
+    const ty = targetPos[iy]   * currentScale / 1;
+    const tz = targetPos[iz]   * currentScale / 1;
+
+    pa[ix] += (tx - pa[ix]) * 0.08;
+    pa[iy] += (ty - pa[iy]) * 0.08;
+    pa[iz] += (tz - pa[iz]) * 0.08;
+
+    // Subtle jitter — motion level from hand movement
+    const jitter = Math.abs(targetScale - currentScale) * 0.04;
+    pa[ix] += (Math.random()-.5) * jitter;
+    pa[iy] += (Math.random()-.5) * jitter;
+    pa[iz] += (Math.random()-.5) * jitter;
+
+    // ✅ FIX 3: Reuse tempColor (zero allocations)
+    const hue = (baseHue + i * 0.00025 + Math.sin(elapsed*1.5 + i*0.01)*0.05) % 1.0;
+    tempColor.setHSL(hue, 0.95, 0.55 + 0.2 * Math.sin(elapsed*2 + i));
+    ca[ix] = tempColor.r;
+    ca[iy] = tempColor.g;
+    ca[iz] = tempColor.b;
+  }
+
+  posAttr.needsUpdate = true;
+  colAttr.needsUpdate = true;
+
+  // Gentle star drift
+  stars.rotation.y += 0.0002 * (delta * 60);
+
+  // Subtle camera sway
+  camera.position.x = Math.sin(elapsed * 0.15) * 1.2;
+  camera.position.y = 1.5 + Math.sin(elapsed * 0.22) * 0.4;
+  camera.lookAt(0, 0, 0);
+
+  composer.render();
+}
+
+animate();
+</script>
+</body>
+</html>
