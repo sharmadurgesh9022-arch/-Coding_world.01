@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Automatic Response System Simulator</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00ff00;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        #sensor-data {
+            margin-top: 10px;
+        }
+        
+        .sensor-item {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        
+        .sensor-item.warning {
+            background: rgba(255,255,0,0.2);
+            border-left: 4px solid #ffff00;
+        }
+        
+        .sensor-item.danger {
+            background: rgba(255,0,0,0.2);
+            border-left: 4px solid #ff0000;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .value-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.2);
+            margin-top: 5px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .value-fill {
+            height: 100%;
+            transition: width 0.3s, background 0.3s;
+        }
+        
+        #status-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 200px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 10;
+        }
+        
+        #alert-level {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        #alert-level.safe {
+            background: rgba(0,255,0,0.2);
+            color: #00ff00;
+        }
+        
+        #alert-level.warning {
+            background: rgba(255,255,0,0.2);
+            color: #ffff00;
+        }
+        
+        #alert-level.danger {
+            background: rgba(255,0,0,0.2);
+            color: #ff0000;
+            animation: pulseText 1s infinite;
+        }
+        
+        @keyframes pulseText {
+            0% { text-shadow: 0 0 5px red; }
+            50% { text-shadow: 0 0 20px red; }
+            100% { text-shadow: 0 0 5px red; }
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px 30px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 20;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        #start-btn {
+            background: #00ff00;
+            color: black;
+        }
+        
+        #stop-btn {
+            background: #ff0000;
+            color: white;
+        }
+        
+        #trigger-btn {
+            background: #ffff00;
+            color: black;
+        }
+        
+        #reset-btn {
+            background: #333;
+            color: white;
+        }
+        
+        #stats {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            z-index: 10;
+        }
+        
+        .response-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 0 0 20px red;
+            z-index: 30;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        
+        .response-indicator.active {
+            opacity: 1;
+            animation: flashText 0.5s infinite;
+        }
+        
+        @keyframes flashText {
+            0% { opacity: 1; text-shadow: 0 0 20px red; }
+            50% { opacity: 0.5; text-shadow: 0 0 40px red; }
+            100% { opacity: 1; text-shadow: 0 0 20px red; }
+        }
+    </style>
+</head>
+<body>
+    <div id="info-panel">
+        <h2>🌍 Automatic Response System</h2>
+        <div id="sensor-data">
+            <div class="sensor-item" id="sensor-temp">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>🌡️ Temperature</span>
+                    <span id="temp-value">0</span>
+                </div>
+                <div class="value-bar">
+                    <div class="value-fill" id="temp-bar" style="width: 0%; background: #00ff00;"></div>
+                </div>
+            </div>
+            <div class="sensor-item" id="sensor-rad">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>☢️ Radiation</span>
+                    <span id="rad-value">0</span>
+                </div>
+                <div class="value-bar">
+                    <div class="value-fill" id="rad-bar" style="width: 0%; background: #00ff00;"></div>
+                </div>
+            </div>
+            <div class="sensor-item" id="sensor-seis">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>📊 Seismic</span>
+                    <span id="seis-value">0</span>
+                </div>
+                <div class="value-bar">
+                    <div class="value-fill" id="seis-bar" style="width: 0%; background: #00ff00;"></div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 15px; font-size: 12px; color: #aaa;">
+            Threshold: 70 | Danger: 85
+        </div>
+    </div>
+
+    <div id="status-panel">
+        <h3>System Status</h3>
+        <div id="alert-level" class="safe">🟢 SAFE</div>
+        <div style="margin-top: 15px;">
+            <div>📡 Active Responses:</div>
+            <div id="active-responses" style="margin-top: 5px; font-size: 14px;">
+                • Warning Light: <span id="warning-status">Inactive</span><br>
+                • Alarm: <span id="alarm-status">Inactive</span><br>
+                • Drone: <span id="drone-status">Standby</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button id="start-btn">▶ Start</button>
+        <button id="stop-btn">⏹️ Stop</button>
+        <button id="trigger-btn">⚠️ Trigger Emergency</button>
+        <button id="reset-btn">🔄 Reset</button>
+    </div>
+
+    <div id="stats">
+        FPS: <span id="fps">0</span> | Time: <span id="time">0</span>s
+    </div>
+
+    <div class="response-indicator" id="emergency-broadcast">
+        🚨 EMERGENCY BROADCAST 🚨
+    </div>
+
+    <!-- Three.js will be injected here -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js';
+        
+        // --- Configuration ---
+        const SENSOR_COUNT = 3;
+        const THRESHOLD_WARNING = 70;
+        const THRESHOLD_DANGER = 85;
+        
+        // --- State Management ---
+        const state = {
+            running: true,
+            sensors: [
+                { type: 'temperature', value: 45, color: 0x00ff00, position: [-8, 0, 5], threshold: THRESHOLD_WARNING, dangerThreshold: THRESHOLD_DANGER },
+                { type: 'radiation', value: 30, color: 0x00ff00, position: [0, 0, 8], threshold: THRESHOLD_WARNING, dangerThreshold: THRESHOLD_DANGER },
+                { type: 'seismic', value: 20, color: 0x00ff00, position: [8, 0, 3], threshold: THRESHOLD_WARNING, dangerThreshold: THRESHOLD_DANGER }
+            ],
+            alertLevel: 'safe', // safe, warning, danger
+            responses: {
+                warningLight: false,
+                alarm: false,
+                drone: false,
+                shield: false,
+                broadcast: false
+            },
+            time: 0,
+            frameCount: 0,
+            lastFpsUpdate: 0,
+            fps: 0
+        };
+
+        // --- Scene Setup ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a2a); // Dark blue night sky
+        scene.fog = new THREE.Fog(0x0a0a2a, 30, 80);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(25, 15, 25);
+        camera.lookAt(0, 5, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // Controls
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+        controls.maxPolarAngle = Math.PI / 2;
+        controls.target.set(0, 5, 0);
+
+        // Lighting
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404060);
+        scene.add(ambientLight);
+
+        // Main directional light (sun)
+        const sunLight = new THREE.DirectionalLight(0xffeedd, 1);
+        sunLight.position.set(20, 30, 10);
+        sunLight.castShadow = true;
+        sunLight.receiveShadow = true;
+        sunLight.shadow.mapSize.width = 1024;
+        sunLight.shadow.mapSize.height = 1024;
+        const d = 30;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        sunLight.shadow.camera.near = 1;
+        sunLight.shadow.camera.far = 50;
+        scene.add(sunLight);
+
+        // Fill lights
+        const fillLight1 = new THREE.PointLight(0x4466ff, 0.5);
+        fillLight1.position.set(-10, 10, 10);
+        scene.add(fillLight1);
+
+        const fillLight2 = new THREE.PointLight(0xffaa66, 0.3);
+        fillLight2.position.set(10, 5, -10);
+        scene.add(fillLight2);
+
+        // Ground
+        const groundGeometry = new THREE.CircleGeometry(40, 32);
+        const groundMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x1a2a3a, 
+            roughness: 0.7, 
+            metalness: 0.1,
+            emissive: new THREE.Color(0x050810)
+        });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.5;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Grid helper
+        const gridHelper = new THREE.GridHelper(80, 20, 0x4466aa, 0x224466);
+        gridHelper.position.y = -0.49;
+        scene.add(gridHelper);
+
+        // Stars in background
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 1000;
+        const starsPositions = new Float32Array(starsCount * 3);
+        for (let i = 0; i < starsCount * 3; i += 3) {
+            starsPositions[i] = (Math.random() - 0.5) * 200;
+            starsPositions[i+1] = (Math.random() - 0.5) * 200;
+            starsPositions[i+2] = (Math.random() - 0.5) * 200 - 50; // behind scene
+        }
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
+        const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.2 });
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        // --- Create 3D Objects ---
+
+        // 1. Control Center (main building)
+        const controlCenterGroup = new THREE.Group();
+        
+        // Base
+        const baseGeo = new THREE.BoxGeometry(6, 3, 6);
+        const baseMat = new THREE.MeshStandardMaterial({ color: 0x335588, emissive: new THREE.Color(0x112233), roughness: 0.4, metalness: 0.3 });
+        const base = new THREE.Mesh(baseGeo, baseMat);
+        base.castShadow = true;
+        base.receiveShadow = true;
+        base.position.y = 1.5;
+        controlCenterGroup.add(base);
+        
+        // Top
+        const topGeo = new THREE.CylinderGeometry(2, 3, 2, 8);
+        const topMat = new THREE.MeshStandardMaterial({ color: 0x44aaff, emissive: new THREE.Color(0x113355), roughness: 0.3, metalness: 0.2 });
+        const top = new THREE.Mesh(topGeo, topMat);
+        top.castShadow = true;
+        top.receiveShadow = true;
+        top.position.y = 4;
+        controlCenterGroup.add(top);
+        
+        // Dome
+        const domeGeo = new THREE.SphereGeometry(1.5, 16, 8, 0, Math.PI * 2, 0, Math.PI/2);
+        const domeMat = new THREE.MeshStandardMaterial({ color: 0x88ccff, emissive: new THREE.Color(0x224466), roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.8 });
+        const dome = new THREE.Mesh(domeGeo, domeMat);
+        dome.castShadow = true;
+        dome.receiveShadow = true;
+        dome.position.y = 5.5;
+        dome.scale.set(1.2, 0.5, 1.2);
+        controlCenterGroup.add(dome);
+        
+        // Antenna
+        const antennaBaseGeo = new THREE.CylinderGeometry(0.2, 0.2, 1);
+        const antennaBaseMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, emissive: new THREE.Color(0x333333) });
+        const antennaBase = new THREE.Mesh(antennaBaseGeo, antennaBaseMat);
+        antennaBase.castShadow = true;
+        antennaBase.position.y = 6;
+        antennaBase.position.x = 1;
+        antennaBase.position.z = 1;
+        controlCenterGroup.add(antennaBase);
+        
+        const antennaBallGeo = new THREE.SphereGeometry(0.3);
+        const antennaBallMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: new THREE.Color(0x442200) });
+        const antennaBall = new THREE.Mesh(antennaBallGeo, antennaBallMat);
+        antennaBall.castShadow = true;
+        antennaBall.position.y = 6.5;
+        antennaBall.position.x = 1;
+        antennaBall.position.z = 1;
+        controlCenterGroup.add(antennaBall);
+        
+        // Glow effect (point light)
+        const controlGlow = new THREE.PointLight(0x4488ff, 1, 15);
+        controlGlow.position.set(0, 5, 0);
+        controlCenterGroup.add(controlGlow);
+        
+        controlCenterGroup.position.set(0, 0, 0);
+        scene.add(controlCenterGroup);
+
+        // 2. Communication Towers
+        const towers = [];
+        const towerPositions = [
+            [-5, 0, -5],
+            [8, 0, -4],
+            [-7, 0, 7]
+        ];
+
+        towerPositions.forEach((pos, index) => {
+            const towerGroup = new THREE.Group();
+            
+            // Base
+            const baseGeo = new THREE.CylinderGeometry(1, 1.2, 0.5);
+            const baseMat = new THREE.MeshStandardMaterial({ color: 0x556677 });
+            const base = new THREE.Mesh(baseGeo, baseMat);
+            base.castShadow = true;
+            base.receiveShadow = true;
+            base.position.y = 0.25;
+            towerGroup.add(base);
+            
+            // Tower body
+            const bodyGeo = new THREE.CylinderGeometry(0.4, 0.6, 6);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xaaccff });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.castShadow = true;
+            body.receiveShadow = true;
+            body.position.y = 3.25;
+            towerGroup.add(body);
+            
+            // Dishes
+            for (let i = 0; i < 3; i++) {
+                const dishGroup = new THREE.Group();
+                
+                const dishArmGeo = new THREE.CylinderGeometry(0.1, 0.1, 1.5);
+                const dishArmMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+                const dishArm = new THREE.Mesh(dishArmGeo, dishArmMat);
+                dishArm.castShadow = true;
+                dishArm.rotation.z = Math.PI / 2;
+                dishArm.position.x = 0.75;
+                dishGroup.add(dishArm);
+                
+                const dishGeo = new THREE.CylinderGeometry(1, 1, 0.2, 16);
+                const dishMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, emissive: new THREE.Color(0x224466) });
+                const dish = new THREE.Mesh(dishGeo, dishMat);
+                dish.castShadow = true;
+                dish.rotation.y = Math.PI / 2;
+                dish.position.x = 1.5;
+                dishGroup.add(dish);
+                
+                const dishCenterGeo = new THREE.SphereGeometry(0.2);
+                const dishCenterMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+                const dishCenter = new THREE.Mesh(dishCenterGeo, dishCenterMat);
+                dishCenter.position.x = 1.5;
+                dishGroup.add(dishCenter);
+                
+                dishGroup.position.y = 3 + i * 1.5;
+                dishGroup.rotation.y = (i * Math.PI * 2 / 3) + index;
+                towerGroup.add(dishGroup);
+            }
+            
+            // Light at top
+            const topLight = new THREE.PointLight(0x4488ff, 0.5, 10);
+            topLight.position.y = 6.5;
+            towerGroup.add(topLight);
+            
+            towerGroup.position.set(pos[0], pos[1], pos[2]);
+            scene.add(towerGroup);
+            towers.push(towerGroup);
+        });
+
+        // 3. Sensors (glowing spheres)
+        const sensorMeshes = [];
+        state.sensors.forEach((sensor, index) => {
+            const sensorGroup = new THREE.Group();
+            
+            // Base platform
+            const platformGeo = new THREE.CylinderGeometry(1.5, 1.5, 0.3);
+            const platformMat = new THREE.MeshStandardMaterial({ color: 0x445566 });
+            const platform = new THREE.Mesh(platformGeo, platformMat);
+            platform.castShadow = true;
+            platform.receiveShadow = true;
+            platform.position.y = 0.15;
+            sensorGroup.add(platform);
+            
+            // Sensor body
+            const bodyGeo = new THREE.SphereGeometry(1, 32);
+            const bodyMat = new THREE.MeshStandardMaterial({ 
+                color: sensor.color, 
+                emissive: new THREE.Color(sensor.color).multiplyScalar(0.3),
+                roughness: 0.2,
+                transparent: true,
+                opacity: 0.9
+            });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.castShadow = true;
+            body.receiveShadow = true;
+            body.position.y = 1.2;
+            sensorGroup.add(body);
+            
+            // Inner core
+            const coreGeo = new THREE.SphereGeometry(0.5, 16);
+            const coreMat = new THREE.MeshStandardMaterial({ 
+                color: 0xffffff, 
+                emissive: new THREE.Color(sensor.color),
+                transparent: true
+            });
+            const core = new THREE.Mesh(coreGeo, coreMat);
+            core.position.y = 1.2;
+            sensorGroup.add(core);
+            
+            // Glow light
+            const glowLight = new THREE.PointLight(sensor.color, 1, 8);
+            glowLight.position.y = 1.2;
+            sensorGroup.add(glowLight);
+            
+            sensorGroup.position.set(sensor.position[0], sensor.position[1], sensor.position[2]);
+            scene.add(sensorGroup);
+            
+            sensorMeshes.push({
+                group: sensorGroup,
+                body: body,
+                core: core,
+                light: glowLight,
+                data: sensor
+            });
+        });
+
+        // 4. Satellite in sky
+        const satelliteGroup = new THREE.Group();
+        
+        // Main body
+        const satBodyGeo = new THREE.BoxGeometry(2, 1, 1);
+        const satBodyMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, emissive: new THREE.Color(0x222222) });
+        const satBody = new THREE.Mesh(satBodyGeo, satBodyMat);
+        satBody.castShadow = true;
+        satBody.receiveShadow = true;
+        satelliteGroup.add(satBody);
+        
+        // Solar panels
+        const panelGeo = new THREE.BoxGeometry(0.2, 1.5, 2);
+        const panelMat = new THREE.MeshStandardMaterial({ color: 0x333333, emissive: new THREE.Color(0x111122) });
+        
+        const panelLeft = new THREE.Mesh(panelGeo, panelMat);
+        panelLeft.castShadow = true;
+        panelLeft.receiveShadow = true;
+        panelLeft.position.x = -1.1;
+        satelliteGroup.add(panelLeft);
+        
+        const panelRight = new THREE.Mesh(panelGeo, panelMat);
+        panelRight.castShadow = true;
+        panelRight.receiveShadow = true;
+        panelRight.position.x = 1.1;
+        satelliteGroup.add(panelRight);
+        
+        // Antenna
+        const antennaGeo = new THREE.CylinderGeometry(0.1, 0.1, 1);
+        const antennaMat = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+        const antenna = new THREE.Mesh(antennaGeo, antennaMat);
+        antenna.castShadow = true;
+        antenna.position.z = 0.8;
+        antenna.position.y = 0.3;
+        antenna.rotation.x = Math.PI / 4;
+        satelliteGroup.add(antenna);
+        
+        // Glow
+        const satLight = new THREE.PointLight(0x4488ff, 0.8, 15);
+        satLight.position.set(0, 0, 0);
+        satelliteGroup.add(satLight);
+        
+        satelliteGroup.position.set(-5, 18, -5);
+        scene.add(satelliteGroup);
+
+        // 5. Network lines (animated)
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x4488ff });
+        const lines = [];
+        
+        // Connections from sensors to nearest tower
+        const connections = [
+            { from: state.sensors[0].position, to: towerPositions[0] }, // temp to tower1
+            { from: state.sensors[1].position, to: towerPositions[1] }, // rad to tower2
+            { from: state.sensors[2].position, to: towerPositions[2] }, // seis to tower3
+            { from: towerPositions[0], to: [0, 5, 0] }, // tower1 to control center
+            { from: towerPositions[1], to: [0, 5, 0] }, // tower2 to control center
+            { from: towerPositions[2], to: [0, 5, 0] }, // tower3 to control center
+            { from: [0, 5, 0], to: [-5, 18, -5] } // control center to satellite
+        ];
+        
+        connections.forEach(conn => {
+            const points = [
+                new THREE.Vector3(conn.from[0], conn.from[1] + 1, conn.from[2]),
+                new THREE.Vector3(conn.to[0], conn.to[1] + 1, conn.to[2])
+            ];
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geometry, lineMaterial);
+            scene.add(line);
+            lines.push({
+                line: line,
+                originalColor: 0x4488ff,
+                pulsePhase: Math.random() * Math.PI * 2
+            });
+        });
+
+        // Additional decorative lines
+        for (let i = 0; i < 10; i++) {
+            const start = [(Math.random() - 0.5) * 30, Math.random() * 10, (Math.random() - 0.5) * 30];
+            const end = [(Math.random() - 0.5) * 30, Math.random() * 10, (Math.random() - 0.5) * 30];
+            const points = [
+                new THREE.Vector3(start[0], start[1], start[2]),
+                new THREE.Vector3(end[0], end[1], end[2])
+            ];
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const line = new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: 0x224466, transparent: true, opacity: 0.3 }));
+            scene.add(line);
+        }
+
+        // 6. Drone for response visualization
+        const droneGroup = new THREE.Group();
+        
+        // Body
+        const droneBodyGeo = new THREE.SphereGeometry(0.5, 16);
+        const droneBodyMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: new THREE.Color(0x442200) });
+        const droneBody = new THREE.Mesh(droneBodyGeo, droneBodyMat);
+        droneBody.castShadow = true;
+        droneBody.receiveShadow = true;
+        droneGroup.add(droneBody);
+        
+        // Rotors
+        for (let i = 0; i < 4; i++) {
+            const rotorGroup = new THREE.Group();
+            
+            const armGeo = new THREE.BoxGeometry(1, 0.1, 0.2);
+            const armMat = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+            const arm = new THREE.Mesh(armGeo, armMat);
+            arm.castShadow = true;
+            arm.receiveShadow = true;
+            rotorGroup.add(arm);
+            
+            const bladeGeo = new THREE.BoxGeometry(0.2, 0.05, 0.8);
+            const bladeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
+            const blade = new THREE.Mesh(bladeGeo, bladeMat);
+            blade.castShadow = true;
+            blade.receiveShadow = true;
+            blade.position.x = 0.6;
+            blade.rotation.y = Math.PI / 4;
+            rotorGroup.add(blade);
+            
+            const blade2 = blade.clone();
+            blade2.rotation.y = -Math.PI / 4;
+            blade2.position.x = -0.6;
+            rotorGroup.add(blade2);
+            
+            rotorGroup.rotation.y = (i * Math.PI / 2);
+            droneGroup.add(rotorGroup);
+        }
+        
+        // Light
+        const droneLight = new THREE.PointLight(0xffaa00, 1, 10);
+        droneLight.position.y = 0.5;
+        droneGroup.add(droneLight);
+        
+        droneGroup.position.set(0, 2, 0);
+        droneGroup.visible = false;
+        scene.add(droneGroup);
+
+        // 7. Energy shield effect (particles)
+        const shieldParticles = new THREE.BufferGeometry();
+        const shieldCount = 200;
+        const shieldPositions = new Float32Array(shieldCount * 3);
+        for (let i = 0; i < shieldCount * 3; i += 3) {
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 4 + Math.random() * 2;
+            const height = (Math.random() - 0.5) * 8;
+            shieldPositions[i] = Math.cos(angle) * radius;
+            shieldPositions[i+1] = height + 5;
+            shieldPositions[i+2] = Math.sin(angle) * radius;
+        }
+        shieldParticles.setAttribute('position', new THREE.BufferAttribute(shieldPositions, 3));
+        const shieldMaterial = new THREE.PointsMaterial({ color: 0x44aaff, size: 0.2, transparent: true, opacity: 0.6 });
+        const shield = new THREE.Points(shieldParticles, shieldMaterial);
+        shield.visible = false;
+        scene.add(shield);
+
+        // Warning lights (small spheres around control center)
+        const warningLights = [];
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const lightGeo = new THREE.SphereGeometry(0.3);
+            const lightMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, emissive: new THREE.Color(0x442200) });
+            const light = new THREE.Mesh(lightGeo, lightMat);
+            light.position.set(Math.cos(angle) * 4, 3, Math.sin(angle) * 4);
+            light.visible = false;
+            scene.add(light);
+            warningLights.push(light);
+        }
+
+        // --- UI Elements Update ---
+        function updateUI() {
+            // Update sensor values
+            state.sensors.forEach((sensor, index) => {
+                const valueElem = document.getElementById(`${sensor.type}-value`);
+                const barElem = document.getElementById(`${sensor.type}-bar`);
+                const sensorItem = document.getElementById(`sensor-${sensor.type}`);
+                
+                if (valueElem) valueElem.textContent = Math.round(sensor.value);
+                if (barElem) {
+                    barElem.style.width = `${sensor.value}%`;
+                    if (sensor.value >= sensor.dangerThreshold) {
+                        barElem.style.background = '#ff0000';
+                        sensorItem?.classList.add('danger');
+                        sensorItem?.classList.remove('warning');
+                    } else if (sensor.value >= sensor.threshold) {
+                        barElem.style.background = '#ffff00';
+                        sensorItem?.classList.add('warning');
+                        sensorItem?.classList.remove('danger');
+                    } else {
+                        barElem.style.background = '#00ff00';
+                        sensorItem?.classList.remove('warning', 'danger');
+                    }
+                }
+            });
+
+            // Update alert level
+            const alertElem = document.getElementById('alert-level');
+            if (alertElem) {
+                alertElem.className = '';
+                if (state.alertLevel === 'safe') {
+                    alertElem.classList.add('safe');
+                    alertElem.innerHTML = '🟢 SAFE';
+                } else if (state.alertLevel === 'warning') {
+                    alertElem.classList.add('warning');
+                    alertElem.innerHTML = '🟡 WARNING';
+                } else {
+                    alertElem.classList.add('danger');
+                    alertElem.innerHTML = '🔴 DANGER';
+                }
+            }
+
+            // Update response status
+            document.getElementById('warning-status').textContent = state.responses.warningLight ? 'Active' : 'Inactive';
+            document.getElementById('alarm-status').textContent = state.responses.alarm ? 'Active' : 'Inactive';
+            document.getElementById('drone-status').textContent = state.responses.drone ? 'Deployed' : 'Standby';
+            
+            // Emergency broadcast
+            const broadcastElem = document.getElementById('emergency-broadcast');
+            if (state.responses.broadcast) {
+                broadcastElem.classList.add('active');
+            } else {
+                broadcastElem.classList.remove('active');
+            }
+        }
+
+        // --- Simulation Logic ---
+        function updateSimulation() {
+            if (!state.running) return;
+
+            // Update sensor values with random changes
+            state.sensors.forEach(sensor => {
+                // Random walk
+                const change = (Math.random() - 0.5) * 5;
+                sensor.value = Math.max(0, Math.min(100, sensor.value + change));
+            });
+
+            // Determine alert level based on max sensor value
+            const maxValue = Math.max(...state.sensors.map(s => s.value));
+            let newAlertLevel = 'safe';
+            if (maxValue >= THRESHOLD_DANGER) {
+                newAlertLevel = 'danger';
+            } else if (maxValue >= THRESHOLD_WARNING) {
+                newAlertLevel = 'warning';
+            }
+
+            // Update responses based on alert level
+            if (newAlertLevel !== state.alertLevel) {
+                state.alertLevel = newAlertLevel;
+                
+                // Trigger responses
+                if (state.alertLevel === 'danger') {
+                    state.responses.warningLight = true;
+                    state.responses.alarm = true;
+                    state.responses.drone = true;
+                    state.responses.shield = true;
+                    state.responses.broadcast = true;
+                } else if (state.alertLevel === 'warning') {
+                    state.responses.warningLight = true;
+                    state.responses.alarm = false;
+                    state.responses.drone = false;
+                    state.responses.shield = false;
+                    state.responses.broadcast = false;
+                } else {
+                    state.responses.warningLight = false;
+                    state.responses.alarm = false;
+                    state.responses.drone = false;
+                    state.responses.shield = false;
+                    state.responses.broadcast = false;
+                }
+            }
+
+            // Update 3D objects based on responses
+            // Warning lights
+            warningLights.forEach((light, index) => {
+                light.visible = state.responses.warningLight;
+                if (state.responses.warningLight) {
+                    const hue = (Date.now() * 0.005 + index * 0.5) % 1;
+                    light.material.emissive.setHSL(hue, 1, 0.5);
+                }
+            });
+
+            // Drone
+            droneGroup.visible = state.responses.drone;
+            if (state.responses.drone) {
+                // Animate drone flying around
+                const time = Date.now() * 0.001;
+                droneGroup.position.x = Math.sin(time) * 10;
+                droneGroup.position.z = Math.cos(time * 1.3) * 8;
+                droneGroup.position.y = 5 + Math.sin(time * 2) * 2;
+                droneGroup.rotation.y = time;
+            }
+
+            // Shield
+            shield.visible = state.responses.shield;
+            if (state.responses.shield) {
+                shield.rotation.y += 0.01;
+            }
+
+            // Update sensor colors based on values
+            sensorMeshes.forEach((mesh, index) => {
+                const sensor = state.sensors[index];
+                let color;
+                if (sensor.value >= sensor.dangerThreshold) {
+                    color = 0xff0000;
+                } else if (sensor.value >= sensor.threshold) {
+                    color = 0xffff00;
+                } else {
+                    color = 0x00ff00;
+                }
+                
+                mesh.body.material.color.setHex(color);
+                mesh.body.material.emissive.setHex(color).multiplyScalar(0.3);
+                mesh.core.material.emissive.setHex(color);
+                mesh.light.color.setHex(color);
+                
+                // Pulse intensity based on value
+                const intensity = 0.5 + (sensor.value / 100) * 1.5;
+                mesh.light.intensity = intensity;
+            });
+
+            // Pulse network lines
+            lines.forEach(line => {
+                const pulse = Math.sin(Date.now() * 0.005 + line.pulsePhase) * 0.5 + 0.5;
+                line.line.material.color.setHSL(0.6, 1, 0.3 + pulse * 0.3);
+            });
+
+            updateUI();
+        }
+
+        // --- Animation Loop ---
+        let clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            state.time += delta;
+
+            // Update FPS counter
+            state.frameCount++;
+            if (state.time - state.lastFpsUpdate >= 1) {
+                state.fps = state.frameCount;
+                state.frameCount = 0;
+                state.lastFpsUpdate = state.time;
+                document.getElementById('fps').textContent = state.fps;
+            }
+
+            document.getElementById('time').textContent = state.time.toFixed(1);
+
+            // Auto-rotate control
+            controls.update();
+
+            // Rotate satellite
+            satelliteGroup.rotation.y += 0.005;
+
+            // Update simulation
+            updateSimulation();
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // --- Event Listeners for Controls ---
+        document.getElementById('start-btn').addEventListener('click', () => {
+            state.running = true;
+        });
+
+        document.getElementById('stop-btn').addEventListener('click', () => {
+            state.running = false;
+        });
+
+        document.getElementById('trigger-btn').addEventListener('click', () => {
+            // Set all sensors to danger
+            state.sensors.forEach(sensor => {
+                sensor.value = 95;
+            });
+            state.alertLevel = 'danger';
+            state.responses.warningLight = true;
+            state.responses.alarm = true;
+            state.responses.drone = true;
+            state.responses.shield = true;
+            state.responses.broadcast = true;
+            updateUI();
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            // Reset all sensors to safe values
+            state.sensors.forEach(sensor => {
+                sensor.value = 20 + Math.random() * 20;
+            });
+            state.alertLevel = 'safe';
+            state.responses.warningLight = false;
+            state.responses.alarm = false;
+            state.responses.drone = false;
+            state.responses.shield = false;
+            state.responses.broadcast = false;
+            updateUI();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', onWindowResize, false);
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Initialize UI
+        updateUI();
+
+        console.log('3D Automatic Response System Simulator started!');
+    </script>
+</body>
+</html>
