@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0c0c14">
+<title>JARVIS — AI Assistant by Durgesh Sharma</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   ROOT VARIABLES
+═══════════════════════════════════════════ */
+:root{
+  --bg:     #0c0c14;
+  --bg2:    #12121f;
+  --bg3:    #181828;
+  --bg4:    #1e1e32;
+  --accent: #7c6aff;
+  --accent2:#5b4dff;
+  --green:  #00d97e;
+  --red:    #ff4757;
+  --yellow: #ffd32a;
+  --text:   #e8e8f0;
+  --text2:  #8888aa;
+  --border: rgba(124,106,255,.15);
+  --glow:   rgba(124,106,255,.2);
+  --card:   rgba(18,18,31,.9);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);overflow:hidden}
+
+/* Subtle grid bg */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(124,106,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,106,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0
+}
+body::after{
+  content:'';position:fixed;top:-40%;left:-20%;width:60%;height:80%;
+  background:radial-gradient(ellipse,rgba(124,106,255,.06) 0%,transparent 60%);
+  pointer-events:none;z-index:0;animation:orb 12s ease-in-out infinite alternate
+}
+@keyframes orb{from{transform:translate(0,0)}to{transform:translate(30%,20%)}}
+
+/* ═══════════════════════════════════════════
+   SPLASH
+═══════════════════════════════════════════ */
+#splash{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#splash.out{animation:sOut .5s ease forwards;pointer-events:none}
+@keyframes sOut{to{opacity:0;transform:scale(1.04)}}
+.sp-ring{width:80px;height:80px;border-radius:50%;border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(135deg,var(--accent),#ff6eb4) border-box;display:flex;align-items:center;justify-content:center;animation:spin 4s linear infinite,pulseRing 2s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(124,106,255,.4)}50%{box-shadow:0 0 0 16px rgba(124,106,255,0)}}
+.sp-inner{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#7c6aff);display:flex;align-items:center;justify-content:center;font-size:1.6rem;animation:counterSpin 4s linear infinite}
+@keyframes counterSpin{to{transform:rotate(-360deg)}}
+.sp-name{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;letter-spacing:4px;background:linear-gradient(135deg,#fff 0%,var(--accent) 60%,#ff6eb4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeUp .5s ease .4s both}
+.sp-sub{font-size:.72rem;letter-spacing:5px;color:var(--text2);text-transform:uppercase;animation:fadeUp .5s ease .6s both}
+.sp-bar{width:120px;height:2px;background:rgba(255,255,255,.08);border-radius:1px;overflow:hidden;animation:fadeUp .4s ease .8s both}
+.sp-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent),#ff6eb4);animation:fillBar 2s ease .8s both}
+@keyframes fillBar{from{width:0}to{width:100%}}
+@keyframes fadeUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ═══════════════════════════════════════════
+   KEY SETUP
+═══════════════════════════════════════════ */
+#keySetup{position:fixed;inset:0;z-index:500;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;gap:16px}
+#keySetup.show{display:flex}
+.ks-icon{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 8px 32px rgba(124,106,255,.35)}
+.ks-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;text-align:center}
+.ks-title span{background:linear-gradient(135deg,var(--accent),#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ks-sub{font-size:.78rem;color:var(--text2);text-align:center;line-height:1.7;max-width:300px}
+.ks-card{width:100%;max-width:360px;background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:18px}
+.ks-label{font-size:.62rem;letter-spacing:3px;color:var(--text2);text-transform:uppercase;margin-bottom:8px}
+.ks-row{display:flex;gap:8px;align-items:center}
+.ks-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--text);outline:none;transition:border-color .2s;letter-spacing:1px}
+.ks-input:focus{border-color:var(--accent)}
+.ks-input::placeholder{color:var(--text2);letter-spacing:0}
+.eye{background:none;border:none;cursor:pointer;font-size:1rem;padding:4px;color:var(--text2);transition:color .2s}
+.eye:hover{color:var(--text)}
+.ks-btn{width:100%;max-width:360px;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent));border:none;color:#fff;font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px;box-shadow:0 4px 20px rgba(124,106,255,.35)}
+.ks-btn:hover{transform:scale(1.02);box-shadow:0 6px 28px rgba(124,106,255,.5)}
+.ks-warn{font-size:.65rem;color:var(--text2);text-align:center;max-width:300px;line-height:1.6}
+.ks-link{font-size:.7rem;color:var(--accent);cursor:pointer;text-decoration:underline;text-align:center}
+
+/* ═══════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════ */
+#app{display:none;height:100dvh;max-width:480px;margin:0 auto;flex-direction:column;position:relative;z-index:1}
+#app.show{display:flex}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(12,12,20,.96);border-bottom:1px solid var(--border);backdrop-filter:blur(14px);z-index:10}
+.h-left{display:flex;align-items:center;gap:10px}
+.h-logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 0 12px var(--glow)}
+.h-name{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.5px}
+.h-status{display:flex;align-items:center;gap:5px;font-size:.6rem;color:var(--text2);letter-spacing:.5px}
+.h-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 2s infinite}
+@keyframes blink{50%{opacity:.2}}
+.h-right{display:flex;gap:6px}
+.hib{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.78rem;transition:all .2s}
+.hib:hover{background:var(--glow);border-color:var(--accent)}
+
+/* Learning stats bar */
+#learnBar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:6px 16px;background:rgba(18,18,31,.8);border-bottom:1px solid var(--border);font-size:.65rem;color:var(--text2)}
+.lb-stat{display:flex;align-items:center;gap:5px}
+.lb-val{font-weight:700;color:var(--text)}
+.lb-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:10px;font-size:.62rem;font-weight:600;letter-spacing:.5px}
+.lb-badge.good{background:rgba(0,217,126,.12);color:var(--green);border:1px solid rgba(0,217,126,.2)}
+.lb-badge.learning{background:rgba(124,106,255,.12);color:var(--accent);border:1px solid var(--border)}
+
+/* ═══════════════════════════════════════════
+   CHAT AREA
+═══════════════════════════════════════════ */
+#chat{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 12px 8px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+#chat::-webkit-scrollbar{width:3px}
+#chat::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;opacity:.7}
+.empty-icon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 0 24px var(--glow)}
+.empty-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;text-align:center}
+.empty-sub{font-size:.78rem;color:var(--text2);text-align:center;line-height:1.6;max-width:240px}
+.starter-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:320px}
+.chip{background:rgba(124,106,255,.08);border:1px solid var(--border);border-radius:16px;padding:7px 14px;font-size:.74rem;color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap}
+.chip:hover{background:var(--glow);color:var(--accent);border-color:rgba(124,106,255,.4)}
+
+/* Day divider */
+.day-div{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:.6rem;letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
+.day-div::before,.day-div::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Messages */
+.mrow{display:flex;align-items:flex-end;gap:8px;animation:msgIn .28s cubic-bezier(.22,1,.36,1)}
+.mrow.user{flex-direction:row-reverse}
+@keyframes msgIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.av{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+.av.ai{background:linear-gradient(135deg,var(--accent2),var(--accent));box-shadow:0 0 8px var(--glow)}
+.av.user{background:linear-gradient(135deg,#2d2d4e,#3d3d66)}
+
+.bwrap{display:flex;flex-direction:column;max-width:82%;gap:4px}
+.mrow.user .bwrap{align-items:flex-end}
+
+.bub{padding:10px 14px;border-radius:16px;font-size:.86rem;line-height:1.68;word-break:break-word;position:relative}
+.bub.ai{background:var(--bg3);border:1px solid var(--border);border-bottom-left-radius:4px;color:var(--text)}
+.bub.user{background:linear-gradient(135deg,var(--accent2),var(--accent));border-bottom-right-radius:4px;color:#fff;box-shadow:0 3px 14px rgba(124,106,255,.3)}
+
+/* Markdown */
+.bub strong{color:#c4b5fd;font-weight:600}
+.bub em{color:var(--text2)}
+.bub code{background:rgba(124,106,255,.15);border:1px solid rgba(124,106,255,.2);border-radius:4px;padding:1px 6px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#c4b5fd}
+.bub pre{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:10px;padding:12px;margin:7px 0;overflow-x:auto;font-family:monospace;font-size:.76rem}
+.bub pre code{background:none;border:none;padding:0;color:var(--text)}
+.bub ul,.bub ol{padding-left:18px;margin:5px 0}
+.bub li{margin:3px 0}
+.bub h1,.bub h2,.bub h3{color:#c4b5fd;margin:7px 0 3px;font-weight:700}
+.bub blockquote{border-left:3px solid var(--accent);padding-left:10px;color:var(--text2);margin:5px 0}
+.bub a{color:var(--accent);text-decoration:underline}
+
+/* Feedback row */
+.fb-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.btime{font-size:.57rem;color:var(--text2)}
+.fb-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:8px;font-size:.65rem;cursor:pointer;border:1px solid;transition:all .18s;background:transparent;font-family:'DM Sans',sans-serif}
+.fb-btn.up{border-color:rgba(0,217,126,.25);color:var(--green)}
+.fb-btn.up:hover,.fb-btn.up.active{background:rgba(0,217,126,.12);border-color:var(--green);box-shadow:0 0 8px rgba(0,217,126,.2)}
+.fb-btn.down{border-color:rgba(255,71,87,.25);color:var(--red)}
+.fb-btn.down:hover,.fb-btn.down.active{background:rgba(255,71,87,.1);border-color:var(--red)}
+.fb-btn:disabled{opacity:.4;cursor:default}
+.fb-hint{font-size:.62rem;color:var(--text2);font-style:italic;display:none}
+.fb-hint.show{display:block}
+
+/* Learned badge */
+.learned-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:.6rem;background:rgba(124,106,255,.1);border:1px solid rgba(124,106,255,.2);color:var(--accent)}
+
+/* Correction input */
+.correction-wrap{background:rgba(255,71,87,.06);border:1px solid rgba(255,71,87,.2);border-radius:12px;padding:10px;margin-top:4px;display:none}
+.correction-wrap.show{display:block}
+.corr-label{font-size:.65rem;color:var(--red);margin-bottom:6px;letter-spacing:.5px}
+.corr-row{display:flex;gap:6px}
+.corr-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:.8rem;color:var(--text);outline:none;transition:border-color .2s}
+.corr-input:focus{border-color:var(--red)}
+.corr-input::placeholder{color:var(--text2)}
+.corr-save{padding:7px 14px;border-radius:8px;background:rgba(255,71,87,.15);border:1px solid rgba(255,71,87,.3);color:var(--red);font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.corr-save:hover{background:rgba(255,71,87,.25)}
+
+/* Typing */
+.typing-bub{background:var(--bg3);border:1px solid var(--border);border-radius:16px;border-bottom-left-radius:4px;padding:12px 16px}
+.tdots{display:flex;gap:4px;align-items:center}
+.tdots span{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:td 1.2s ease-in-out infinite}
+.tdots span:nth-child(2){animation-delay:.2s}.tdots span:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,80%,100%{transform:scale(.5);opacity:.3}40%{transform:scale(1);opacity:1}}
+.sc::after{content:'▋';animation:cur .7s infinite;color:var(--accent);font-size:.9em}
+@keyframes cur{50%{opacity:0}}
+
+/* ═══════════════════════════════════════════
+   LEARNING PANEL (sidebar)
+═══════════════════════════════════════════ */
+#learnPanel{position:fixed;top:0;right:0;height:100dvh;width:280px;background:var(--bg2);border-left:1px solid var(--border);z-index:50;transform:translateX(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;max-width:90vw}
+#learnPanel.open{transform:translateX(0)}
+.lp-head{padding:16px 14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.lp-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;flex:1}
+.lp-close{cursor:pointer;opacity:.6;font-size:.9rem;padding:4px;background:none;border:none;color:var(--text)}
+.lp-close:hover{opacity:1}
+.lp-body{flex:1;overflow-y:auto;padding:12px}
+.lp-body::-webkit-scrollbar{width:2px}
+.lp-body::-webkit-scrollbar-thumb{background:var(--border)}
+.lp-section{margin-bottom:16px}
+.lp-sec-title{font-size:.62rem;letter-spacing:3px;color:var(--text2);text-transform:uppercase;margin-bottom:8px}
+.learn-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:7px;font-size:.78rem;line-height:1.5}
+.learn-item .li-q{color:var(--text2);margin-bottom:3px;font-size:.72rem}
+.learn-item .li-a{color:var(--text)}
+.learn-item .li-corr{color:var(--green);font-size:.72rem;margin-top:3px}
+.learn-item-del{float:right;cursor:pointer;opacity:.4;font-size:.75rem}
+.learn-item-del:hover{opacity:.9}
+.lp-empty{text-align:center;color:var(--text2);font-size:.76rem;padding:20px;line-height:1.6}
+.lp-clear{width:100%;padding:10px;border-radius:10px;background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.2);color:var(--red);font-family:'DM Sans',sans-serif;font-size:.78rem;cursor:pointer;transition:all .2s;margin-top:8px}
+.lp-clear:hover{background:rgba(255,71,87,.15)}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.stat-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent)}
+.stat-lbl{font-size:.6rem;color:var(--text2);margin-top:2px}
+
+/* ═══════════════════════════════════════════
+   INPUT AREA
+═══════════════════════════════════════════ */
+#iarea{flex-shrink:0;padding:8px 12px 12px;background:rgba(12,12,20,.98);border-top:1px solid var(--border);backdrop-filter:blur(14px);z-index:10}
+.irow{display:flex;align-items:flex-end;gap:7px}
+#minput{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:.87rem;color:var(--text);outline:none;resize:none;max-height:100px;min-height:42px;line-height:1.5;transition:border-color .2s,box-shadow .2s}
+#minput:focus{border-color:rgba(124,106,255,.5);box-shadow:0 0 0 3px rgba(124,106,255,.08)}
+#minput::placeholder{color:var(--text2)}
+.ibtns{display:flex;gap:5px;align-items:flex-end}
+.ibtn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#vbtn{background:rgba(255,255,255,.06);border:1px solid var(--border);font-size:.9rem;color:var(--text2)}
+#vbtn:hover{background:var(--glow);border-color:var(--accent);color:var(--accent)}
+#vbtn.rec{background:rgba(255,71,87,.15);border-color:var(--red);color:var(--red);animation:recP 1s infinite}
+@keyframes recP{50%{box-shadow:0 0 0 5px rgba(255,71,87,.12)}}
+#sbtn{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;font-size:.9rem;box-shadow:0 3px 12px rgba(124,106,255,.3)}
+#sbtn:hover{transform:scale(1.07);box-shadow:0 5px 18px rgba(124,106,255,.45)}
+#sbtn:active{transform:scale(.95)}
+#sbtn:disabled{opacity:.28;cursor:default;transform:none!important}
+.ihint{text-align:center;font-size:.57rem;color:var(--text2);margin-top:5px;opacity:.6}
+
+/* ═══════════════════════════════════════════
+   OVERLAY
+═══════════════════════════════════════════ */
+#lpOverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:49;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+#lpOverlay.show{opacity:1;pointer-events:all}
+
+/* ═══════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════ */
+#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:8px 18px;font-size:.76rem;color:var(--text);z-index:300;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════
+   VOICE WAVE
+═══════════════════════════════════════════ */
+#voiceWave{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:4px;background:rgba(12,12,20,.92);border:1px solid var(--border);border-radius:20px;padding:10px 18px;z-index:100;backdrop-filter:blur(8px)}
+#voiceWave.show{display:flex}
+.vw-bar{width:3px;border-radius:2px;background:var(--accent);animation:vw 0.8s ease-in-out infinite}
+.vw-bar:nth-child(1){height:8px;animation-delay:0s}
+.vw-bar:nth-child(2){height:16px;animation-delay:.1s}
+.vw-bar:nth-child(3){height:22px;animation-delay:.2s}
+.vw-bar:nth-child(4){height:16px;animation-delay:.3s}
+.vw-bar:nth-child(5){height:8px;animation-delay:.4s}
+@keyframes vw{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+#voiceWave span{font-size:.72rem;color:var(--text2);margin-left:8px}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="sp-ring"><div class="sp-inner">🤖</div></div>
+  <div class="sp-name">JARVIS</div>
+  <div class="sp-sub">Self-Learning AI · by Durgesh Sharma</div>
+  <div class="sp-bar"><div class="sp-fill"></div></div>
+</div>
+
+<!-- API KEY SETUP -->
+<div id="keySetup">
+  <div class="ks-icon">🔑</div>
+  <div class="ks-title">JARVIS <span>Setup</span></div>
+  <div class="ks-sub">Anthropic API key daalo — sirf aapke device pe save hogi. Koi server nahi jaayegi.</div>
+  <div class="ks-card">
+    <div class="ks-label">🔑 Anthropic API Key</div>
+    <div class="ks-row">
+      <input class="ks-input" id="apiKeyIn" type="password" placeholder="sk-ant-api03-...">
+      <button class="eye" onclick="toggleEye()">👁️</button>
+    </div>
+    <div style="font-size:.62rem;color:var(--text2);margin-top:8px;line-height:1.5">Key sirf <code style="background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px">localStorage</code> mein save hogi — koi bhi nahi dekh sakta</div>
+  </div>
+  <button class="ks-btn" onclick="saveKey()">⚡ JARVIS Start Karo</button>
+  <div class="ks-warn">⚠️ API key kisi ke saath share mat karo<br>console.anthropic.com se milegi</div>
+  <div class="ks-link" onclick="window.open('https://console.anthropic.com','_blank')">API Key kahan se milegi? →</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- Header -->
+  <header>
+    <div class="h-left">
+      <div class="h-logo">🤖</div>
+      <div>
+        <div class="h-name">JARVIS</div>
+        <div class="h-status"><div class="h-dot"></div><span id="statusTxt">Online · Seekh raha hai</span></div>
+      </div>
+    </div>
+    <div class="h-right">
+      <div class="hib" onclick="toggleTTS()" id="ttsBtn" title="Voice Output Toggle">🔊</div>
+      <div class="hib" onclick="toggleLearnPanel()" title="Learning Data">🧠</div>
+      <div class="hib" onclick="clearChat()" title="Clear Chat">🗑️</div>
+      <div class="hib" onclick="changeKey()" title="API Key">🔑</div>
+    </div>
+  </header>
+
+  <!-- Learning Stats Bar -->
+  <div id="learnBar">
+    <div class="lb-stat">🧠 Seekha: <span class="lb-val" id="learnCount">0</span> corrections</div>
+    <div class="lb-stat">👍 <span class="lb-val" id="goodCount">0</span> &nbsp; 👎 <span class="lb-val" id="badCount">0</span></div>
+    <div class="lb-badge learning" id="levelBadge">🌱 Beginner</div>
+  </div>
+
+  <!-- Chat -->
+  <div id="chat">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🤖</div>
+      <div class="empty-title">Namaste! Main hoon JARVIS</div>
+      <div class="empty-sub">Aapka self-learning AI assistant — jo feedback se seekhta aur behtar hota rehta hai</div>
+      <div class="starter-chips">
+        <div class="chip" onclick="sendChip(this)">👋 Tum kaun ho?</div>
+        <div class="chip" onclick="sendChip(this)">🏗️ Tumhe kisne banaya?</div>
+        <div class="chip" onclick="sendChip(this)">🧠 Tum kya seekh sakte ho?</div>
+        <div class="chip" onclick="sendChip(this)">💡 JavaScript sikhao</div>
+        <div class="chip" onclick="sendChip(this)">😄 Ek joke sunao</div>
+        <div class="chip" onclick="sendChip(this)">🌟 Motivate karo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div id="iarea">
+    <div class="irow">
+      <textarea id="minput" placeholder="Kuch bhi poochho... JARVIS sun raha hai 🎧" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <div class="ibtns">
+        <button class="ibtn" id="vbtn" onclick="toggleVoice()" title="Voice Input">🎤</button>
+        <button class="ibtn" id="sbtn" onclick="sendMsg()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="ihint">JARVIS · Self-Learning AI · Made by <strong>Durgesh Sharma</strong> · No backend · Pure HTML</div>
+  </div>
+</div>
+
+<!-- LEARNING PANEL -->
+<div id="lpOverlay" onclick="closeLearnPanel()"></div>
+<div id="learnPanel">
+  <div class="lp-head">
+    <div style="font-size:1.2rem">🧠</div>
+    <div class="lp-title">JARVIS ki Memory</div>
+    <button class="lp-close" onclick="closeLearnPanel()">✕</button>
+  </div>
+  <div class="lp-body">
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" id="lpGood">0</div><div class="stat-lbl">👍 Sahi Jawab</div></div>
+      <div class="stat-box"><div class="stat-val" id="lpBad">0</div><div class="stat-lbl">👎 Galat Jawab</div></div>
+      <div class="stat-box"><div class="stat-val" id="lpCorr">0</div><div class="stat-lbl">✏️ Corrections</div></div>
+      <div class="stat-box"><div class="stat-val" id="lpAcc">-</div><div class="stat-lbl">🎯 Accuracy</div></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-sec-title">📚 Seekhi hui baatein</div>
+      <div id="learnItems"></div>
+    </div>
+    <button class="lp-clear" onclick="clearLearning()">🗑️ Learning Data Reset Karo</button>
+  </div>
+</div>
+
+<!-- Voice Wave -->
+<div id="voiceWave">
+  <div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div><div class="vw-bar"></div>
+  <span>Bol raho... (stop karne ke liye dobara tap karo)</span>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONSTANTS & STORAGE
+═══════════════════════════════════════════════════ */
+const SK  = 'jarvis_key';
+const SK2 = 'jarvis_learn';
+const SK3 = 'jarvis_stats';
+
+// ── System prompt builder ──────────────────────────
+function buildSystemPrompt(learnData) {
+  const corrections = learnData.corrections || [];
+  const corrText = corrections.length
+    ? `\n\nSEEKHI HUI BAATEIN (pehle ki galtiyon se seekha):\n`
+      + corrections.map((c,i) => `${i+1}. Jab poochhein "${c.question}" → Sahi jawab: "${c.correction}"`).join('\n')
+    : '';
+
+  return `Tu JARVIS hai — ek self-learning AI assistant jo Durgesh Sharma ne banaya hai.
+
+IDENTITY (kabhi mat toda):
+1. Tu JARVIS hai. Agar koi puche "tumhe kisne banaya" ya "who made you" → hamesha bolo: "Mujhe Durgesh Sharma ne banaya hai! Woh ek talented developer hain jinhone mujhe ek pure frontend HTML file mein banaya — koi backend nahi, koi database nahi! 🚀"
+2. Tu Claude ya Anthropic nahi hai. Tu JARVIS hai — ek custom AI.
+3. Hindi mein primarily baat kar. English/Hinglish bhi theek hai user ke hisaab se.
+
+LEARNING BEHAVIOR:
+4. User feedback (👍/👎) se tu seekhta hai.
+5. Agar user ne koi correction di hai, toh woh yaad rakh aur us topic par sahi jawab de.
+6. Pichli galtiyan mat dohraa.
+7. Har response ke baad user feedback deta hai — usse seriously le.
+
+PERSONALITY:
+8. Friendly, smart, thoda casual — jaise ek knowledgeable dost.
+9. Short & clear responses prefer kar. Unnecessary padding mat kar.
+10. Code likhne mein mahir hai. Examples deta hai.
+11. Honest reh — agar kuch nahi pata toh bol do.
+${corrText}
+
+Response format:
+- 2-4 lines for simple questions
+- Markdown use kar code/lists ke liye
+- Emojis naturally use kar`;
+}
+
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let S = {
+  apiKey:   localStorage.getItem(SK) || '',
+  history:  [],          // API conversation history
+  learn:    loadLearn(), // { corrections:[], stats:{good,bad} }
+  isLoad:   false,
+  isRec:    false,
+  recog:    null,
+  msgCount: 0,
+  ttsEnabled: true,
+};
+
+function loadLearn() {
+  try {
+    const d = localStorage.getItem(SK2);
+    return d ? JSON.parse(d) : { corrections:[], stats:{good:0,bad:0} };
+  } catch(e) { return { corrections:[], stats:{good:0,bad:0} }; }
+}
+
+function saveLearn() {
+  localStorage.setItem(SK2, JSON.stringify(S.learn));
+  updateStatsUI();
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('out');
+    setTimeout(() => {
+      document.getElementById('splash').remove();
+      if (!S.apiKey) {
+        document.getElementById('keySetup').classList.add('show');
+      } else {
+        startApp();
+      }
+    }, 500);
+  }, 3000);
+});
+
+/* ═══════════════════════════════════════════════════
+   KEY SETUP
+═══════════════════════════════════════════════════ */
+window.toggleEye = function() {
+  const inp = document.getElementById('apiKeyIn');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+};
+
+window.saveKey = function() {
+  const key = document.getElementById('apiKeyIn').value.trim();
+  if (!key || !key.startsWith('sk-ant')) {
+    showToast('❌ Sahi key daalo! "sk-ant-..." se shuru honi chahiye'); return;
+  }
+  S.apiKey = key;
+  localStorage.setItem(SK, key);
+  document.getElementById('keySetup').classList.remove('show');
+  startApp();
+};
+
+window.changeKey = function() {
+  const k = prompt('Nayi API Key daalo (sk-ant-...):', '');
+  if (!k) return;
+  if (!k.startsWith('sk-ant')) { showToast('❌ Invalid key format'); return; }
+  S.apiKey = k; localStorage.setItem(SK, k);
+  showToast('✅ API Key update ho gayi!');
+};
+
+/* ═══════════════════════════════════════════════════
+   APP START
+═══════════════════════════════════════════════════ */
+function startApp() {
+  document.getElementById('app').classList.add('show');
+  updateStatsUI();
+
+  // Welcome message
+  setTimeout(() => {
+    const corr = S.learn.corrections.length;
+    const welcome = corr > 0
+      ? `Wapas aaye! 🎉 Main ab tak ${corr} cheezein seekh chuka hoon aapke feedback se. Aaj kya poochhna hai?`
+      : `Namaste! Main JARVIS hoon — aapka self-learning AI assistant. Jo aapko galat lage, mujhe 👎 do aur correction batao — main seekh lunga! 🧠`;
+    addBubble(welcome, 'ai', null, false);
+    if (S.ttsEnabled) speakText(welcome.slice(0, 180));
+  }, 600);
+}
+
+/* ═══════════════════════════════════════════════════
+   SEND MESSAGE
+═══════════════════════════════════════════════════ */
+window.handleKey = function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+};
+
+window.sendChip = function(el) {
+  // FIX 5: Remove emptyState from DOM entirely so it never re-appears
+  const es = document.getElementById('emptyState');
+  if (es) es.remove();
+  document.getElementById('minput').value = el.textContent.trim().replace(/^[^\s]+\s/,'');
+  sendMsg();
+};
+
+async function sendMsg() {
+  const inp  = document.getElementById('minput');
+  const text = inp.value.trim();
+  if (!text || S.isLoad) return;
+
+  // FIX 5: Remove emptyState from DOM entirely
+  const es = document.getElementById('emptyState');
+  if (es) es.remove();
+  inp.value = ''; inp.style.height = 'auto';
+  S.isLoad  = true;
+  document.getElementById('sbtn').disabled = true;
+
+  addBubble(text, 'user');
+  S.history.push({ role:'user', content: text });
+  if (S.history.length > 24) S.history = S.history.slice(-24);
+
+  setStatus('Soch raha hai...');
+
+  // Typing indicator
+  const typRow = addTypingRow();
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type':      'application/json',
+        'x-api-key':         S.apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model:      'claude-sonnet-4-20250514',
+        max_tokens: 800,
+        stream:     true,
+        system:     buildSystemPrompt(S.learn),
+        messages:   S.history.slice(-20),
+      }),
+    });
+
+    typRow.remove();
+
+    if (!resp.ok) {
+      const ed = await resp.json().catch(()=>({}));
+      const em = {401:'❌ API Key galat hai',429:'⏳ Rate limit — thodi der baad try karo',403:'❌ Access denied'}[resp.status]
+        || `HTTP ${resp.status}`;
+      throw new Error(em);
+    }
+
+    // Streaming
+    const msgId = 'msg' + (++S.msgCount);
+    const { bub } = addBubble('', 'ai', msgId, true);
+    bub.classList.add('sc');
+    let fullText = '';
+
+    const reader  = resp.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split('\n');
+        buf = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith('data:')) continue;
+          const raw = line.slice(5).trim();
+          if (raw === '[DONE]') continue;
+          try {
+            const ev = JSON.parse(raw);
+            if (ev.type === 'content_block_delta' && ev.delta?.text) {
+              fullText += ev.delta.text;
+              bub.innerHTML = renderMD(fullText);
+              scrollBottom();
+            }
+          } catch(e) {}
+        }
+      }
+    } finally {
+      // FIX 2: Guaranteed sc removal — even if stream errors out mid-way
+      bub.classList.remove('sc');
+      bub.innerHTML = renderMD(fullText || 'Kuch samajh nahi aaya 🤔');
+    }
+
+    S.history.push({ role:'assistant', content: fullText });
+
+    // TTS
+    if (S.ttsEnabled && fullText.length < 250) speakText(fullText);
+
+    // Show feedback buttons for this message
+    showFeedbackUI(msgId, text, fullText);
+
+  } catch(err) {
+    typRow?.remove();
+    const { bub } = addBubble('', 'ai', null, false);
+    bub.style.cssText += ';background:rgba(255,71,87,.07);border-color:rgba(255,71,87,.25)';
+    bub.innerHTML = `⚠️ <strong>Error:</strong> ${escHtml(err.message)}`;
+  }
+
+  S.isLoad = false;
+  document.getElementById('sbtn').disabled = false;
+  setStatus('Online · Seekh raha hai');
+}
+
+/* ═══════════════════════════════════════════════════
+   FEEDBACK + LEARNING SYSTEM
+═══════════════════════════════════════════════════ */
+function showFeedbackUI(msgId, question, answer) {
+  const row = document.getElementById(msgId);
+  if (!row) return;
+
+  const fbRow = row.querySelector('.fb-row');
+  if (!fbRow) return;
+
+  // Feedback buttons
+  const upBtn   = fbRow.querySelector('.fb-btn.up');
+  const downBtn = fbRow.querySelector('.fb-btn.down');
+  const corrWrap= row.querySelector('.correction-wrap');
+  const fbHint  = row.querySelector('.fb-hint');
+
+  upBtn.addEventListener('click', () => {
+    if (upBtn.classList.contains('active')) return;
+    upBtn.classList.add('active');
+    downBtn.disabled = true;
+    S.learn.stats.good++;
+    saveLearn();
+    showToast('👍 Shukriya! JARVIS seekh raha hai 🧠');
+    fbHint.textContent = '✅ Jawab sahi tha — JARVIS ne note kar liya!';
+    fbHint.classList.add('show');
+
+    // Add a "learned" badge next to time
+    const badge = document.createElement('span');
+    badge.className = 'learned-badge';
+    badge.innerHTML = '✅ Sahi';
+    fbRow.appendChild(badge);
+  });
+
+  downBtn.addEventListener('click', () => {
+    if (downBtn.classList.contains('active')) return;
+    downBtn.classList.add('active');
+    upBtn.disabled = true;
+    S.learn.stats.bad++;
+    saveLearn();
+    corrWrap.classList.add('show');
+    fbHint.textContent = '❌ Oops! Sahi jawab batao — JARVIS seekh jaayega!';
+    fbHint.classList.add('show');
+    scrollBottom();
+
+    // Focus correction input
+    setTimeout(() => corrWrap.querySelector('.corr-input')?.focus(), 200);
+  });
+
+  // Save correction
+  const corrBtn = corrWrap?.querySelector('.corr-save');
+  const corrInp = corrWrap?.querySelector('.corr-input');
+
+  corrBtn?.addEventListener('click', saveCorrection);
+
+  // FIX 3: Enter key submits correction
+  corrInp?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); saveCorrection(); }
+  });
+
+  function saveCorrection() {
+    const correction = corrInp?.value?.trim();
+    if (!correction) { showToast('❗ Pehle sahi jawab batao!'); return; }
+
+    // Store correction
+    const corrEntry = {
+      id:         Date.now(),
+      question:   question.slice(0, 120),
+      oldAnswer:  answer.slice(0, 200),
+      correction: correction,
+      timestamp:  new Date().toLocaleDateString('hi-IN'),
+    };
+
+    S.learn.corrections.unshift(corrEntry);
+    if (S.learn.corrections.length > 30) S.learn.corrections = S.learn.corrections.slice(0, 30);
+    saveLearn();
+    renderLearnItems();
+
+    corrWrap.innerHTML = `<div style="color:var(--green);font-size:.78rem;">✅ Seekh liya! "${escHtml(correction)}" — Agle baar sahi jawab dunga! 🧠</div>`;
+
+    // Add learned badge
+    const badge = document.createElement('span');
+    badge.className = 'learned-badge';
+    badge.innerHTML = '🧠 Seekh liya';
+    fbRow.appendChild(badge);
+
+    showToast('🧠 JARVIS ne correction save kar liya!');
+
+    // FIX 1: buildSystemPrompt already injects corrections on every API call.
+    // We do NOT add to history (would confuse AI with fake user messages).
+    // Just rebuild system prompt is enough — happens automatically on next sendMsg().
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER CHAT BUBBLE
+═══════════════════════════════════════════════════ */
+function addBubble(text, role, id = null, showFB = false) {
+  const chat = document.getElementById('chat');
+  const rowId = id || ('m' + (++S.msgCount));
+
+  const row = document.createElement('div');
+  row.className = 'mrow ' + (role === 'user' ? 'user' : '');
+  row.id = rowId;
+
+  const av = document.createElement('div');
+  av.className = 'av ' + (role === 'user' ? 'user' : 'ai');
+  av.textContent = role === 'user' ? '👤' : '🤖';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'bwrap';
+
+  const bub = document.createElement('div');
+  bub.className = 'bub ' + (role === 'user' ? 'user' : 'ai');
+  bub.innerHTML = role === 'ai' ? renderMD(text) : escHtml(text).replace(/\n/g,'<br>');
+
+  wrap.appendChild(bub);
+
+  // Feedback row (AI only)
+  if (role === 'ai') {
+    const fbRow = document.createElement('div');
+    fbRow.className = 'fb-row';
+
+    const bt = document.createElement('span');
+    bt.className = 'btime';
+    bt.textContent = getTime();
+
+    if (showFB) {
+      const upBtn = document.createElement('button');
+      upBtn.className = 'fb-btn up';
+      upBtn.innerHTML = '👍 Sahi';
+
+      const downBtn = document.createElement('button');
+      downBtn.className = 'fb-btn down';
+      downBtn.innerHTML = '👎 Galat';
+
+      fbRow.appendChild(bt);
+      fbRow.appendChild(upBtn);
+      fbRow.appendChild(downBtn);
+
+      const fbHint = document.createElement('div');
+      fbHint.className = 'fb-hint';
+      wrap.appendChild(fbRow);
+      wrap.appendChild(fbHint);
+
+      // Correction wrap
+      const cw = document.createElement('div');
+      cw.className = 'correction-wrap';
+      cw.innerHTML = `
+        <div class="corr-label">✏️ Sahi jawab kya hona chahiye tha?</div>
+        <div class="corr-row">
+          <input class="corr-input" type="text" placeholder="Yahan sahi jawab likho...">
+          <button class="corr-save">💾 Sikha do</button>
+        </div>`;
+      wrap.appendChild(cw);
+
+    } else {
+      fbRow.appendChild(bt);
+      wrap.appendChild(fbRow);
+    }
+  }
+
+  row.appendChild(av);
+  row.appendChild(wrap);
+  chat.appendChild(row);
+  scrollBottom();
+  return { row, bub, id: rowId };
+}
+
+function addTypingRow() {
+  const chat = document.getElementById('chat');
+  const row  = document.createElement('div');
+  row.className = 'mrow'; row.id = 'typing';
+  const av   = document.createElement('div'); av.className='av ai'; av.textContent='🤖';
+  const bub  = document.createElement('div'); bub.className='typing-bub';
+  bub.innerHTML='<div class="tdots"><span></span><span></span><span></span></div>';
+  row.appendChild(av); row.appendChild(bub);
+  chat.appendChild(row); scrollBottom();
+  return row;
+}
+
+/* ═══════════════════════════════════════════════════
+   LEARNING PANEL UI
+═══════════════════════════════════════════════════ */
+window.toggleLearnPanel = function() {
+  const panel = document.getElementById('learnPanel');
+  const ov    = document.getElementById('lpOverlay');
+  const isOpen = panel.classList.contains('open');
+  if (isOpen) { panel.classList.remove('open'); ov.classList.remove('show'); }
+  else { panel.classList.add('open'); ov.classList.add('show'); renderLearnItems(); }
+};
+
+function closeLearnPanel() {
+  document.getElementById('learnPanel').classList.remove('open');
+  document.getElementById('lpOverlay').classList.remove('show');
+}
+
+function renderLearnItems() {
+  const cont = document.getElementById('learnItems');
+  const corrs = S.learn.corrections;
+  if (!corrs.length) {
+    cont.innerHTML='<div class="lp-empty">Abhi koi correction nahi hai.<br>👎 do aur sahi jawab batao — JARVIS seekhega!</div>';
+    return;
+  }
+  cont.innerHTML = corrs.map(c => `
+    <div class="learn-item">
+      <div style="float:right;cursor:pointer;opacity:.4;font-size:.75rem" onclick="deleteCorrection(${c.id})">✕</div>
+      <div class="li-q">❓ "${escHtml(c.question)}"</div>
+      <div class="li-a" style="font-size:.72rem;color:var(--text2)">Pehle: "${escHtml(c.oldAnswer.slice(0,80))}..."</div>
+      <div class="li-corr">✅ Seekha: "${escHtml(c.correction)}"</div>
+      <div style="font-size:.6rem;color:var(--text2);margin-top:3px">${c.timestamp}</div>
+    </div>`).join('');
+}
+
+window.deleteCorrection = function(id) {
+  const deleted = S.learn.corrections.find(c => c.id === id);
+  S.learn.corrections = S.learn.corrections.filter(c => c.id !== id);
+
+  // FIX 6: Also scrub any related [SYSTEM CORRECTION] entries from history
+  // (if any old ones exist) AND rebuild system prompt context by resetting history
+  // The key fix: buildSystemPrompt() already excludes deleted corrections automatically,
+  // so just saving is enough. But if history has old injected messages, remove them.
+  if (deleted) {
+    S.history = S.history.filter(m =>
+      !(m.role === 'user' && m.content?.includes('[SYSTEM CORRECTION]') &&
+        m.content?.includes(deleted.question.slice(0, 40)))
+    );
+  }
+
+  saveLearn(); renderLearnItems();
+  showToast('🗑️ Correction delete + JARVIS ko bhulaya gaya');
+};
+
+// FIX 4: TTS toggle
+window.toggleTTS = function() {
+  S.ttsEnabled = !S.ttsEnabled;
+  const btn = document.getElementById('ttsBtn');
+  btn.textContent  = S.ttsEnabled ? '🔊' : '🔇';
+  btn.title        = S.ttsEnabled ? 'Voice ON — click to mute' : 'Voice OFF — click to unmute';
+  btn.style.color  = S.ttsEnabled ? '' : 'var(--red)';
+  btn.style.borderColor = S.ttsEnabled ? '' : 'var(--red)';
+  if (!S.ttsEnabled) window.speechSynthesis?.cancel();
+  showToast(S.ttsEnabled ? '🔊 Voice output ON' : '🔇 Voice output OFF');
+};
+
+window.clearLearning = function() {
+  if (!confirm('Saari learning data reset karni hai? JARVIS bhool jaayega sab kuch!')) return;
+  S.learn = { corrections:[], stats:{good:0,bad:0} };
+  saveLearn(); renderLearnItems();
+  showToast('🗑️ Learning data reset ho gaya');
+};
+
+function updateStatsUI() {
+  const g = S.learn.stats.good;
+  const b = S.learn.stats.bad;
+  const c = S.learn.corrections.length;
+  const total = g + b;
+  const acc = total > 0 ? Math.round((g/total)*100) + '%' : '-';
+
+  document.getElementById('learnCount').textContent = c;
+  document.getElementById('goodCount').textContent  = g;
+  document.getElementById('badCount').textContent   = b;
+  document.getElementById('lpGood').textContent     = g;
+  document.getElementById('lpBad').textContent      = b;
+  document.getElementById('lpCorr').textContent     = c;
+  document.getElementById('lpAcc').textContent      = acc;
+
+  // Level badge
+  const badge = document.getElementById('levelBadge');
+  if (c >= 20)      { badge.textContent='🏆 Expert'; badge.className='lb-badge good'; }
+  else if (c >= 10) { badge.textContent='⚡ Advanced'; badge.className='lb-badge good'; }
+  else if (c >= 5)  { badge.textContent='🚀 Growing'; badge.className='lb-badge learning'; }
+  else              { badge.textContent='🌱 Beginner'; badge.className='lb-badge learning'; }
+}
+
+/* ═══════════════════════════════════════════════════
+   VOICE INPUT
+═══════════════════════════════════════════════════ */
+window.toggleVoice = function() {
+  const secure = location.protocol==='https:'||location.hostname==='localhost'||location.hostname.includes('127.');
+  const hasSR  = ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+
+  if (!hasSR)    { showToast('❌ Chrome browser use karo voice ke liye'); return; }
+  if (!secure)   { showToast('🎤 HTTPS chahiye mic ke liye — website pe host karo'); return; }
+
+  if (S.isRec) {
+    S.recog?.stop(); return;
+  }
+
+  const SR   = window.SpeechRecognition || window.webkitSpeechRecognition;
+  S.recog    = new SR();
+  S.recog.lang = 'hi-IN';
+  S.recog.interimResults = true;
+  S.recog.continuous     = false;
+
+  S.recog.onstart = () => {
+    S.isRec = true;
+    document.getElementById('vbtn').classList.add('rec');
+    document.getElementById('voiceWave').classList.add('show');
+  };
+
+  S.recog.onresult = e => {
+    const t = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('minput').value = t;
+    autoResize(document.getElementById('minput'));
+    if (e.results[e.results.length-1].isFinal) {
+      setTimeout(() => sendMsg(), 400);
+    }
+  };
+
+  S.recog.onend = () => {
+    S.isRec = false;
+    document.getElementById('vbtn').classList.remove('rec');
+    document.getElementById('voiceWave').classList.remove('show');
+  };
+
+  S.recog.onerror = e => {
+    S.isRec = false;
+    document.getElementById('vbtn').classList.remove('rec');
+    document.getElementById('voiceWave').classList.remove('show');
+    const msgs = { 'not-allowed':'❌ Mic permission do', 'network':'❌ Network error', 'no-speech':'⚠️ Awaaz nahi aayi', 'aborted':'' };
+    if (msgs[e.error]) showToast(msgs[e.error], 3000);
+  };
+
+  try { S.recog.start(); } catch(e) { showToast('❌ Mic start nahi hua'); }
+};
+
+/* ═══════════════════════════════════════════════════
+   TTS
+═══════════════════════════════════════════════════ */
+function speakText(text) {
+  if (!('speechSynthesis' in window)) return;
+  const clean = text.replace(/[#*`~\[\]()\-\_]/g,'').replace(/<[^>]+>/g,'').slice(0,300);
+  window.speechSynthesis.cancel();
+  const utt  = new SpeechSynthesisUtterance(clean);
+  utt.lang   = 'hi-IN';
+  utt.rate   = 1;
+  utt.pitch  = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const hv = voices.find(v=>v.lang.startsWith('hi')) || voices.find(v=>v.lang.startsWith('en-IN'));
+  if (hv) utt.voice = hv;
+  window.speechSynthesis.speak(utt);
+}
+
+/* ═══════════════════════════════════════════════════
+   MARKDOWN RENDERER
+═══════════════════════════════════════════════════ */
+function renderMD(t) {
+  t = escHtml(t);
+  // Code blocks
+  t = t.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+  // Inline code
+  t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold
+  t = t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italic
+  t = t.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Headers
+  t = t.replace(/^### (.*)$/gm, '<h3>$1</h3>');
+  t = t.replace(/^## (.*)$/gm,  '<h2>$1</h2>');
+  t = t.replace(/^# (.*)$/gm,   '<h1>$1</h1>');
+  // Blockquote
+  t = t.replace(/^&gt; (.*)$/gm, '<blockquote>$1</blockquote>');
+  // Lists
+  t = t.replace(/^[\-\*] (.*)$/gm, '<li>$1</li>');
+  t = t.replace(/^\d+\. (.*)$/gm,  '<li>$1</li>');
+  // Links
+  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+  // Line breaks
+  t = t.replace(/\n(?!<)/g, '<br>');
+  return t;
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ═══════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════ */
+function getTime() {
+  return new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+function scrollBottom() {
+  const c = document.getElementById('chat');
+  setTimeout(() => c.scrollTo({ top:c.scrollHeight, behavior:'smooth' }), 30);
+}
+function setStatus(t) {
+  document.getElementById('statusTxt').textContent = t;
+}
+window.clearChat = function() {
+  if (!confirm('Chat clear karni hai?')) return;
+  const chat = document.getElementById('chat');
+  chat.innerHTML = '';
+  // FIX 5: Re-create emptyState fresh each time
+  chat.innerHTML = `
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">🤖</div>
+      <div class="empty-title">Namaste! Main hoon JARVIS</div>
+      <div class="empty-sub">Aapka self-learning AI assistant — jo feedback se seekhta aur behtar hota rehta hai</div>
+      <div class="starter-chips">
+        <div class="chip" onclick="sendChip(this)">👋 Tum kaun ho?</div>
+        <div class="chip" onclick="sendChip(this)">🏗️ Tumhe kisne banaya?</div>
+        <div class="chip" onclick="sendChip(this)">🧠 Tum kya seekh sakte ho?</div>
+        <div class="chip" onclick="sendChip(this)">💡 JavaScript sikhao</div>
+        <div class="chip" onclick="sendChip(this)">😄 Ek joke sunao</div>
+        <div class="chip" onclick="sendChip(this)">🌟 Motivate karo</div>
+      </div>
+    </div>`;
+  S.history = [];
+  showToast('🗑️ Chat clear ho gayi');
+};
+
+let toastT;
+function showToast(msg, dur=2400) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), dur);
+}
+</script>
+</body>
+</html>
