@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Beauty Parlour Website Template | Customizable</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fffbfa;
+            color: #2d2a2a;
+            scroll-behavior: smooth;
+            line-height: 1.5;
+        }
+
+        /* CSS Variables - Client Branding: Easily change colors */
+        :root {
+            --gold: #c9a87b;
+            --gold-light: #e8d5b5;
+            --pink-soft: #f9e6f0;
+            --pink-lip: #e8a2b9;
+            --dark-bg: #2c2a2a;
+            --white: #ffffff;
+            --shadow-sm: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02);
+            --shadow-md: 0 20px 25px -12px rgba(0,0,0,0.08);
+            --primary-gradient: linear-gradient(135deg, var(--gold) 0%, #b48b5a 100%);
+        }
+
+        /* Demo watermark */
+        .demo-watermark {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.6);
+            color: #ffd966;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 40px;
+            z-index: 9999;
+            pointer-events: none;
+            font-family: monospace;
+            backdrop-filter: blur(4px);
+        }
+
+        h1, h2, h3, .logo, .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Sticky Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            z-index: 1000;
+            padding: 16px 0;
+            transition: 0.3s;
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .logo h2 {
+            font-size: 1.75rem;
+            letter-spacing: -0.02em;
+            color: #3e2a2a;
+        }
+        .logo span {
+            color: var(--gold);
+            font-weight: 700;
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #3e2a2a;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { color: var(--gold); }
+        .menu-icon { display: none; font-size: 1.7rem; cursor: pointer; color: #3e2a2a; }
+
+        .btn-primary {
+            display: inline-block;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 48px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(201,168,123,0.3);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(201,168,123,0.4); }
+        
+        section { padding: 80px 0; }
+        .section-title {
+            text-align: center;
+            font-size: 2.3rem;
+            margin-bottom: 48px;
+            color: #2c2a2a;
+            position: relative;
+        }
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 3px;
+            background: var(--gold);
+            margin: 16px auto 0;
+            border-radius: 4px;
+        }
+
+        /* Hide/Show Toggle UI */
+        .section-toggle-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            background: #faf3ed;
+            padding: 12px 20px;
+            border-radius: 60px;
+        }
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+        .toggle-btn.active { background: var(--gold); color: white; border-color: var(--gold); }
+
+        /* layouts */
+        .services-grid, .testimonials-grid, .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+        .service-card, .testimonial-card {
+            background: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(201,168,123,0.2);
+            transition: 0.25s;
+        }
+        .service-card:hover { transform: translateY(-6px); }
+        .service-icon { font-size: 2.8rem; color: var(--gold); margin-bottom: 16px; }
+        .price { font-weight: 700; color: #c27e5e; margin-top: 12px; }
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 24px;
+            aspect-ratio: 1 / 1;
+        }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .gallery-item:hover img { transform: scale(1.08); }
+        .stars { color: #ffb347; margin-bottom: 14px; }
+        
+        .about-offer-wrapper { display: flex; flex-wrap: wrap; gap: 40px; }
+        .about-box, .offer-box { flex: 1; background: #fff9f5; border-radius: 40px; padding: 40px; }
+        .offer-box { background: linear-gradient(125deg, #ffe6e6, #fff2e6); border: 1px solid var(--gold-light); }
+        .badge { display: inline-block; background: var(--gold); color: white; padding: 6px 16px; border-radius: 40px; font-size: 0.8rem; margin-bottom: 20px; }
+        
+        .contact-grid { display: flex; flex-wrap: wrap; gap: 40px; }
+        .contact-info, .map-container { flex: 1; }
+        .contact-detail { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .contact-detail i { width: 40px; height: 40px; background: #f2e4dc; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--gold); }
+        .map-container iframe { width: 100%; height: 280px; border-radius: 28px; border: 0; background: #e9dfd7; }
+        .booking-form { background: white; padding: 32px; border-radius: 36px; box-shadow: var(--shadow-md); max-width: 600px; margin: 0 auto; }
+        .form-group input, .form-group select { width: 100%; padding: 14px 18px; border-radius: 48px; border: 1px solid #e2cfc0; margin-bottom: 20px; }
+        .whatsapp-btn { background: #25D366; display: inline-flex; align-items: center; gap: 10px; justify-content: center; }
+        footer { background: #2c2a2a; color: #ebdfd4; padding: 48px 0 24px; margin-top: 40px; }
+        .footer-content { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 32px; }
+        .social-icons a { color: #ecc9a7; font-size: 1.6rem; margin: 0 12px; transition: 0.2s; }
+        .social-icons a:hover { color: white; }
+        .copyright { text-align: center; margin-top: 48px; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; }
+        .float-wa { position: fixed; bottom: 28px; right: 28px; background: #25D366; width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; box-shadow: 0 10px 20px rgba(0,0,0,0.2); z-index: 999; text-decoration: none; }
+        .float-wa:hover { transform: scale(1.08); background: #128C7E; }
+        .client-cta { text-align: center; margin: 20px auto 0; background: #f2e4dc; border-radius: 60px; padding: 12px; max-width: 300px; }
+        .client-cta a { color: #a06948; font-weight: bold; text-decoration: none; }
+        
+        @media (max-width: 860px) {
+            .nav-links { display: none; flex-direction: column; background: white; width: 100%; padding: 24px; border-radius: 28px; margin-top: 16px; }
+            .nav-links.active { display: flex; }
+            .menu-icon { display: block; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .about-offer-wrapper { flex-direction: column; }
+        }
+        /* editable class hint */
+        [contenteditable="true"] {
+            outline: none;
+            border-bottom: 1px dashed var(--gold);
+            display: inline-block;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+<div class="demo-watermark">✨ Demo Template – Ready for client data ✨</div>
+
+<!-- Sticky Navbar -->
+<div class="navbar">
+    <div class="container nav-container">
+        <div class="logo" id="logoContainer"><h2>Blush & <span>Glow</span></h2></div>
+        <div class="menu-icon" id="menuToggle"><i class="fas fa-bars"></i></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li><li><a href="#services">Services</a></li><li><a href="#gallery">Gallery</a></li>
+            <li><a href="#testimonials">Reviews</a></li><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li><li><a href="#booking">Book</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- ==================== ALL SECTIONS ==================== -->
+<section id="home" class="hero"><div class="container hero-grid" style="display:flex; flex-wrap:wrap; gap:40px; align-items:center;">
+    <div class="hero-content" style="flex:1"><div class="tag">✦ PREMIUM BEAUTY STUDIO ✦</div>
+    <h1 contenteditable="true" id="parlourNameEditable">Blush & Glow</h1>
+    <p style="font-size:1.2rem; margin:16px 0 24px;" contenteditable="true" id="taglineEditable">Enhancing Your Natural Beauty</p>
+    <a href="#" class="btn-primary" id="heroWhatsAppBtn"><i class="fab fa-whatsapp"></i> Book Appointment</a>
+    </div>
+    <div class="hero-image" style="flex:1; border-radius:32px; overflow:hidden;">
+        <!-- CLIENT: Replace hero image URL with your own salon image -->
+        <img src="https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Beauty Salon" id="heroImage" style="width:100%">
+    </div>
+</div></section>
+
+<!-- Services -->
+<section id="services" class="toggle-section"><div class="container"><h2 class="section-title">Pamper Yourself</h2>
+<div class="services-grid" id="servicesGrid"></div></div></section>
+
+<!-- Gallery -->
+<section id="gallery" class="toggle-section"><div class="container"><h2 class="section-title">Our Transformations</h2>
+<div class="gallery-grid" id="galleryGrid"></div>
+<p style="text-align:center; margin-top:16px; font-size:0.8rem; color:#b97f63;">⭐ Replace images in /images/ folder or use external URLs (update CONFIG)</p>
+</div></section>
+
+<!-- Testimonials with placeholder option -->
+<section id="testimonials" class="toggle-section"><div class="container"><h2 class="section-title">Client Love</h2>
+<div class="testimonials-grid" id="testimonialsGrid"></div>
+<p style="text-align:center; margin-top:12px;"><em id="testimonialNote">✍️ Replace these with real client reviews in the CONFIG</em></p>
+</div></section>
+
+<!-- About + Offers -->
+<section id="about" class="toggle-section"><div class="container about-offer-wrapper">
+    <div class="about-box"><div class="badge">✦ Our Story ✦</div>
+    <h3 contenteditable="true" id="aboutTitle" style="font-size:1.8rem;">Redefining Elegance</h3>
+    <p contenteditable="true" id="aboutDesc">Blush & Glow is a luxury beauty destination where artistry meets self-care. With over 5+ years of experience, we bring personalized treatments using premium products.</p>
+    <p><strong id="aboutExp">✔ 5+ years experience</strong> &nbsp;|&nbsp; <strong>✔ 100% Hygiene</strong></p></div>
+    <div class="offer-box optional-offer" id="offerBox"><div class="badge" style="background:#c6794a;">LIMITED OFFER</div>
+    <span class="discount-percent" contenteditable="true" id="offerDiscount">20% OFF</span>
+    <h3 contenteditable="true" id="offerTitle">on Bridal Makeup</h3>
+    <p contenteditable="true" id="offerDesc">Combo packages + free trial session. Book your dream wedding look!</p>
+    <a href="#" class="btn-primary" id="offerWhatsAppLink" style="margin-top:16px; display:inline-block;">Grab Deal →</a>
+    </div>
+</div></section>
+
+<!-- Contact + Map dynamic -->
+<section id="contact" class="toggle-section"><div class="container"><h2 class="section-title">Visit Us</h2>
+<div class="contact-grid"><div class="contact-info" id="contactInfo"></div>
+<div class="map-container" id="mapContainer"><iframe id="googleMapIframe" src="https://maps.google.com/maps?q=JP%20Nagar%20Bengaluru&t=&z=14&ie=UTF8&iwloc=&output=embed" allowfullscreen loading="lazy"></iframe>
+<p style="font-size:12px; margin-top:6px;">📍 Update Google Maps embed link in CONFIG.mapEmbedUrl</p>
+</div></div></div></section>
+
+<!-- Booking Form -->
+<section id="booking" class="toggle-section"><div class="container"><h2 class="section-title">Reserve Your Slot</h2>
+<div class="booking-form"><form id="bookingForm"><div class="form-group"><input type="text" id="fullName" placeholder="Full name" required></div>
+<div class="form-group"><input type="tel" id="mobile" placeholder="Phone number" required></div>
+<div class="form-group"><select id="serviceSelect"><option>Haircut</option><option>Facial</option><option>Bridal Makeup</option><option>Waxing</option><option>Hair Spa</option></select></div>
+<div class="form-group"><input type="date" id="appointmentDate" required></div>
+<button type="submit" class="btn-primary" style="width:100%"><i class="fas fa-calendar-check"></i> Book Now</button></form>
+<div style="text-align:center; margin-top:24px;"><p>or</p><a href="#" class="btn-primary whatsapp-btn" id="bookingWhatsAppBtn" target="_blank" style="background:#25D366;"><i class="fab fa-whatsapp"></i> Click to Chat & Book</a></div>
+</div></div></section>
+
+<!-- Footer -->
+<footer><div class="container"><div class="footer-content"><div><h3 id="footerBusinessName">Blush & Glow</h3><p>Luxury beauty studio</p></div>
+<div class="social-icons" id="socialIcons"></div></div><div class="copyright" id="copyrightText"></div></div></footer>
+
+<a href="#" class="float-wa" id="floatingWhatsAppBtn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<div class="client-cta"><a href="#" id="clientCtaLink">✨ Get Your Own Beauty Website →</a></div>
+
+<script>
+    // ==================== CENTRAL CONFIGURATION (EASY CUSTOMIZATION) ====================
+    const CONFIG = {
+        // Business Info
+        businessName: "Blush & Glow",
+        tagline: "Enhancing Your Natural Beauty",
+        phoneNumber: "+919876543210",      // <-- Update with client's WhatsApp number
+        address: "42, Luxury Plaza, JP Nagar, Bengaluru - 560078",  // Update to your location
+        openingHours: "Mon-Sat: 10:00 AM – 8:00 PM<br>Sunday: 11:00 AM – 5:00 PM",
+        
+        // Social Links
+        instagram: "https://instagram.com/glamstudio",
+        facebook: "https://facebook.com/blushandglow",
+        
+        // Colors / Branding (Edit CSS variables also but these reflect demo)
+        primaryGold: "#c9a87b",
+        
+        // Google Maps Embed URL (dynamic) – replace with actual embed
+        mapEmbedUrl: "https://maps.google.com/maps?q=JP%20Nagar%20Bengaluru&t=&z=14&ie=UTF8&iwloc=&output=embed",
+        
+        // Hero Background image (replace with local or CDN)
+        heroImageUrl: "https://images.pexels.com/photos/3992872/pexels-photo-3992872.jpeg?auto=compress&cs=tinysrgb&w=800",
+        
+        // Services Data (Price generic)
+        services: [
+            { icon: "fas fa-cut", name: "Haircut", desc: "Modern styles & precision layers", price: "Starting from ₹599" },
+            { icon: "fas fa-spa", name: "Facial", desc: "Gold & organic glow treatments", price: "Starting from ₹999" },
+            { icon: "fas fa-brush", name: "Bridal Makeup", desc: "Airbrush & HD finish", price: "Starting from ₹6499" },
+            { icon: "fas fa-hand-sparkles", name: "Waxing", desc: "Chocolate / rica wax", price: "Starting from ₹349" },
+            { icon: "fas fa-water", name: "Hair Spa", desc: "Nourishing & repair", price: "Starting from ₹1299" }
+        ],
+        
+        // Gallery images - Replace with local images or Unsplash/Pexels. Suggest use /images/ folder
+        galleryImages: [
+            "https://images.pexels.com/photos/3993448/pexels-photo-3993448.jpeg?auto=compress&cs=tinysrgb&w=600",
+            "https://images.pexels.com/photos/4386465/pexels-photo-4386465.jpeg?auto=compress&cs=tinysrgb&w=600",
+            "https://images.pexels.com/photos/6847522/pexels-photo-6847522.jpeg?auto=compress&cs=tinysrgb&w=600",
+            "https://images.pexels.com/photos/3373736/pexels-photo-3373736.jpeg?auto=compress&cs=tinysrgb&w=600",
+            "https://images.pexels.com/photos/3985070/pexels-photo-3985070.jpeg?auto=compress&cs=tinysrgb&w=600",
+            "https://images.pexels.com/photos/3727464/pexels-photo-3727464.jpeg?auto=compress&cs=tinysrgb&w=600"
+        ],
+        
+        // Testimonials (edit or remove for placeholder)
+        testimonials: [
+            { name: "Riya Sharma", text: "Absolutely stunning! My bridal makeup was dreamy. Professional team.", rating: 5 },
+            { name: "Anjali Mehta", text: "Best facial in town, my skin glowed for days. Hygienic and premium.", rating: 5 },
+            { name: "Sneha K.", text: "Great haircut and spa. Ambience is so relaxing, love the gold theme.", rating: 4 }
+        ],
+        
+        // Offer section (can be disabled if needed)
+        offerEnabled: true,
+        offerBadge: "LIMITED OFFER",
+        offerPercent: "20% OFF",
+        offerTitle: "on Bridal Makeup",
+        offerDesc: "Combo packages + free trial session. Book your dream wedding look!",
+        
+        // Footer Copyright
+        copyrightYear: new Date().getFullYear(),
+        
+        // Enable/Disable sections (use for toggle)
+        sections: {
+            services: true, gallery: true, testimonials: true, about: true, contact: true, booking: true
+        }
+    };
+    
+    // Helper to generate WhatsApp link
+    function getWhatsAppLink(message = "Hello! I'd like to book an appointment.") {
+        let number = CONFIG.phoneNumber.replace(/[^0-9]/g, '');
+        return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+    }
+    
+    // Update all WhatsApp links dynamically
+    function updateWhatsAppLinks() {
+        const defaultMsg = `Hi ${CONFIG.businessName}, I want to book an appointment.`;
+        const links = document.querySelectorAll('#heroWhatsAppBtn, #bookingWhatsAppBtn, #floatingWhatsAppBtn, #offerWhatsAppLink');
+        links.forEach(link => {
+            if(link.id === 'offerWhatsAppLink') link.href = getWhatsAppLink(`Hi ${CONFIG.businessName}, I'm interested in ${CONFIG.offerTitle} offer.`);
+            else link.href = getWhatsAppLink(defaultMsg);
+        });
+        // Also update floating & footer
+        document.getElementById('floatingWhatsAppBtn').href = getWhatsAppLink(`Hi ${CONFIG.businessName}, I need assistance.`);
+        // update booking form submission uses same number
+    }
+    
+    // Render Services
+    function renderServices() {
+        const container = document.getElementById('servicesGrid');
+        if(!container) return;
+        container.innerHTML = CONFIG.services.map(s => `<div class="service-card"><div class="service-icon"><i class="${s.icon}"></i></div><h3>${s.name}</h3><p>${s.desc}</p><div class="price">${s.price}</div></div>`).join('');
+    }
+    
+    // Gallery render
+    function renderGallery() {
+        const container = document.getElementById('galleryGrid');
+        if(!container) return;
+        container.innerHTML = CONFIG.galleryImages.map(img => `<div class="gallery-item"><img src="${img}" alt="Beauty transformation" loading="lazy"><div class="overlay"></div></div>`).join('');
+    }
+    
+    // Testimonials
+    function renderTestimonials() {
+        const container = document.getElementById('testimonialsGrid');
+        if(!container) return;
+        if(CONFIG.testimonials.length === 0) {
+            container.innerHTML = `<div style="text-align:center; grid-column:1/-1;">✨ Client reviews will appear here. Edit CONFIG.testimonials ✨</div>`;
+            return;
+        }
+        container.innerHTML = CONFIG.testimonials.map(t => `<div class="testimonial-card"><div class="stars">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</div><p>"${t.text}"</p><div class="client-name">- ${t.name}</div></div>`).join('');
+    }
+    
+    // Contact info from config
+    function renderContact() {
+        const contactDiv = document.getElementById('contactInfo');
+        if(contactDiv){
+            contactDiv.innerHTML = `
+                <div class="contact-detail"><i class="fas fa-phone-alt"></i> <span>${CONFIG.phoneNumber}</span></div>
+                <div class="contact-detail"><i class="fas fa-map-marker-alt"></i> <span>${CONFIG.address}</span></div>
+                <div class="hours"><i class="fas fa-clock"></i> <strong>Opening Hours</strong><br>${CONFIG.openingHours}</div>
+            `;
+        }
+        const mapFrame = document.getElementById('googleMapIframe');
+        if(mapFrame && CONFIG.mapEmbedUrl) mapFrame.src = CONFIG.mapEmbedUrl;
+    }
+    
+    function renderFooterAndBranding() {
+        // Logo and Business name
+        document.getElementById('logoContainer').innerHTML = `<h2>${CONFIG.businessName.split(' ')[0] || 'Blush'} & <span>${CONFIG.businessName.split(' ').pop() || 'Glow'}</span></h2>`;
+        document.getElementById('parlourNameEditable').innerText = CONFIG.businessName;
+        document.getElementById('taglineEditable').innerText = CONFIG.tagline;
+        document.getElementById('footerBusinessName').innerText = CONFIG.businessName;
+        document.getElementById('copyrightText').innerHTML = `© ${CONFIG.copyrightYear} ${CONFIG.businessName} Parlour. All rights reserved.`;
+        // Social Icons
+        const socialContainer = document.getElementById('socialIcons');
+        if(socialContainer){
+            socialContainer.innerHTML = `<a href="${CONFIG.instagram}" target="_blank"><i class="fab fa-instagram"></i></a><a href="${CONFIG.facebook}" target="_blank"><i class="fab fa-facebook-f"></i></a>`;
+        }
+        // Hero Image
+        const heroImg = document.getElementById('heroImage');
+        if(heroImg) heroImg.src = CONFIG.heroImageUrl;
+        // Offer Section optional toggle
+        const offerSection = document.getElementById('offerBox');
+        if(offerSection) {
+            if(!CONFIG.offerEnabled) offerSection.style.display = 'none';
+            else {
+                document.getElementById('offerDiscount').innerText = CONFIG.offerPercent;
+                document.getElementById('offerTitle').innerText = CONFIG.offerTitle;
+                document.getElementById('offerDesc').innerText = CONFIG.offerDesc;
+                const badgeDiv = offerSection.querySelector('.badge');
+                if(badgeDiv) badgeDiv.innerText = CONFIG.offerBadge;
+            }
+        }
+        // About editable static prefilled
+        document.getElementById('aboutExp').innerHTML = `✔ 5+ years experience &nbsp;|&nbsp; ✔ Premium Quality`;
+    }
+    
+    // Section Toggle (Hide/Show based on config & interactive)
+    function initSectionToggles() {
+        const sections = ['services', 'gallery', 'testimonials', 'about', 'contact', 'booking'];
+        sections.forEach(sec => {
+            const el = document.getElementById(sec);
+            if(el && CONFIG.sections[sec] === false) el.style.display = 'none';
+        });
+        // Create toggle bar UI for demo
+        const toggleBar = document.createElement('div');
+        toggleBar.className = 'section-toggle-bar';
+        toggleBar.innerHTML = sections.map(sec => `<button class="toggle-btn" data-section="${sec}">${sec.toUpperCase()}</button>`).join('');
+        const firstSection = document.querySelector('section');
+        if(firstSection) firstSection.parentNode.insertBefore(toggleBar, firstSection);
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const secId = btn.dataset.section;
+                const targetSec = document.getElementById(secId);
+                if(targetSec) {
+                    const isVisible = targetSec.style.display !== 'none';
+                    targetSec.style.display = isVisible ? 'none' : 'block';
+                    btn.classList.toggle('active', !isVisible);
+                }
+            });
+            // set active style if not hidden by default
+            const secEl = document.getElementById(btn.dataset.section);
+            if(secEl && secEl.style.display !== 'none') btn.classList.add('active');
+        });
+    }
+    
+    // Booking form uses centralized phone number
+    function initBookingForm() {
+        const form = document.getElementById('bookingForm');
+        if(form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('fullName').value.trim();
+                const phone = document.getElementById('mobile').value.trim();
+                const service = document.getElementById('serviceSelect').value;
+                const date = document.getElementById('appointmentDate').value;
+                if(!name || !phone || !date) { alert("Please fill all fields"); return; }
+                const msg = `Hi ${CONFIG.businessName}, my name is ${name}. I want to book ${service} on ${date}. My number: ${phone}. Please confirm.`;
+                window.open(getWhatsAppLink(msg), '_blank');
+                alert("Redirecting to WhatsApp to confirm booking.");
+                form.reset();
+            });
+        }
+    }
+    
+    // Client CTA mock
+    document.getElementById('clientCtaLink')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert("🔧 This is a demo template. Contact us to get your own customized beauty website! (Replace this link with your agency/contact URL)");
+    });
+    
+    function initAll() {
+        renderServices();
+        renderGallery();
+        renderTestimonials();
+        renderContact();
+        renderFooterAndBranding();
+        updateWhatsAppLinks();
+        initBookingForm();
+        initSectionToggles();
+        // mobile menu
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        if(menuToggle) menuToggle.onclick = () => navLinks.classList.toggle('active');
+        // smooth scroll
+        document.querySelectorAll('.nav-links a').forEach(a => {
+            a.addEventListener('click', function(e) {
+                const hash = this.getAttribute('href');
+                if(hash && hash.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(hash);
+                    if(target) target.scrollIntoView({behavior: 'smooth'});
+                    if(navLinks.classList.contains('active')) navLinks.classList.remove('active');
+                }
+            });
+        });
+    }
+    initAll();
+</script>
+</body>
+</html>
