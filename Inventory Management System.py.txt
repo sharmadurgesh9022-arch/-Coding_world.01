@@ -1,0 +1,665 @@
+import customtkinter as ctk
+import mysql.connector
+from tkinter import messagebox, ttk
+from datetime import datetime
+import bcrypt
+from PIL import Image
+import os
+
+# Appearance config
+ctk.set_appearance_mode("dark")
+ctk.set_default_color_theme("blue")
+
+class LoginSystem:
+    def __init__(self):
+        self.root = ctk.CTk()
+        self.root.title("Inventory Management System - Login")
+        self.root.geometry("400x500")
+        self.root.resizable(False, False)
+        
+        # Database connection
+        self.db = self.connect_db()
+        self.create_tables()
+        
+        self.setup_ui()
+        self.root.mainloop()
+    
+    def connect_db(self):
+        return mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="",  # अपना MySQL पासवर्ड दो
+            database="inventory_system"
+        )
+    
+    def create_tables(self):
+        cursor = self.db.cursor()
+        
+        # Users table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                role VARCHAR(20) DEFAULT 'user',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        # Products table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS products (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                product_code VARCHAR(50) UNIQUE NOT NULL,
+                name VARCHAR(100) NOT NULL,
+                category VARCHAR(50),
+                quantity INT DEFAULT 0,
+                price DECIMAL(10,2),
+                supplier VARCHAR(100),
+                added_date DATE
+            )
+        ''')
+        
+        # Transactions table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS transactions (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                product_code VARCHAR(50),
+                type ENUM('in', 'out'),
+                quantity INT,
+                date DATE,
+                remarks TEXT
+            )
+        ''')
+        
+        # Insert default admin if not exists
+        cursor.execute("SELECT * FROM users WHERE username = 'admin'")
+        if not cursor.fetchone():
+            hashed = bcrypt.hashpw("admin123".encode(), bcrypt.gensalt())
+            cursor.execute("INSERT INTO users (username, password, role) VALUES (%s, %s, %s)", 
+                          ("admin", hashed, "admin"))
+        
+        self.db.commit()
+        cursor.close()
+    
+    def setup_ui(self):
+        # Title
+        title = ctk.CTkLabel(self.root, text="INVENTORY MANAGEMENT SYSTEM", 
+                            font=("Arial", 20, "bold"))
+        title.pack(pady=30)
+        
+        # Login Frame
+        frame = ctk.CTkFrame(self.root, width=300, height=350)
+        frame.pack(pady=20)
+        frame.pack_propagate(False)
+        
+        ctk.CTkLabel(frame, text="LOGIN", font=("Arial", 18, "bold")).pack(pady=20)
+        
+        self.username = ctk.CTkEntry(frame, placeholder_text="Username", width=250)
+        self.username.pack(pady=10)
+        
+        self.password = ctk.CTkEntry(frame, placeholder_text="Password", 
+                                     show="*", width=250)
+        self.password.pack(pady=10)
+        
+        ctk.CTkButton(frame, text="Login", command=self.login, width=200).pack(pady=20)
+        
+        # Register area
+        ctk.CTkLabel(frame, text="New User?").pack(pady=5)
+        ctk.CTkButton(frame, text="Create Account", command=self.register_window,
+                     fg_color="green", width=200).pack()
+    
+    def login(self):
+        username = self.username.get()
+        password = self.password.get()
+        
+        if not username or not password:
+            messagebox.showerror("Error", "Please fill all fields")
+            return
+        
+        cursor = self.db.cursor()
+        cursor.execute("SELECT password, role FROM users WHERE username = %s", (username,))
+        result = cursor.fetchone()
+        cursor.close()
+        
+        if result and bcrypt.checkpw(password.encode(), result[0].encode()):
+            messagebox.showinfo("Success", f"Welcome {username}!")
+            self.root.destroy()
+            MainApp(username, result[1], self.db)
+        else:
+            messagebox.showerror("Error", "Invalid credentials")
+    
+    def register_window(self):
+        reg_win = ctk.CTkToplevel(self.root)
+        reg_win.title("Register")
+        reg_win.geometry("350x400")
+        
+        ctk.CTkLabel(reg_win, text="CREATE ACCOUNT", font=("Arial", 16, "bold")).pack(pady=20)
+        
+        username = ctk.CTkEntry(reg_win, placeholder_text="Username", width=250)
+        username.pack(pady=10)
+        
+        password = ctk.CTkEntry(reg_win, placeholder_text="Password", show="*", width=250)
+        password.pack(pady=10)
+        
+        confirm = ctk.CTkEntry(reg_win, placeholder_text="Confirm Password", show="*", width=250)
+        confirm.pack(pady=10)
+        
+        def do_register():
+            if username.get() == password.get() == "":
+                messagebox.showerror("Error", "Fill all fields")
+                return
+            if password.get() != confirm.get():
+                messagebox.showerror("Error", "Passwords don't match")
+                return
+            
+            cursor = self.db.cursor()
+            try:
+                hashed = bcrypt.hashpw(password.get().encode(), bcrypt.gensalt())
+                cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)",
+                              (username.get(), hashed))
+                self.db.commit()
+                messagebox.showinfo("Success", "Account created! Now login.")
+                reg_win.destroy()
+            except mysql.connector.IntegrityError:
+                messagebox.showerror("Error", "Username already exists")
+            cursor.close()
+        
+        ctk.CTkButton(reg_win, text="Register", command=do_register, width=200).pack(pady=20)
+
+class MainApp:
+    def __init__(self, user, role, db):
+        self.user = user
+        self.role = role
+        self.db = db
+        self.root = ctk.CTk()
+        self.root.title("Inventory Management System")
+        self.root.geometry("1200x700")
+        
+        self.setup_menu()
+        self.show_dashboard()
+        self.root.mainloop()
+    
+    def setup_menu(self):
+        # Sidebar
+        sidebar = ctk.CTkFrame(self.root, width=200, corner_radius=0)
+        sidebar.pack(side="left", fill="y")
+        
+        ctk.CTkLabel(sidebar, text="IMS", font=("Arial", 20, "bold")).pack(pady=20)
+        
+        buttons = [
+            ("📊 Dashboard", self.show_dashboard),
+            ("📦 Products", self.show_products),
+            ("➕ Add Product", self.show_add_product),
+            ("📈 Stock In/Out", self.show_stock_movement),
+            ("🔍 Search", self.show_search),
+            ("📜 Reports", self.show_reports),
+            ("👤 Profile", self.show_profile),
+            ("🚪 Logout", self.logout)
+        ]
+        
+        for text, command in buttons:
+            btn = ctk.CTkButton(sidebar, text=text, command=command, 
+                               fg_color="transparent", anchor="w", height=40)
+            btn.pack(fill="x", padx=10, pady=5)
+        
+        # Main content area
+        self.main_frame = ctk.CTkFrame(self.root)
+        self.main_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+    
+    def clear_frame(self):
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+    
+    def show_dashboard(self):
+        self.clear_frame()
+        
+        # Stats cards
+        cursor = self.db.cursor()
+        
+        cursor.execute("SELECT COUNT(*) FROM products")
+        total_products = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT SUM(quantity) FROM products")
+        total_stock = cursor.fetchone()[0] or 0
+        
+        cursor.execute("SELECT SUM(price * quantity) FROM products")
+        total_value = cursor.fetchone()[0] or 0
+        
+        cursor.execute("SELECT COUNT(*) FROM products WHERE quantity < 10")
+        low_stock = cursor.fetchone()[0]
+        
+        cursor.close()
+        
+        # Card frame
+        card_frame = ctk.CTkFrame(self.main_frame)
+        card_frame.pack(fill="x", pady=10)
+        
+        cards = [
+            (f"📦 {total_products}", "Total Products", "#3498db"),
+            (f"📊 {total_stock}", "Total Stock", "#2ecc71"),
+            (f"💰 ₹{total_value:,.0f}", "Inventory Value", "#e74c3c"),
+            (f"⚠️ {low_stock}", "Low Stock Items", "#f39c12")
+        ]
+        
+        for value, label, color in cards:
+            card = ctk.CTkFrame(card_frame, fg_color=color, corner_radius=10)
+            card.pack(side="left", expand=True, fill="both", padx=5, pady=10)
+            
+            ctk.CTkLabel(card, text=value, font=("Arial", 24, "bold"), 
+                        text_color="white").pack(pady=10)
+            ctk.CTkLabel(card, text=label, font=("Arial", 12), 
+                        text_color="white").pack(pady=5)
+        
+        # Recent products
+        ctk.CTkLabel(self.main_frame, text="Recent Products", 
+                    font=("Arial", 16, "bold")).pack(anchor="w", pady=10)
+        
+        tree = ttk.Treeview(self.main_frame, columns=("Code", "Name", "Qty", "Price"), 
+                           show="headings", height=8)
+        tree.heading("Code", text="Product Code")
+        tree.heading("Name", text="Name")
+        tree.heading("Qty", text="Quantity")
+        tree.heading("Price", text="Price")
+        
+        cursor = self.db.cursor()
+        cursor.execute("SELECT product_code, name, quantity, price FROM products LIMIT 10")
+        for row in cursor.fetchall():
+            tree.insert("", "end", values=row)
+        cursor.close()
+        
+        tree.pack(fill="both", expand=True, pady=10)
+    
+    def show_products(self):
+        self.clear_frame()
+        
+        ctk.CTkLabel(self.main_frame, text="All Products", 
+                    font=("Arial", 20, "bold")).pack(pady=10)
+        
+        # Search
+        search_frame = ctk.CTkFrame(self.main_frame)
+        search_frame.pack(fill="x", pady=10)
+        
+        search_entry = ctk.CTkEntry(search_frame, placeholder_text="Search by name or code", width=300)
+        search_entry.pack(side="left", padx=5)
+        
+        def do_search():
+            query = search_entry.get()
+            for row in tree.get_children():
+                tree.delete(row)
+            
+            cursor = self.db.cursor()
+            if query:
+                cursor.execute("SELECT id, product_code, name, category, quantity, price, supplier FROM products WHERE name LIKE %s OR product_code LIKE %s",
+                              (f"%{query}%", f"%{query}%"))
+            else:
+                cursor.execute("SELECT id, product_code, name, category, quantity, price, supplier FROM products")
+            
+            for row in cursor.fetchall():
+                tree.insert("", "end", values=row, tags=(row[0],))
+            cursor.close()
+        
+        ctk.CTkButton(search_frame, text="🔍 Search", command=do_search).pack(side="left", padx=5)
+        
+        # Treeview
+        columns = ("ID", "Code", "Name", "Category", "Qty", "Price", "Supplier")
+        tree = ttk.Treeview(self.main_frame, columns=columns, show="headings", height=15)
+        
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=100)
+        
+        cursor = self.db.cursor()
+        cursor.execute("SELECT id, product_code, name, category, quantity, price, supplier FROM products")
+        for row in cursor.fetchall():
+            tree.insert("", "end", values=row, tags=(row[0],))
+        cursor.close()
+        
+        tree.pack(fill="both", expand=True, pady=10)
+        
+        # Delete function
+        def delete_product():
+            selected = tree.selection()
+            if not selected:
+                messagebox.showerror("Error", "Select a product")
+                return
+            
+            item = tree.item(selected[0])
+            prod_id = item['tags'][0]
+            
+            if messagebox.askyesno("Confirm", "Delete this product?"):
+                cursor = self.db.cursor()
+                cursor.execute("DELETE FROM products WHERE id = %s", (prod_id,))
+                self.db.commit()
+                cursor.close()
+                messagebox.showinfo("Success", "Product deleted")
+                do_search()
+        
+        if self.role == "admin":
+            ctk.CTkButton(self.main_frame, text="🗑️ Delete Selected", 
+                         command=delete_product, fg_color="red").pack(pady=5)
+    
+    def show_add_product(self):
+        self.clear_frame()
+        
+        ctk.CTkLabel(self.main_frame, text="Add New Product", 
+                    font=("Arial", 20, "bold")).pack(pady=20)
+        
+        form_frame = ctk.CTkFrame(self.main_frame)
+        form_frame.pack(pady=20)
+        
+        # 2 column layout
+        left = ctk.CTkFrame(form_frame)
+        left.pack(side="left", padx=20, pady=20)
+        
+        right = ctk.CTkFrame(form_frame)
+        right.pack(side="left", padx=20, pady=20)
+        
+        entries = {}
+        fields = [
+            ("Product Code", "code"),
+            ("Product Name", "name"),
+            ("Category", "category"),
+            ("Quantity", "quantity"),
+            ("Price", "price"),
+            ("Supplier", "supplier")
+        ]
+        
+        for label, key in fields[:3]:
+            ctk.CTkLabel(left, text=label).pack(pady=5)
+            entries[key] = ctk.CTkEntry(left)
+            entries[key].pack(pady=5)
+        
+        for label, key in fields[3:]:
+            ctk.CTkLabel(right, text=label).pack(pady=5)
+            entries[key] = ctk.CTkEntry(right)
+            entries[key].pack(pady=5)
+        
+        def add_product():
+            if not all(entries[key].get() for key in ['code', 'name']):
+                messagebox.showerror("Error", "Code and Name required")
+                return
+            
+            cursor = self.db.cursor()
+            try:
+                cursor.execute('''
+                    INSERT INTO products (product_code, name, category, quantity, price, supplier, added_date)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ''', (
+                    entries['code'].get(),
+                    entries['name'].get(),
+                    entries['category'].get(),
+                    int(entries['quantity'].get()) if entries['quantity'].get() else 0,
+                    float(entries['price'].get()) if entries['price'].get() else 0,
+                    entries['supplier'].get(),
+                    datetime.now().date()
+                ))
+                self.db.commit()
+                messagebox.showinfo("Success", "Product added!")
+                for key in entries:
+                    entries[key].delete(0, 'end')
+            except mysql.connector.IntegrityError:
+                messagebox.showerror("Error", "Product code already exists")
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
+            finally:
+                cursor.close()
+        
+        ctk.CTkButton(form_frame, text="💾 Save Product", command=add_product, 
+                     width=200, height=40, font=("Arial", 14)).pack(pady=20)
+    
+    def show_stock_movement(self):
+        self.clear_frame()
+        
+        ctk.CTkLabel(self.main_frame, text="Stock Movement", 
+                    font=("Arial", 20, "bold")).pack(pady=10)
+        
+        # Product selection
+        select_frame = ctk.CTkFrame(self.main_frame)
+        select_frame.pack(fill="x", pady=10)
+        
+        ctk.CTkLabel(select_frame, text="Select Product:").pack(side="left", padx=5)
+        
+        # Load products
+        cursor = self.db.cursor()
+        cursor.execute("SELECT product_code, name FROM products")
+        products = cursor.fetchall()
+        product_list = [f"{p[0]} - {p[1]}" for p in products]
+        cursor.close()
+        
+        product_var = ctk.StringVar()
+        product_combo = ctk.CTkComboBox(select_frame, values=product_list, width=300)
+        product_combo.pack(side="left", padx=5)
+        
+        # Type frame
+        type_frame = ctk.CTkFrame(self.main_frame)
+        type_frame.pack(pady=10)
+        
+        type_var = ctk.StringVar(value="in")
+        ctk.CTkRadioButton(type_frame, text="Stock IN (Add)", variable=type_var, 
+                          value="in").pack(side="left", padx=10)
+        ctk.CTkRadioButton(type_frame, text="Stock OUT (Remove)", variable=type_var, 
+                          value="out").pack(side="left", padx=10)
+        
+        # Quantity
+        qty_frame = ctk.CTkFrame(self.main_frame)
+        qty_frame.pack(pady=10)
+        
+        ctk.CTkLabel(qty_frame, text="Quantity:").pack(side="left", padx=5)
+        qty_entry = ctk.CTkEntry(qty_frame, width=100)
+        qty_entry.pack(side="left", padx=5)
+        
+        remarks_entry = ctk.CTkEntry(self.main_frame, placeholder_text="Remarks", width=400)
+        remarks_entry.pack(pady=10)
+        
+        def update_stock():
+            if not product_combo.get() or not qty_entry.get():
+                messagebox.showerror("Error", "Select product and enter quantity")
+                return
+            
+            prod_code = product_combo.get().split(" - ")[0]
+            quantity = int(qty_entry.get())
+            trans_type = type_var.get()
+            
+            cursor = self.db.cursor()
+            
+            # Update product quantity
+            if trans_type == "in":
+                cursor.execute("UPDATE products SET quantity = quantity + %s WHERE product_code = %s",
+                              (quantity, prod_code))
+            else:
+                cursor.execute("SELECT quantity FROM products WHERE product_code = %s", (prod_code,))
+                current = cursor.fetchone()[0]
+                if current < quantity:
+                    messagebox.showerror("Error", "Insufficient stock")
+                    cursor.close()
+                    return
+                cursor.execute("UPDATE products SET quantity = quantity - %s WHERE product_code = %s",
+                              (quantity, prod_code))
+            
+            # Record transaction
+            cursor.execute('''
+                INSERT INTO transactions (product_code, type, quantity, date, remarks)
+                VALUES (%s, %s, %s, %s, %s)
+            ''', (prod_code, trans_type, quantity, datetime.now().date(), remarks_entry.get()))
+            
+            self.db.commit()
+            cursor.close()
+            messagebox.showinfo("Success", "Stock updated!")
+            qty_entry.delete(0, 'end')
+            remarks_entry.delete(0, 'end')
+        
+        ctk.CTkButton(self.main_frame, text="✅ Update Stock", command=update_stock, 
+                     width=200, height=40, fg_color="green").pack(pady=10)
+        
+        # Transaction history
+        ctk.CTkLabel(self.main_frame, text="Recent Transactions", 
+                    font=("Arial", 16, "bold")).pack(pady=10)
+        
+        tree = ttk.Treeview(self.main_frame, columns=("Date", "Product", "Type", "Qty", "Remarks"), 
+                           show="headings", height=8)
+        for col in tree['columns']:
+            tree.heading(col, text=col)
+        
+        cursor = self.db.cursor()
+        cursor.execute('''
+            SELECT t.date, t.product_code, t.type, t.quantity, t.remarks 
+            FROM transactions t ORDER BY t.date DESC LIMIT 20
+        ''')
+        for row in cursor.fetchall():
+            tree.insert("", "end", values=row)
+        cursor.close()
+        
+        tree.pack(fill="both", expand=True, pady=10)
+    
+    def show_search(self):
+        self.clear_frame()
+        
+        ctk.CTkLabel(self.main_frame, text="Search Products", 
+                    font=("Arial", 20, "bold")).pack(pady=10)
+        
+        search_frame = ctk.CTkFrame(self.main_frame)
+        search_frame.pack(fill="x", pady=10)
+        
+        search_entry = ctk.CTkEntry(search_frame, placeholder_text="Enter name or code...", width=400)
+        search_entry.pack(side="left", padx=10)
+        
+        result_text = ctk.CTkTextbox(self.main_frame, height=400)
+        result_text.pack(fill="both", expand=True, pady=10)
+        
+        def do_search():
+            query = search_entry.get()
+            cursor = self.db.cursor()
+            cursor.execute('''
+                SELECT product_code, name, category, quantity, price, supplier 
+                FROM products 
+                WHERE name LIKE %s OR product_code LIKE %s
+            ''', (f"%{query}%", f"%{query}%"))
+            
+            results = cursor.fetchall()
+            cursor.close()
+            
+            result_text.delete("1.0", "end")
+            
+            if not results:
+                result_text.insert("1.0", "No products found.")
+                return
+            
+            for prod in results:
+                result_text.insert("end", f"""
+{'='*50}
+📦 Code: {prod[0]}
+📝 Name: {prod[1]}
+🏷️ Category: {prod[2]}
+📊 Stock: {prod[3]}
+💰 Price: ₹{prod[4]}
+🏭 Supplier: {prod[5]}
+{'='*50}\n
+""")
+        
+        ctk.CTkButton(search_frame, text="🔍 Search", command=do_search, 
+                     width=150, height=35).pack(side="left", padx=10)
+    
+    def show_reports(self):
+        self.clear_frame()
+        
+        ctk.CTkLabel(self.main_frame, text="Reports", font=("Arial", 20, "bold")).pack(pady=10)
+        
+        tabs = ctk.CTkTabview(self.main_frame)
+        tabs.pack(fill="both", expand=True, pady=10)
+        
+        # Low stock tab
+        low_tab = tabs.add("Low Stock")
+        ctk.CTkLabel(low_tab, text="Products with Low Stock (<10)", 
+                    font=("Arial", 16, "bold")).pack(pady=10)
+        
+        low_tree = ttk.Treeview(low_tab, columns=("Code", "Name", "Qty", "Price"), show="headings", height=10)
+        for col in low_tree['columns']:
+            low_tree.heading(col, text=col)
+        
+        cursor = self.db.cursor()
+        cursor.execute("SELECT product_code, name, quantity, price FROM products WHERE quantity < 10")
+        for row in cursor.fetchall():
+            low_tree.insert("", "end", values=row)
+        cursor.close()
+        low_tree.pack(fill="both", expand=True)
+        
+        # Value report
+        value_tab = tabs.add("Inventory Value")
+        ctk.CTkLabel(value_tab, text="Inventory Value by Category", 
+                    font=("Arial", 16, "bold")).pack(pady=10)
+        
+        value_tree = ttk.Treeview(value_tab, columns=("Category", "Items", "Total Value"), 
+                                 show="headings", height=10)
+        for col in value_tree['columns']:
+            value_tree.heading(col, text=col)
+        
+        cursor = self.db.cursor()
+        cursor.execute("""
+            SELECT category, COUNT(*) as items, SUM(price * quantity) as total 
+            FROM products GROUP BY category
+        """)
+        for row in cursor.fetchall():
+            value_tree.insert("", "end", values=(row[0] or "Uncategorized", row[1], f"₹{row[2]:,.2f}"))
+        cursor.close()
+        value_tree.pack(fill="both", expand=True)
+    
+    def show_profile(self):
+        self.clear_frame()
+        
+        ctk.CTkLabel(self.main_frame, text="User Profile", 
+                    font=("Arial", 20, "bold")).pack(pady=20)
+        
+        frame = ctk.CTkFrame(self.main_frame, width=400, height=300)
+        frame.pack(pady=20)
+        
+        ctk.CTkLabel(frame, text=f"Username: {self.user}", font=("Arial", 14)).pack(pady=10)
+        ctk.CTkLabel(frame, text=f"Role: {self.role}", font=("Arial", 14)).pack(pady=10)
+        
+        # Change password
+        ctk.CTkLabel(frame, text="Change Password", font=("Arial", 16, "bold")).pack(pady=20)
+        
+        old_pass = ctk.CTkEntry(frame, placeholder_text="Old Password", show="*", width=250)
+        old_pass.pack(pady=5)
+        
+        new_pass = ctk.CTkEntry(frame, placeholder_text="New Password", show="*", width=250)
+        new_pass.pack(pady=5)
+        
+        confirm_pass = ctk.CTkEntry(frame, placeholder_text="Confirm Password", show="*", width=250)
+        confirm_pass.pack(pady=5)
+        
+        def change_pass():
+            if not old_pass.get() or not new_pass.get():
+                messagebox.showerror("Error", "Fill all fields")
+                return
+            
+            if new_pass.get() != confirm_pass.get():
+                messagebox.showerror("Error", "New passwords don't match")
+                return
+            
+            cursor = self.db.cursor()
+            cursor.execute("SELECT password FROM users WHERE username = %s", (self.user,))
+            current_hash = cursor.fetchone()[0]
+            
+            if bcrypt.checkpw(old_pass.get().encode(), current_hash.encode()):
+                new_hash = bcrypt.hashpw(new_pass.get().encode(), bcrypt.gensalt())
+                cursor.execute("UPDATE users SET password = %s WHERE username = %s",
+                              (new_hash, self.user))
+                self.db.commit()
+                messagebox.showinfo("Success", "Password changed!")
+                old_pass.delete(0, 'end')
+                new_pass.delete(0, 'end')
+                confirm_pass.delete(0, 'end')
+            else:
+                messagebox.showerror("Error", "Old password is incorrect")
+            cursor.close()
+        
+        ctk.CTkButton(frame, text="Change Password", command=change_pass, width=200).pack(pady=10)
+    
+    def logout(self):
+        if messagebox.askyesno("Logout", "Are you sure?"):
+            self.root.destroy()
+            LoginSystem()
+
+if __name__ == "__main__":
+    LoginSystem()
