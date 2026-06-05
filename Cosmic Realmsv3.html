@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NEBULA CORE | Cinematic Deep-Space Engine</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'Poppins', 'Arial', sans-serif;
+        }
+
+        /* UI Overlay - Glassmorphism */
+        .ui-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .title-card {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(5, 5, 20, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 16px 28px;
+            border-left: 4px solid #ff5588;
+            border-right: 1px solid rgba(100, 150, 255, 0.3);
+            box-shadow: 0 0 35px rgba(0,0,0,0.6);
+            pointer-events: none;
+            font-family: 'Poppins', monospace;
+            animation: fadeIn 1.8s ease-out;
+        }
+
+        .title-card h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            font-weight: 400;
+            background: linear-gradient(135deg, #ffccaa, #ff88aa, #aaccff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 8px rgba(0,0,0,0.3);
+        }
+
+        .title-card p {
+            margin: 6px 0 0;
+            font-size: 0.7rem;
+            opacity: 0.7;
+            color: #ccddff;
+            letter-spacing: 1px;
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            width: 260px;
+            background: rgba(8, 8, 20, 0.75);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 16px 18px;
+            border: 1px solid rgba(255, 100, 150, 0.4);
+            pointer-events: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #eef;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+            z-index: 200;
+        }
+
+        .controls-panel h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-align: center;
+            color: #ffaa99;
+            border-bottom: 1px dashed #ff88aa55;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-group label {
+            font-size: 10px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        input[type="range"] {
+            width: 140px;
+            background: #223;
+            height: 3px;
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff88aa;
+            cursor: pointer;
+            box-shadow: 0 0 6px #ff5599;
+        }
+
+        .stat-value {
+            background: #00000066;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-family: monospace;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        .fps-meter {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 10px;
+            color: #8af;
+            border-top: 1px solid #2a2a4a;
+            padding-top: 8px;
+        }
+
+        .instruction {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(5px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 11px;
+            font-family: monospace;
+            color: #ccddff;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        @keyframes pulseGlow {
+            0% { border-left-color: #ff5588; }
+            100% { border-left-color: #ffaa88; }
+        }
+
+        button {
+            background: #1a1a2eaa;
+            border: 1px solid #ff88aa;
+            color: #ffccdd;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        button:hover {
+            background: #ff558855;
+            box-shadow: 0 0 10px #ff5588;
+        }
+
+        @media (max-width: 700px) {
+            .controls-panel { width: 220px; padding: 10px 12px; }
+            .title-card { top: 15px; left: 15px; padding: 10px 18px; }
+            .title-card h1 { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="ui-container">
+    <div class="title-card">
+        <h1>✦ GRAVITAR • DEEP SPACE ENGINE ✦</h1>
+        <p>spiral galaxy | black hole | volumetric nebula | cinematic 4K</p>
+    </div>
+    <div class="controls-panel" id="controlsPanel">
+        <h3>🌀 COSMIC CONTROL</h3>
+        <div class="control-group"><label>🌌 Bloom strength</label><input type="range" id="bloomStrength" min="0.2" max="1.4" step="0.01" value="0.8"><span id="bloomVal" class="stat-value">0.80</span></div>
+        <div class="control-group"><label>⚡ Galaxy Rotation</label><input type="range" id="galaxySpeed" min="0.0" max="0.015" step="0.0002" value="0.005"><span id="speedVal" class="stat-value">0.005</span></div>
+        <div class="control-group"><label>✨ Nebula density</label><input type="range" id="nebulaDensity" min="0.2" max="1.2" step="0.01" value="0.85"><span id="nebulaVal" class="stat-value">0.85</span></div>
+        <div class="control-group"><label>🌀 Camera Auto-Rotate</label><button id="toggleAutoRotateBtn">⏸️ PAUSE</button></div>
+        <div class="fps-meter" id="fpsDisplay">✨ FPS: -- | ✨ stars: 215K</div>
+        <div style="font-size:9px; text-align:center; margin-top:8px;">⚡ magnetic mouse | gravitational lensing</div>
+    </div>
+    <div class="instruction">🖱️ DRAG to orbit • 🖱️ MOUSE moves near stars → magnetic distortion • 🌌 auto-cinematic rotation</div>
+</div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+    
+    // --- setup scene, camera, renderer ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x010118);
+    scene.fog = new THREE.FogExp2(0x010118, 0.00022);
+    
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.2, 1400);
+    camera.position.set(24, 10, 32);
+    camera.lookAt(0, 0, 0);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.toneMapping = THREE.ReinhardToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    document.body.appendChild(renderer.domElement);
+    
+    // --- post processing ---
+    const renderScene = new RenderPass(scene, camera);
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.3, 0.4);
+    bloomPass.threshold = 0.2;
+    bloomPass.strength = 0.8;
+    bloomPass.radius = 0.5;
+    const effectComposer = new EffectComposer(renderer);
+    effectComposer.addPass(renderScene);
+    effectComposer.addPass(bloomPass);
+    
+    // --- orbit controls with auto-rotate ---
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.9;
+    controls.enableZoom = true;
+    controls.enablePan = true;
+    controls.zoomSpeed = 0.8;
+    controls.rotateSpeed = 0.7;
+    controls.target.set(0, 0, 0);
+    
+    let autoRotateFlag = true;
+    const toggleBtn = document.getElementById('toggleAutoRotateBtn');
+    toggleBtn.addEventListener('click', () => {
+        controls.autoRotate = !controls.autoRotate;
+        autoRotateFlag = controls.autoRotate;
+        toggleBtn.textContent = autoRotateFlag ? "⏸️ PAUSE" : "▶️ START";
+    });
+    
+    // --- UI sliders listeners ---
+    const bloomSlider = document.getElementById('bloomStrength');
+    const bloomVal = document.getElementById('bloomVal');
+    bloomSlider.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        bloomPass.strength = val;
+        bloomVal.innerText = val.toFixed(2);
+    });
+    const speedSlider = document.getElementById('galaxySpeed');
+    const speedValSpan = document.getElementById('speedVal');
+    let customGalaxySpeed = 0.005;
+    speedSlider.addEventListener('input', (e) => {
+        customGalaxySpeed = parseFloat(e.target.value);
+        speedValSpan.innerText = customGalaxySpeed.toFixed(4);
+    });
+    const nebulaSlider = document.getElementById('nebulaDensity');
+    const nebulaValSpan = document.getElementById('nebulaVal');
+    
+    // --- LIGHTS: Dramatic space lighting ---
+    const ambient = new THREE.AmbientLight(0x111122, 0.5);
+    scene.add(ambient);
+    const coreLight = new THREE.PointLight(0xff8866, 1.2, 45);
+    coreLight.position.set(0, 0, 0);
+    scene.add(coreLight);
+    const fillBlue = new THREE.PointLight(0x4488ff, 0.6);
+    fillBlue.position.set(5, 4, 7);
+    scene.add(fillBlue);
+    const backRim = new THREE.DirectionalLight(0xffaa88, 0.45);
+    backRim.position.set(-2, 3, -4);
+    scene.add(backRim);
+    
+    // --- BLACK HOLE with gravitational lensing effect (shader mesh)---
+    const blackHoleCore = new THREE.Mesh(
+        new THREE.SphereGeometry(1.2, 64, 64),
+        new THREE.MeshStandardMaterial({ color: 0x000000, emissive: 0x220022, emissiveIntensity: 0.7, metalness: 0.9, roughness: 0.2 })
+    );
+    scene.add(blackHoleCore);
+    
+    // Accretion disk (glowing torus rings)
+    const accretionRing1 = new THREE.Mesh(
+        new THREE.TorusGeometry(2.1, 0.12, 128, 200),
+        new THREE.MeshStandardMaterial({ color: 0xff6666, emissive: 0xff3366, emissiveIntensity: 0.9, transparent: true })
+    );
+    const accretionRing2 = new THREE.Mesh(
+        new THREE.TorusGeometry(2.7, 0.09, 128, 200),
+        new THREE.MeshStandardMaterial({ color: 0xffaa88, emissive: 0xff8844, emissiveIntensity: 0.7 })
+    );
+    const accretionRing3 = new THREE.Mesh(
+        new THREE.TorusGeometry(3.4, 0.07, 128, 200),
+        new THREE.MeshStandardMaterial({ color: 0xff88aa, emissive: 0xff4488, emissiveIntensity: 0.6 })
+    );
+    scene.add(accretionRing1);
+    scene.add(accretionRing2);
+    scene.add(accretionRing3);
+    
+    // --- GALAXY GENERATION: 215,000 stars + procedural spiral + color temperature---
+    const STAR_COUNT = 215000;
+    const positions = new Float32Array(STAR_COUNT * 3);
+    const colorsStar = new Float32Array(STAR_COUNT * 3);
+    
+    const arms = 4;
+    const spiralTight = 2.6;
+    const armSpreadFactor = 0.42;
+    const innerRad = 3.2;
+    const outerRad = 34;
+    
+    for (let i = 0; i < STAR_COUNT; i++) {
+        let radius, angle, yOff;
+        const rRand = Math.random();
+        if (rRand < 0.72) {
+            const armIdx = Math.floor(Math.random() * arms);
+            const armAngleBase = (armIdx / arms) * Math.PI * 2;
+            radius = innerRad + Math.pow(Math.random(), 1.2) * (outerRad - innerRad);
+            const spiralAngle = spiralTight * Math.log(radius + 0.7);
+            const randOffset = (Math.random() - 0.5) * armSpreadFactor * Math.pow(radius / outerRad, 0.6);
+            angle = armAngleBase + spiralAngle + randOffset;
+            yOff = Math.sin(radius * 0.45) * 0.45 * (Math.random() - 0.5);
+            yOff += (Math.random() - 0.5) * 0.35;
+        } else if (rRand < 0.92) {
+            radius = Math.pow(Math.random(), 1.5) * 7.2;
+            angle = Math.random() * Math.PI * 2;
+            yOff = (Math.random() - 0.5) * 1.8 * (1 - radius / 8);
+        } else {
+            radius = 9 + Math.random() * 12;
+            angle = Math.random() * Math.PI * 2;
+            yOff = (Math.random() - 0.5) * 3.2;
+        }
+        
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const y = yOff * 0.9;
+        positions[i*3] = x;
+        positions[i*3+1] = y;
+        positions[i*3+2] = z;
+        
+        const distNorm = Math.min(1.0, Math.sqrt(x*x + z*z) / outerRad);
+        let rCol, gCol, bCol;
+        const tempRand = Math.random();
+        if (distNorm < 0.25) {
+            rCol = 0.85 + Math.random()*0.2;
+            gCol = 0.6 + Math.random()*0.25;
+            bCol = 0.45 + Math.random()*0.2;
+        } else {
+            const blueFactor = 0.5 + (1 - distNorm) * 0.8;
+            if (tempRand > 0.7) {
+                rCol = 0.9 + Math.random()*0.1;
+                gCol = 0.7 + Math.random()*0.2;
+                bCol = 0.5 + Math.random()*0.2;
+            } else if (tempRand > 0.3) {
+                rCol = 0.65 + Math.random()*0.2;
+                gCol = 0.65 + Math.random()*0.2;
+                bCol = 0.85 + Math.random()*0.15;
+            } else {
+                rCol = 0.45 + Math.random()*0.2;
+                gCol = 0.55 + Math.random()*0.2;
+                bCol = 0.95 + Math.random()*0.05;
+            }
+        }
+        colorsStar[i*3] = rCol;
+        colorsStar[i*3+1] = gCol;
+        colorsStar[i*3+2] = bCol;
+    }
+    
+    const starGeometry = new THREE.BufferGeometry();
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    starGeometry.setAttribute('color', new THREE.BufferAttribute(colorsStar, 3));
+    
+    // custom shader for realistic star points (size based on distance)
+    const vertexShaderStar = `
+        attribute vec3 color;
+        varying vec3 vColor;
+        void main() {
+            vColor = color;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            float size = (280.0 / - mvPosition.z) * 0.7;
+            gl_PointSize = clamp(size, 1.0, 3.2);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `;
+    const fragmentShaderStar = `
+        varying vec3 vColor;
+        uniform sampler2D pointTexture;
+        void main() {
+            vec2 coord = gl_PointCoord;
+            float dist = length(coord - vec2(0.5));
+            if (dist > 0.5) discard;
+            float alpha = (1.0 - smoothstep(0.15, 0.5, dist)) * 0.85;
+            float brightness = 0.8 + (1.0 - dist) * 0.5;
+            gl_FragColor = vec4(vColor * brightness, alpha);
+        }
+    `;
+    function generateStarTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 32;
+        canvas.height = 32;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        grad.addColorStop(0, 'rgba(255,255,200,1)');
+        grad.addColorStop(0.4, 'rgba(255,180,100,0.7)');
+        grad.addColorStop(0.7, 'rgba(120,100,180,0.2)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 32, 32);
+        const texture = new THREE.CanvasTexture(canvas);
+        return texture;
+    }
+    const starMaterial = new THREE.ShaderMaterial({
+        uniforms: { pointTexture: { value: generateStarTexture() } },
+        vertexShader: vertexShaderStar,
+        fragmentShader: fragmentShaderStar,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    });
+    const galaxyPoints = new THREE.Points(starGeometry, starMaterial);
+    scene.add(galaxyPoints);
+    
+    // --- Nebula Volumetric Clouds (fluffy particles)
+    const NEBULA_COUNT = 18000;
+    const nebulaPos = new Float32Array(NEBULA_COUNT * 3);
+    const nebulaColorArr = new Float32Array(NEBULA_COUNT * 3);
+    for (let i = 0; i < NEBULA_COUNT; i++) {
+        const rad = 12 + Math.random() * 24;
+        const ang = Math.random() * Math.PI * 2;
+        const yoff = (Math.random() - 0.5) * 5.5;
+        nebulaPos[i*3] = Math.cos(ang) * rad;
+        nebulaPos[i*3+1] = yoff + Math.sin(ang * 2.5) * 0.8;
+        nebulaPos[i*3+2] = Math.sin(ang) * rad;
+        const choice = Math.random();
+        if (choice < 0.4) { nebulaColorArr[i*3] = 0.55; nebulaColorArr[i*3+1] = 0.35; nebulaColorArr[i*3+2] = 0.85; }
+        else if (choice < 0.7) { nebulaColorArr[i*3] = 0.75; nebulaColorArr[i*3+1] = 0.45; nebulaColorArr[i*3+2] = 0.65; }
+        else { nebulaColorArr[i*3] = 0.85; nebulaColorArr[i*3+1] = 0.55; nebulaColorArr[i*3+2] = 0.55; }
+    }
+    const nebulaGeom = new THREE.BufferGeometry();
+    nebulaGeom.setAttribute('position', new THREE.BufferAttribute(nebulaPos, 3));
+    nebulaGeom.setAttribute('color', new THREE.BufferAttribute(nebulaColorArr, 3));
+    const nebulaPointsMat = new THREE.PointsMaterial({ size: 0.17, vertexColors: true, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending });
+    const nebulaCloud = new THREE.Points(nebulaGeom, nebulaPointsMat);
+    scene.add(nebulaCloud);
+    
+    // asteroid belt
+    const ASTEROID_COUNT = 18000;
+    const astPos = new Float32Array(ASTEROID_COUNT * 3);
+    for (let i = 0; i < ASTEROID_COUNT; i++) {
+        const rad = 13 + Math.random() * 5.5;
+        const ang = Math.random() * Math.PI * 2;
+        const yoff = (Math.random() - 0.5) * 1.2;
+        astPos[i*3] = Math.cos(ang) * rad;
+        astPos[i*3+1] = yoff;
+        astPos[i*3+2] = Math.sin(ang) * rad;
+    }
+    const astGeom = new THREE.BufferGeometry();
+    astGeom.setAttribute('position', new THREE.BufferAttribute(astPos, 3));
+    const astMat = new THREE.PointsMaterial({ color: 0xaa9977, size: 0.06 });
+    const asteroidField = new THREE.Points(astGeom, astMat);
+    scene.add(asteroidField);
+    
+    // distant stars background
+    const bgStarsCount = 28000;
+    const bgPos = new Float32Array(bgStarsCount * 3);
+    for (let i = 0; i < bgStarsCount; i++) {
+        bgPos[i*3] = (Math.random() - 0.5) * 380;
+        bgPos[i*3+1] = (Math.random() - 0.5) * 200;
+        bgPos[i*3+2] = (Math.random() - 0.5) * 180 - 70;
+    }
+    const bgStarGeom = new THREE.BufferGeometry();
+    bgStarGeom.setAttribute('position', new THREE.BufferAttribute(bgPos, 3));
+    const bgStarMat = new THREE.PointsMaterial({ color: 0x99bbff, size: 0.12, transparent: true, opacity: 0.45 });
+    const bgStarsField = new THREE.Points(bgStarGeom, bgStarMat);
+    scene.add(bgStarsField);
+    
+    // Shooting stars (dynamic)
+    let shootingStars = [];
+    class ShootingStar {
+        constructor() {
+            this.pos = new THREE.Vector3((Math.random() - 0.5)*80, (Math.random() - 0.5)*30, (Math.random() - 0.5)*60 - 30);
+            this.vel = new THREE.Vector3((Math.random() - 0.5)*0.8, -0.4 - Math.random()*0.4, (Math.random() - 0.5)*0.7);
+            this.life = 1;
+            this.mesh = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0xffaa88, size: 0.19, blending: THREE.AdditiveBlending }));
+            const geom = new THREE.BufferGeometry();
+            geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0,0,0]), 3));
+            this.mesh.geometry = geom;
+            this.mesh.position.copy(this.pos);
+            scene.add(this.mesh);
+        }
+        update() {
+            this.pos.add(this.vel);
+            this.life -= 0.008;
+            this.mesh.position.copy(this.pos);
+            if (this.life <= 0 || Math.abs(this.pos.x) > 85 || Math.abs(this.pos.z) > 85) return false;
+            return true;
+        }
+        dispose() { scene.remove(this.mesh); this.mesh.geometry.dispose(); }
+    }
+    setInterval(() => {
+        if (shootingStars.length < 7) shootingStars.push(new ShootingStar());
+    }, 3200);
+    
+    // --- Magnetic mouse force (interaction affecting nearby particles) ---
+    const mouse = new THREE.Vector2();
+    const raycasterMouse = new THREE.Raycaster();
+    let mouseInfluence = new THREE.Vector3(0,0,0);
+    window.addEventListener('mousemove', (event) => {
+        mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+        mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+        raycasterMouse.setFromCamera(mouse, camera);
+        const intersectPoint = raycasterMouse.ray.direction.clone().multiplyScalar(16).add(camera.position);
+        mouseInfluence = intersectPoint;
+    });
+    
+    // update shader attraction effect based on mouse: subtle magnetic warp
+    const originalPositions = positions.slice();
+    function updateMagneticWarp(time) {
+        const posAttr = starGeometry.attributes.position.array;
+        const magRadius = 4.2;
+        const strengthMag = 0.028;
+        for (let i = 0; i < STAR_COUNT; i+= 27) {
+            const ix = i*3, iy = i*3+1, iz = i*3+2;
+            const px = originalPositions[ix];
+            const py = originalPositions[iy];
+            const pz = originalPositions[iz];
+            const dx = px - mouseInfluence.x;
+            const dz = pz - mouseInfluence.z;
+            const dist = Math.sqrt(dx*dx + dz*dz);
+            if (dist < magRadius) {
+                const force = (1 - dist/magRadius) * strengthMag * Math.sin(time * 8);
+                posAttr[ix] = px + dx * force * 0.15;
+                posAttr[iz] = pz + dz * force * 0.15;
+            } else {
+                posAttr[ix] = px;
+                posAttr[iz] = pz;
+            }
+        }
+        starGeometry.attributes.position.needsUpdate = true;
+    }
+    
+    // --- Animation & Rotation loops---
+    let clock = new THREE.Clock();
+    let timeAcc = 0;
+    
+    // pulsing black hole lensing effect on rings
+    function animateBlackHole(t) {
+        const pulse = 1 + Math.sin(t * 2.2) * 0.05;
+        blackHoleCore.scale.set(pulse, pulse, pulse);
+        coreLight.intensity = 1.1 + Math.sin(t * 2.5) * 0.3;
+        accretionRing1.rotation.x = Math.sin(t * 0.6) * 0.15;
+        accretionRing1.rotation.z = t * 0.4;
+        accretionRing2.rotation.x = Math.cos(t * 0.5) * 0.1;
+        accretionRing2.rotation.z = t * 0.35;
+        accretionRing3.rotation.z = t * 0.3;
+        const matRing = accretionRing1.material;
+        matRing.emissiveIntensity = 0.9 + Math.sin(t*5)*0.3;
+    }
+    
+    let frame = 0;
+    let lastFpsUpdate = performance.now();
+    let fps = 60;
+    function updateFPS() {
+        frame++;
+        const now = performance.now();
+        if (now - lastFpsUpdate >= 1000) {
+            fps = frame;
+            document.getElementById('fpsDisplay').innerHTML = `✨ FPS: ${fps} | ✨ stars: 215K • nebula dynamic`;
+            frame = 0;
+            lastFpsUpdate = now;
+        }
+    }
+    
+    // adjust nebula density from UI
+    nebulaSlider.addEventListener('input', (e) => {
+        const density = parseFloat(e.target.value);
+        nebulaPointsMat.opacity = 0.25 + density * 0.25;
+        nebulaValSpan.innerText = density.toFixed(2);
+    });
+    
+    // cosmic dust movement & auto galaxy rotation speed
+    function renderLoop() {
+        const delta = clock.getDelta();
+        const elapsedTime = performance.now() * 0.001;
+        timeAcc += 0.004;
+        
+        // galaxy rotation speed control
+        galaxyPoints.rotation.y += customGalaxySpeed;
+        nebulaCloud.rotation.y += customGalaxySpeed * 0.42;
+        asteroidField.rotation.y += 0.0009;
+        bgStarsField.rotation.y += 0.0002;
+        
+        // magnetic warp effect per frame
+        updateMagneticWarp(elapsedTime);
+        
+        // shooting stars update
+        for (let i=shootingStars.length-1; i>=0; i--) {
+            const starObj = shootingStars[i];
+            const alive = starObj.update();
+            if (!alive) { starObj.dispose(); shootingStars.splice(i,1); }
+        }
+        
+        animateBlackHole(elapsedTime);
+        controls.update(); // auto-rotate handled here
+        updateFPS();
+        effectComposer.render();
+        requestAnimationFrame(renderLoop);
+    }
+    
+    // cinematic intro: subtle camera start ease
+    camera.position.set(26, 8, 38);
+    setTimeout(() => {
+        camera.position.set(24, 10, 32);
+    }, 200);
+    
+    renderLoop();
+    
+    // resize handler
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        effectComposer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // final console
+    console.log("%c🌀 GRAVITAR ENGINE • BLACK HOLE LENSING • 215K STARS • VOLUMETRIC NEBULA", "color: #ff88aa; font-size: 16px;");
+    
+    // optional extra godray: Additive volumetric glow for core
+    const coreGlowMat = new THREE.MeshStandardMaterial({ color: 0xff6644, emissive: 0xff4422, emissiveIntensity: 0.8, transparent: true, opacity: 0.3 });
+    const glowSphere = new THREE.Mesh(new THREE.SphereGeometry(1.7, 32, 32), coreGlowMat);
+    scene.add(glowSphere);
+</script>
+</body>
+</html>
