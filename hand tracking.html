@@ -3,26 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Particle Metamorphosis — Hand Tracking FIXED</title>
+  <title>Particle Metamorphosis — Fast Hand Tracking</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { overflow: hidden; background: #050510; font-family: 'Segoe UI', sans-serif; }
     #info {
       position: absolute; top: 20px; left: 20px;
       color: #fff; background: rgba(0,0,0,0.6);
-      padding: 10px 22px; border-radius: 40px;
+      padding: 8px 18px; border-radius: 40px;
       backdrop-filter: blur(6px);
-      z-index: 10; font-size: 13px;
+      z-index: 10; font-size: 12px;
       pointer-events: none;
     }
     #mode-badge {
       position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
       color: #fff; background: rgba(0,0,0,0.7);
-      padding: 14px 32px; border-radius: 60px;
-      font-size: 26px; font-weight: bold;
+      padding: 12px 28px; border-radius: 60px;
+      font-size: 22px; font-weight: bold;
       z-index: 10; backdrop-filter: blur(8px);
       border: 2px solid rgba(255,215,0,0.5);
-      box-shadow: 0 0 30px rgba(255,215,0,0.25);
       white-space: nowrap;
     }
     #shape-btns {
@@ -33,29 +32,27 @@
     .sbtn {
       background: rgba(0,0,0,0.6);
       border: 1px solid rgba(255,255,255,0.2);
-      color: #fff; padding: 8px 16px;
+      color: #fff; padding: 6px 14px;
       border-radius: 20px; cursor: pointer;
-      font-size: 13px;
-      backdrop-filter: blur(4px);
+      font-size: 12px;
     }
     .sbtn:hover, .sbtn.active {
       background: rgba(255,200,0,0.2);
       border-color: rgba(255,200,0,0.6);
-      box-shadow: 0 0 12px rgba(255,200,0,0.3);
     }
     #status {
       position: absolute; bottom: 20px; right: 20px;
       color: #0f0; background: rgba(0,0,0,0.7);
-      padding: 5px 12px; border-radius: 20px;
-      font-size: 11px;
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 10px;
       z-index: 10;
     }
   </style>
 </head>
 <body>
-<div id="info">✋ Show your hand to camera • Pinch to scale • Rotate to morph</div>
+<div id="info">✋ Show hand to camera • Move = Morph • Pinch = Scale</div>
 <div id="mode-badge">❤️ HEART</div>
-<div id="status">⚡ Initializing...</div>
+<div id="status">⚡ Loading...</div>
 <div id="shape-btns">
   <button class="sbtn active" data-shape="0">❤️ Heart</button>
   <button class="sbtn" data-shape="1">🌸 Flower</button>
@@ -80,57 +77,53 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-// ========== SCENE ==========
+// ========== SCENE (Optimized) ==========
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x050510);
-scene.fog = new THREE.FogExp2(0x050510, 0.003);
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+scene.fog = new THREE.FogExp2(0x050510, 0.002);
+
+const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 1.5, 8);
-camera.lookAt(0, 0, 0);
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.toneMapping = THREE.ReinhardToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.setPixelRatio(1); // performance boost
 document.body.appendChild(renderer.domElement);
 
-// ========== POST PROCESSING ==========
+// ========== POST PROCESSING (Lighter Bloom) ==========
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.2, 0.4, 0.1);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.8, 0.3, 0.1);
 composer.addPass(bloomPass);
 
 // ========== LIGHTS ==========
-const ambient = new THREE.AmbientLight(0x404060);
-scene.add(ambient);
-const mainLight = new THREE.DirectionalLight(0xffaa88, 1);
-mainLight.position.set(2, 5, 3);
+scene.add(new THREE.AmbientLight(0x404060));
+const mainLight = new THREE.DirectionalLight(0xffaa88, 0.8);
+mainLight.position.set(2, 4, 3);
 scene.add(mainLight);
-const fillLight = new THREE.PointLight(0x4466cc, 0.6);
-fillLight.position.set(-2, 1, 4);
+const fillLight = new THREE.PointLight(0x4466cc, 0.5);
+fillLight.position.set(-2, 1, 3);
 scene.add(fillLight);
-const backLight = new THREE.PointLight(0xffaa66, 0.5);
-backLight.position.set(0, 1, -5);
-scene.add(backLight);
 
-// ========== STARS BACKGROUND ==========
-const starCount = 1200;
+// ========== STARS (Less count for speed) ==========
+const starCount = 600;
 const starGeo = new THREE.BufferGeometry();
 const starPositions = new Float32Array(starCount * 3);
 for (let i = 0; i < starCount; i++) {
-  starPositions[i * 3] = (Math.random() - 0.5) * 400;
-  starPositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
-  starPositions[i * 3 + 2] = (Math.random() - 0.5) * 150 - 50;
+  starPositions[i * 3] = (Math.random() - 0.5) * 300;
+  starPositions[i * 3 + 1] = (Math.random() - 0.5) * 150;
+  starPositions[i * 3 + 2] = (Math.random() - 0.5) * 100 - 30;
 }
 starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.7 }));
+const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.1, transparent: true, opacity: 0.6 }));
 scene.add(stars);
 
-// ========== PARTICLE SYSTEM ==========
-const PARTICLE_COUNT = 6000;
+// ========== PARTICLE SYSTEM (Reduced count for speed) ==========
+const PARTICLE_COUNT = 3500;
 const geometry = new THREE.BufferGeometry();
 const positions = new Float32Array(PARTICLE_COUNT * 3);
 const colors = new Float32Array(PARTICLE_COUNT * 3);
+
 for (let i = 0; i < PARTICLE_COUNT; i++) {
   const theta = Math.random() * Math.PI * 2;
   const phi = Math.acos(2 * Math.random() - 1);
@@ -146,10 +139,7 @@ geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
 const particleMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    uTime: { value: 0 },
-    uPointSize: { value: 0.16 }
-  },
+  uniforms: { uTime: { value: 0 }, uPointSize: { value: 0.18 } },
   vertexShader: `
     attribute vec3 color;
     varying vec3 vColor;
@@ -158,7 +148,7 @@ const particleMaterial = new THREE.ShaderMaterial({
     void main() {
       vColor = color;
       vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = uPointSize * (300.0 / ( - mvPosition.z )) * (0.8 + 0.4 * sin(position.x * 3.0 + uTime * 4.0));
+      gl_PointSize = uPointSize * (250.0 / ( - mvPosition.z )) * (0.8 + 0.2 * sin(position.x * 3.0 + uTime * 4.0));
       gl_Position = projectionMatrix * mvPosition;
     }
   `,
@@ -168,8 +158,7 @@ const particleMaterial = new THREE.ShaderMaterial({
       vec2 coord = gl_PointCoord;
       float dist = length(coord - vec2(0.5));
       if (dist > 0.5) discard;
-      float alpha = (1.0 - smoothstep(0.2, 0.5, dist)) * 0.9;
-      gl_FragColor = vec4(vColor, alpha);
+      gl_FragColor = vec4(vColor, 0.8);
     }
   `,
   transparent: true,
@@ -185,12 +174,12 @@ const SHAPES = {
   heart: (i, total) => {
     const t = (i / total) * Math.PI * 2;
     const s = 0.13;
-    return [16 * Math.pow(Math.sin(t), 3) * s, (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s, (Math.random() - 0.5) * 0.35];
+    return [16 * Math.pow(Math.sin(t), 3) * s, (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s, (Math.random() - 0.5) * 0.3];
   },
   flower: (i, total) => {
     const a = (i / total) * Math.PI * 2;
     const r = (Math.sin(6 * a) * 0.7 + 1.0) * 0.8;
-    return [Math.cos(a) * r, Math.sin(a) * r, (Math.random() - 0.5) * 0.45];
+    return [Math.cos(a) * r, Math.sin(a) * r, (Math.random() - 0.5) * 0.4];
   },
   saturn: (i, total) => {
     if (i > total * 0.7) {
@@ -211,8 +200,7 @@ const SHAPES = {
   sphere: (i) => {
     const u = Math.random(), v = Math.random();
     const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
-    const R = 1.3;
-    return [R * Math.sin(phi) * Math.cos(theta), R * Math.sin(phi) * Math.sin(theta), R * Math.cos(phi)];
+    return [1.2 * Math.sin(phi) * Math.cos(theta), 1.2 * Math.sin(phi) * Math.sin(theta), 1.2 * Math.cos(phi)];
   },
   torus: (i) => {
     const u = Math.random() * Math.PI * 2, v = Math.random() * Math.PI * 2;
@@ -225,49 +213,43 @@ const SHAPE_EMOJI = { heart: '❤️', flower: '🌸', saturn: '🪐', firework:
 
 let currentShapeIdx = 0;
 let targetPositions = new Float32Array(PARTICLE_COUNT * 3);
-function bakeTargetPositions(shapeKey, scale = 1.0) {
+function bakeTargetPositions(shapeKey) {
   const fn = SHAPES[shapeKey];
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const [x, y, z] = fn(i, PARTICLE_COUNT);
-    targetPositions[i * 3] = x * scale;
-    targetPositions[i * 3 + 1] = y * scale;
-    targetPositions[i * 3 + 2] = z * scale;
+    targetPositions[i * 3] = x;
+    targetPositions[i * 3 + 1] = y;
+    targetPositions[i * 3 + 2] = z;
   }
 }
 function setShape(index) {
   currentShapeIdx = index;
-  const key = SHAPE_KEYS[index];
-  bakeTargetPositions(key, 1.0);
-  document.getElementById('mode-badge').textContent = `${SHAPE_EMOJI[key]} ${key.toUpperCase()}`;
+  bakeTargetPositions(SHAPE_KEYS[index]);
+  document.getElementById('mode-badge').textContent = `${SHAPE_EMOJI[SHAPE_KEYS[index]]} ${SHAPE_KEYS[index].toUpperCase()}`;
   document.querySelectorAll('.sbtn').forEach((btn, i) => btn.classList.toggle('active', i === index));
 }
 document.querySelectorAll('.sbtn').forEach(btn => btn.addEventListener('click', () => setShape(parseInt(btn.dataset.shape))));
 setShape(0);
 
-// ========== HAND TRACKING (MediaPipe with proper error handling) ==========
+// ========== LIGHTWEIGHT HAND TRACKING (MediaPipe with less load) ==========
 let handX = 0.5, handY = 0.5;
 let targetScale = 1.0, currentScale = 1.0;
-let targetRotation = 0;
 
-// Mouse fallback (hamesha kaam karega)
+// Mouse fallback
 window.addEventListener('mousemove', (e) => {
   handX = e.clientX / window.innerWidth;
   handY = e.clientY / window.innerHeight;
-  targetScale = 0.7 + handX * 2.3;
-  targetRotation = (handX - 0.5) * Math.PI * 2;
+  targetScale = 0.6 + handX * 2.0;
 });
 
-// MediaPipe Hand Tracking (sirf tab jab camera mile)
+// Lightweight hand tracking
 async function initHandTracking() {
   const statusDiv = document.getElementById('status');
   try {
     const { HandLandmarker, FilesetResolver } = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest');
     const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm');
     const handLandmarker = await HandLandmarker.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task',
-        delegate: 'GPU'
-      },
+      baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task', delegate: 'GPU' },
       numHands: 1,
       runningMode: 'VIDEO'
     });
@@ -276,32 +258,35 @@ async function initHandTracking() {
     video.autoplay = true;
     video.playsInline = true;
     video.muted = true;
-    video.width = 640;
-    video.height = 480;
+    video.width = 320;
+    video.height = 240;
+    video.style.position = 'fixed';
+    video.style.bottom = '10px';
+    video.style.right = '10px';
+    video.style.width = '160px';
+    video.style.borderRadius = '8px';
+    video.style.border = '2px solid #F97316';
+    video.style.zIndex = '20';
+    document.body.appendChild(video);
 
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     video.srcObject = stream;
     await video.play();
 
-    statusDiv.innerHTML = '🟢 Hand tracking: ACTIVE (show hand)';
+    statusDiv.innerHTML = '🟢 Hand tracking ACTIVE';
     statusDiv.style.color = '#0f0';
 
     let lastTime = performance.now();
     function detectHand() {
       const now = performance.now();
-      if (now - lastTime > 50) {
+      if (now - lastTime > 80) {
         const results = handLandmarker.detectForVideo(video, now);
         if (results.landmarks && results.landmarks.length > 0) {
           const landmarks = results.landmarks[0];
           const wrist = landmarks[0];
-          const indexTip = landmarks[8];
-          const thumbTip = landmarks[4];
           handX = Math.min(1, Math.max(0, wrist.x));
           handY = Math.min(1, Math.max(0, wrist.y));
-          targetScale = 0.6 + (1 - wrist.y) * 2.5;
-          const pinchDist = Math.hypot(indexTip.x - thumbTip.x, indexTip.y - thumbTip.y);
-          const pinchIntensity = Math.min(1, Math.max(0, 1 - pinchDist / 0.1));
-          targetRotation = (handX - 0.5) * Math.PI * 2 * pinchIntensity;
+          targetScale = 0.5 + (1 - wrist.y) * 2.2;
         }
         lastTime = now;
       }
@@ -309,824 +294,60 @@ async function initHandTracking() {
     }
     detectHand();
   } catch (error) {
-    console.warn('Hand tracking failed:', error);
-    statusDiv.innerHTML = '⚠️ Hand tracking: MOUSE MODE (camera missing/blocked)';
+    statusDiv.innerHTML = '⚠️ Mouse mode (no camera)';
     statusDiv.style.color = '#ff0';
   }
 }
 initHandTracking();
 
 // ========== ANIMATION LOOP ==========
-let lastFrameTime = performance.now();
-let starRotationSpeed = 0.0005;
-function animate() {
-  const now = performance.now();
-  let delta = Math.min((now - lastFrameTime) / 1000, 0.033);
-  lastFrameTime = now;
-  const elapsed = now / 1000;
-  particleMaterial.uniforms.uTime.value = elapsed;
-  currentScale += (targetScale - currentScale) * 0.08;
-  const posAttr = geometry.attributes.position;
-  const posArray = posAttr.array;
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
-    posArray[ix] += (targetPositions[ix] * currentScale - posArray[ix]) * 0.09;
-    posArray[iy] += (targetPositions[iy] * currentScale - posArray[iy]) * 0.09;
-    posArray[iz] += (targetPositions[iz] * currentScale - posArray[iz]) * 0.09;
-  }
-  posAttr.needsUpdate = true;
-  const colAttr = geometry.attributes.color;
-  const colArray = colAttr.array;
-  const baseHue = (handY * 0.7 + elapsed * 0.08) % 1.0;
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const hue = (baseHue + i * 0.00015 + Math.sin(elapsed * 2 + i * 0.005) * 0.05) % 1.0;
-    const color = new THREE.Color().setHSL(hue, 0.85, 0.55);
-    colArray[i * 3] = color.r;
-    colArray[i * 3 + 1] = color.g;
-    colArray[i * 3 + 2] = color.b;
-  }
-  colAttr.needsUpdate = true;
-  stars.rotation.y += starRotationSpeed * (delta * 60);
-  stars.rotation.x = Math.sin(elapsed * 0.1) * 0.05;
-  camera.position.x += ( (handX - 0.5) * 1.5 - camera.position.x) * 0.05;
-  camera.position.y += ( (handY - 0.5) * 0.8 + 1.5 - camera.position.y) * 0.05;
-  camera.lookAt(0, 0, 0);
-  composer.render();
-  requestAnimationFrame(animate);
-}
-animate();
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-});
-bakeTargetPositions('heart', 1.0);
-</script>
-</body>
-</html>  
-</style>
-</head>
-<body>
-<div id="info">✋ Move your hand • Pinch to scale • Rotate to morph</div>
-<div id="mode-badge">❤️ HEART</div>
-<div id="status">⚡ Hand tracking: OFF</div>
-
-<div id="shape-btns">
-  <button class="sbtn active" data-shape="0">❤️ Heart</button>
-  <button class="sbtn" data-shape="1">🌸 Flower</button>
-  <button class="sbtn" data-shape="2">🪐 Saturn</button>
-  <button class="sbtn" data-shape="3">✨ Firework</button>
-  <button class="sbtn" data-shape="4">⚪ Sphere</button>
-  <button class="sbtn" data-shape="5">🍩 Torus</button>
-</div>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-
-// ========== SCENE ==========
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x050510);
-scene.fog = new THREE.FogExp2(0x050510, 0.003);
-
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 1.5, 8);
-camera.lookAt(0, 0, 0);
-
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.toneMapping = THREE.ReinhardToneMapping;
-renderer.toneMappingExposure = 1.2;
-document.body.appendChild(renderer.domElement);
-
-// ========== POST PROCESSING ==========
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.2, 0.4, 0.1);
-composer.addPass(bloomPass);
-
-// ========== LIGHTS ==========
-const ambient = new THREE.AmbientLight(0x404060);
-scene.add(ambient);
-
-const mainLight = new THREE.DirectionalLight(0xffaa88, 1);
-mainLight.position.set(2, 5, 3);
-scene.add(mainLight);
-
-const fillLight = new THREE.PointLight(0x4466cc, 0.6);
-fillLight.position.set(-2, 1, 4);
-scene.add(fillLight);
-
-const backLight = new THREE.PointLight(0xffaa66, 0.5);
-backLight.position.set(0, 1, -5);
-scene.add(backLight);
-
-// ========== STARS BACKGROUND ==========
-const starCount = 1200;
-const starGeo = new THREE.BufferGeometry();
-const starPositions = new Float32Array(starCount * 3);
-for (let i = 0; i < starCount; i++) {
-  starPositions[i * 3] = (Math.random() - 0.5) * 400;
-  starPositions[i * 3 + 1] = (Math.random() - 0.5) * 200;
-  starPositions[i * 3 + 2] = (Math.random() - 0.5) * 150 - 50;
-}
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.12, transparent: true, opacity: 0.7 }));
-scene.add(stars);
-
-// ========== PARTICLE SYSTEM ==========
-const PARTICLE_COUNT = 6000;
-const geometry = new THREE.BufferGeometry();
-const positions = new Float32Array(PARTICLE_COUNT * 3);
-const colors = new Float32Array(PARTICLE_COUNT * 3);
-
-// Initialize random positions (sphere)
-for (let i = 0; i < PARTICLE_COUNT; i++) {
-  const theta = Math.random() * Math.PI * 2;
-  const phi = Math.acos(2 * Math.random() - 1);
-  const r = Math.random() * 1.8;
-  positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-  positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-  positions[i * 3 + 2] = r * Math.cos(phi);
-  colors[i * 3] = 1;
-  colors[i * 3 + 1] = 0.4;
-  colors[i * 3 + 2] = 0.6;
-}
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-const particleMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    uTime: { value: 0 },
-    uPointSize: { value: 0.16 }
-  },
-  vertexShader: `
-    attribute vec3 color;
-    varying vec3 vColor;
-    uniform float uTime;
-    uniform float uPointSize;
-    void main() {
-      vColor = color;
-      vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = uPointSize * (300.0 / ( - mvPosition.z )) * (0.8 + 0.4 * sin(position.x * 3.0 + uTime * 4.0));
-      gl_Position = projectionMatrix * mvPosition;
-    }
-  `,
-  fragmentShader: `
-    varying vec3 vColor;
-    void main() {
-      vec2 coord = gl_PointCoord;
-      float dist = length(coord - vec2(0.5));
-      if (dist > 0.5) discard;
-      float alpha = (1.0 - smoothstep(0.2, 0.5, dist)) * 0.9;
-      gl_FragColor = vec4(vColor, alpha);
-    }
-  `,
-  transparent: true,
-  blending: THREE.AdditiveBlending,
-  depthWrite: false
-});
-
-const particleSystem = new THREE.Points(geometry, particleMaterial);
-scene.add(particleSystem);
-
-// ========== SHAPES ==========
-const SHAPES = {
-  heart: (i, total) => {
-    const t = (i / total) * Math.PI * 2;
-    const s = 0.13;
-    return [
-      16 * Math.pow(Math.sin(t), 3) * s,
-      (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s,
-      (Math.random() - 0.5) * 0.35
-    ];
-  },
-  flower: (i, total) => {
-    const a = (i / total) * Math.PI * 2;
-    const r = (Math.sin(6 * a) * 0.7 + 1.0) * 0.8;
-    return [Math.cos(a) * r, Math.sin(a) * r, (Math.random() - 0.5) * 0.45];
-  },
-  saturn: (i, total) => {
-    if (i > total * 0.7) {
-      const a = Math.random() * Math.PI * 2;
-      const R = 1.5 + Math.random() * 0.4;
-      return [Math.cos(a) * R * 0.6, (Math.random() - 0.5) * 0.3, Math.sin(a) * R * 0.6];
-    }
-    const u = Math.random(), v = Math.random();
-    const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
-    return [0.9 * Math.sin(phi) * Math.cos(theta), 0.9 * Math.sin(phi) * Math.sin(theta), 0.9 * Math.cos(phi)];
-  },
-  firework: (i) => {
-    const a1 = Math.random() * Math.PI * 2;
-    const a2 = Math.acos(2 * Math.random() - 1);
-    const r = Math.random() * 1.6;
-    return [r * Math.sin(a2) * Math.cos(a1), r * Math.sin(a2) * Math.sin(a1), r * Math.cos(a2)];
-  },
-  sphere: (i) => {
-    const u = Math.random(), v = Math.random();
-    const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
-    const R = 1.3;
-    return [R * Math.sin(phi) * Math.cos(theta), R * Math.sin(phi) * Math.sin(theta), R * Math.cos(phi)];
-  },
-  torus: (i) => {
-    const u = Math.random() * Math.PI * 2, v = Math.random() * Math.PI * 2;
-    const R = 1.6, r = 0.55;
-    return [(R + r * Math.cos(v)) * Math.cos(u), (R + r * Math.cos(v)) * Math.sin(u), r * Math.sin(v)];
-  }
-};
-const SHAPE_KEYS = Object.keys(SHAPES);
-const SHAPE_EMOJI = { heart: '❤️', flower: '🌸', saturn: '🪐', firework: '✨', sphere: '⚪', torus: '🍩' };
-
-let currentShapeIdx = 0;
-let targetPositions = new Float32Array(PARTICLE_COUNT * 3);
-let currentPositions = new Float32Array(PARTICLE_COUNT * 3);
-
-function bakeTargetPositions(shapeKey, scale = 1.0) {
-  const fn = SHAPES[shapeKey];
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const [x, y, z] = fn(i, PARTICLE_COUNT);
-    targetPositions[i * 3] = x * scale;
-    targetPositions[i * 3 + 1] = y * scale;
-    targetPositions[i * 3 + 2] = z * scale;
-  }
-}
-
-function setShape(index) {
-  currentShapeIdx = index;
-  const key = SHAPE_KEYS[index];
-  bakeTargetPositions(key, 1.0);
-  const badge = document.getElementById('mode-badge');
-  badge.textContent = `${SHAPE_EMOJI[key]} ${key.toUpperCase()}`;
-  document.querySelectorAll('.sbtn').forEach((btn, i) => {
-    btn.classList.toggle('active', i === index);
-  });
-}
-
-document.querySelectorAll('.sbtn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    setShape(parseInt(btn.dataset.shape));
-  });
-});
-
-setShape(0);
-
-// ========== HAND TRACKING (MediaPipe) ==========
-let handX = 0.5, handY = 0.5;
-let targetScale = 1.0, currentScale = 1.0;
-let handRotation = 0, targetRotation = 0;
-let pinchIntensity = 0;
-
-// Simple fallback mouse
-window.addEventListener('mousemove', (e) => {
-  handX = e.clientX / window.innerWidth;
-  handY = e.clientY / window.innerHeight;
-  targetScale = 0.7 + handX * 2.3;
-  targetRotation = (handX - 0.5) * Math.PI * 2;
-});
-
-// MediaPipe Hand Tracking
-async function initHandTracking() {
-  const statusDiv = document.getElementById('status');
-  try {
-    const { HandLandmarker, FilesetResolver } = await import('https://cdn.skypack.dev/@mediapipe/tasks-vision');
-    const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm');
-    const handLandmarker = await HandLandmarker.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
-        delegate: 'GPU'
-      },
-      numHands: 1,
-      runningMode: 'VIDEO'
-    });
-
-    const video = document.createElement('video');
-    video.autoplay = true;
-    video.playsInline = true;
-    video.muted = true;
-    video.width = 640;
-    video.height = 480;
-
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    video.srcObject = stream;
-    await video.play();
-
-    statusDiv.innerHTML = '🟢 Hand tracking: ACTIVE';
-    statusDiv.style.color = '#0f0';
-
-    let lastTime = performance.now();
-    function detectHand() {
-      const now = performance.now();
-      if (now - lastTime > 50) {
-        const results = handLandmarker.detectForVideo(video, now);
-        if (results.landmarks && results.landmarks.length > 0) {
-          const landmarks = results.landmarks[0];
-          const wrist = landmarks[0];
-          const indexTip = landmarks[8];
-          const thumbTip = landmarks[4];
-          const palmCenter = landmarks[9];
-
-          handX = Math.min(1, Math.max(0, wrist.x));
-          handY = Math.min(1, Math.max(0, wrist.y));
-          targetScale = 0.6 + (1 - wrist.y) * 2.5;
-
-          // Pinch detection
-          const pinchDist = Math.hypot(indexTip.x - thumbTip.x, indexTip.y - thumbTip.y);
-          pinchIntensity = Math.min(1, Math.max(0, 1 - pinchDist / 0.1));
-          
-          // Rotation from palm direction
-          const wristToPalm = { x: palmCenter.x - wrist.x, y: palmCenter.y - wrist.y };
-          targetRotation = Math.atan2(wristToPalm.y, wristToPalm.x);
-        }
-        lastTime = now;
-      }
-      requestAnimationFrame(detectHand);
-    }
-    detectHand();
-  } catch (error) {
-    console.warn('Hand tracking failed:', error);
-    statusDiv.innerHTML = '⚠️ Hand tracking: MOUSE MODE';
-    statusDiv.style.color = '#ff0';
-  }
-}
-
-initHandTracking();
-
-// ========== ANIMATION LOOP (Buttery Smooth) ==========
-let lastFrameTime = performance.now();
-let starRotationSpeed = 0.0005;
-let cameraBaseX = 0, cameraBaseY = 1.5;
-
-function animate() {
-  const now = performance.now();
-  let delta = Math.min((now - lastFrameTime) / 1000, 0.033);
-  lastFrameTime = now;
-  const elapsed = now / 1000;
-
-  // Update shader time
-  particleMaterial.uniforms.uTime.value = elapsed;
-
-  // Smooth interpolation for scale and rotation
-  currentScale += (targetScale - currentScale) * 0.08;
-  const handRot = targetRotation * (pinchIntensity * 2);
-  
-  // Update particle positions with smooth lerp
-  const posAttr = geometry.attributes.position;
-  const posArray = posAttr.array;
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
-    const targetX = targetPositions[ix] * currentScale;
-    const targetY = targetPositions[iy] * currentScale;
-    const targetZ = targetPositions[iz] * currentScale;
-    
-    posArray[ix] += (targetX - posArray[ix]) * 0.09;
-    posArray[iy] += (targetY - posArray[iy]) * 0.09;
-    posArray[iz] += (targetZ - posArray[iz]) * 0.09;
-    
-    // Add subtle noise when morphing
-    const noise = Math.abs(targetScale - currentScale) * 0.03;
-    posArray[ix] += (Math.random() - 0.5) * noise;
-    posArray[iy] += (Math.random() - 0.5) * noise;
-    posArray[iz] += (Math.random() - 0.5) * noise;
-  }
-  posAttr.needsUpdate = true;
-
-  // Update colors based on hand position
-  const colAttr = geometry.attributes.color;
-  const colArray = colAttr.array;
-  const baseHue = (handY * 0.7 + elapsed * 0.08) % 1.0;
-  const pinchEffect = pinchIntensity * 0.5;
-  
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const ix = i * 3, iy = i * 3 + 1, iz = i * 3 + 2;
-    const hue = (baseHue + i * 0.00015 + Math.sin(elapsed * 2 + i * 0.005) * 0.05) % 1.0;
-    const sat = 0.85 + pinchEffect;
-    const light = 0.55 + 0.2 * Math.sin(elapsed * 3 + i * 0.01);
-    const color = new THREE.Color().setHSL(hue, sat, light);
-    colArray[ix] = color.r;
-    colArray[iy] = color.g;
-    colArray[iz] = color.b;
-  }
-  colAttr.needsUpdate = true;
-
-  // Animate stars with delta timing
-  starRotationSpeed += (0.0005 - starRotationSpeed) * 0.02;
-  stars.rotation.y += starRotationSpeed * (delta * 60);
-  stars.rotation.x = Math.sin(elapsed * 0.1) * 0.05;
-
-  // Smooth camera movement based on hand
-  cameraBaseX += ((handX - 0.5) * 1.5 - cameraBaseX) * 0.05;
-  cameraBaseY += ((handY - 0.5) * 0.8 + 1.5 - cameraBaseY) * 0.05;
-  camera.position.x = cameraBaseX;
-  camera.position.y = cameraBaseY;
-  camera.lookAt(handRot * 0.3, 0, 0);
-
-  composer.render();
-  requestAnimationFrame(animate);
-}
-
-animate();
-
-// ========== RESIZE HANDLER ==========
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  composer.setSize(window.innerWidth, window.innerHeight);
-});
-
-// Initial bake
-bakeTargetPositions('heart', 1.0);
-</script>
-</body>
-</html>    display:flex; flex-direction:column; gap:8px;
-    z-index:10;
-  }
-
-  .sbtn {
-    background:rgba(0,0,0,0.6);
-    border:1px solid rgba(255,255,255,0.2);
-    color:#fff; padding:8px 16px;
-    border-radius:20px; cursor:pointer;
-    font-size:13px; letter-spacing:1px;
-    backdrop-filter:blur(4px);
-    transition:all 0.2s;
-  }
-  .sbtn:hover, .sbtn.active {
-    background:rgba(255,200,0,0.2);
-    border-color:rgba(255,200,0,0.6);
-    box-shadow:0 0 12px rgba(255,200,0,0.3);
-  }
-</style>
-</head>
-<body>
-<div id="info">🖐️ Move mouse to change color &amp; expand • Click buttons to morph shape</div>
-<div id="mode-badge">❤️ HEART</div>
-
-<div id="shape-btns">
-  <button class="sbtn active" data-shape="0">❤️ Heart</button>
-  <button class="sbtn"        data-shape="1">🌸 Flower</button>
-  <button class="sbtn"        data-shape="2">🪐 Saturn</button>
-  <button class="sbtn"        data-shape="3">✨ Firework</button>
-  <button class="sbtn"        data-shape="4">⚪ Sphere</button>
-  <button class="sbtn"        data-shape="5">🍩 Torus</button>
-</div>
-
-<!-- ✅ FIX 1: Use r160+ so "three/addons/" importmap works correctly -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-
-// ─── SCENE SETUP ──────────────────────────────────────────────────────────────
-const scene    = new THREE.Scene();
-scene.background = new THREE.Color(0x050510);
-
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 1000);
-camera.position.set(0, 2, 8);
-camera.lookAt(0, 0, 0);
-
-const renderer = new THREE.WebGLRenderer({ antialias:true });
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.ReinhardToneMapping;
-document.body.appendChild(renderer.domElement);
-
-// ─── BLOOM COMPOSER ───────────────────────────────────────────────────────────
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(
-  new THREE.Vector2(innerWidth, innerHeight), 1.2, 0.4, 0.1
-);
-composer.addPass(bloom);
-
-// ─── LIGHTS ───────────────────────────────────────────────────────────────────
-scene.add(new THREE.AmbientLight(0x404060));
-const pl1 = new THREE.PointLight(0xffaa88, 1, 20);
-pl1.position.set(2,3,4); scene.add(pl1);
-const pl2 = new THREE.PointLight(0x88aaff, 0.8, 20);
-pl2.position.set(-3,-1,5); scene.add(pl2);
-
-// ─── STARS ────────────────────────────────────────────────────────────────────
-const starGeo = new THREE.BufferGeometry();
-const starPos = new Float32Array(800 * 3);
-for (let i = 0; i < 800; i++) {
-  starPos[i*3]   = (Math.random()-.5)*200;
-  starPos[i*3+1] = (Math.random()-.5)*200;
-  starPos[i*3+2] = (Math.random()-.5)*200 - 50;
-}
-starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-const stars = new THREE.Points(starGeo,
-  new THREE.PointsMaterial({ color:0xffffff, size:0.15, transparent:true, opacity:0.7 })
-);
-scene.add(stars);
-
-// ─── PARTICLES ────────────────────────────────────────────────────────────────
-const PARTICLE_COUNT = 4000;
-const geo      = new THREE.BufferGeometry();
-const posArr   = new Float32Array(PARTICLE_COUNT * 3);
-const colArr   = new Float32Array(PARTICLE_COUNT * 3);
-
-// Initialise with random sphere spread
-for (let i = 0; i < PARTICLE_COUNT; i++) {
-  const theta = Math.random() * Math.PI * 2;
-  const phi   = Math.acos(2 * Math.random() - 1);
-  const r     = Math.random() * 2;
-  posArr[i*3]   = r * Math.sin(phi) * Math.cos(theta);
-  posArr[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
-  posArr[i*3+2] = r * Math.cos(phi);
-  colArr[i*3]   = 1; colArr[i*3+1] = 0.4; colArr[i*3+2] = 0.6;
-}
-
-geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-geo.setAttribute('color',    new THREE.BufferAttribute(colArr, 3));
-
-const mat = new THREE.ShaderMaterial({
-  uniforms: {
-    uTime:     { value: 0 },
-    uPointSize:{ value: 0.15 },
-  },
-  vertexShader: `
-    attribute vec3 color;
-    varying   vec3 vColor;
-    uniform   float uTime;
-    uniform   float uPointSize;
-    void main() {
-      vColor = color;
-      vec4 mv = modelViewMatrix * vec4(position, 1.0);
-      gl_PointSize = uPointSize * (300.0 / -mv.z)
-                   * (1.0 + 0.25 * sin(position.x * 5.0 + uTime * 3.0));
-      gl_Position  = projectionMatrix * mv;
-    }
-  `,
-  fragmentShader: `
-    varying vec3 vColor;
-    void main() {
-      vec2  cxy = 2.0 * gl_PointCoord - 1.0;
-      float r   = dot(cxy, cxy);
-      if (r > 1.0) discard;
-      gl_FragColor = vec4(vColor, (1.0 - r) * 0.9);
-    }
-  `,
-  transparent:true,
-  blending:   THREE.AdditiveBlending,
-  depthWrite: false,
-});
-
-const particles = new THREE.Points(geo, mat);
-scene.add(particles);
-
-// ─── SHAPE DEFINITIONS ────────────────────────────────────────────────────────
-const SHAPES = {
-  heart: (i, total) => {
-    const t = (i / total) * Math.PI * 2;
-    const s = 0.12;
-    return [
-      16 * Math.pow(Math.sin(t), 3) * s,
-      (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)) * s,
-      (Math.random()-.5) * 0.4,
-    ];
-  },
-  flower: (i, total) => {
-    const a = (i / total) * Math.PI * 2;
-    const r = (Math.sin(6 * a) * 0.6 + 1.0) * 0.75;
-    return [Math.cos(a)*r, Math.sin(a)*r, (Math.random()-.5)*0.5];
-  },
-  saturn: (i, total) => {
-    if (i > total * 0.7) {
-      const a = Math.random() * Math.PI * 2;
-      const R = 1.4 + Math.random() * 0.4;
-      return [Math.cos(a)*R*0.7, (Math.random()-.5)*0.25, Math.sin(a)*R*0.7];
-    }
-    const u = Math.random(), v = Math.random();
-    const t = 2*Math.PI*u, p = Math.acos(2*v-1);
-    return [0.8*Math.sin(p)*Math.cos(t), 0.8*Math.sin(p)*Math.sin(t), 0.8*Math.cos(p)];
-  },
-  firework: (i, total) => {
-    const a1 = Math.random()*Math.PI*2;
-    const a2 = Math.acos(2*Math.random()-1);
-    const r  = Math.random()*1.5;
-    return [r*Math.sin(a2)*Math.cos(a1), r*Math.sin(a2)*Math.sin(a1), r*Math.cos(a2)];
-  },
-  sphere: (i, total) => {
-    const u = Math.random(), v = Math.random();
-    const t = 2*Math.PI*u, p = Math.acos(2*v-1), R = 1.2;
-    return [R*Math.sin(p)*Math.cos(t), R*Math.sin(p)*Math.sin(t), R*Math.cos(p)];
-  },
-  torus: (i, total) => {
-    const u = Math.random()*Math.PI*2, v = Math.random()*Math.PI*2;
-    const R = 1.5, r = 0.5;
-    return [
-      (R + r*Math.cos(v))*Math.cos(u),
-      (R + r*Math.cos(v))*Math.sin(u),
-      r*Math.sin(v),
-    ];
-  },
-};
-
-const SHAPE_KEYS  = Object.keys(SHAPES);
-const SHAPE_EMOJI = { heart:'❤️', flower:'🌸', saturn:'🪐', firework:'✨', sphere:'⚪', torus:'🍩' };
-
-// ✅ FIX 2: Store targets ONCE per shape change — not every frame
-const targetPos = new Float32Array(PARTICLE_COUNT * 3);
-
-function bakeTargets(shapeKey, scale) {
-  const fn = SHAPES[shapeKey];
-  for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const [x, y, z] = fn(i, PARTICLE_COUNT);
-    targetPos[i*3]   = x * scale;
-    targetPos[i*3+1] = y * scale;
-    targetPos[i*3+2] = z * scale;
-  }
-}
-
-let currentShapeIdx = 0;
-bakeTargets('heart', 1.0);
-
-// ✅ FIX: module-scoped function, listeners attached via JS (no inline onclick)
-function changeShape(idx) {
-  currentShapeIdx = idx;
-  const key = SHAPE_KEYS[idx];
-  bakeTargets(key, 1.0);
-  document.getElementById('mode-badge').textContent =
-    SHAPE_EMOJI[key] + ' ' + key.toUpperCase();
-  document.querySelectorAll('.sbtn').forEach((b, i) =>
-    b.classList.toggle('active', i === idx));
-}
-
-document.querySelectorAll('.sbtn').forEach(btn => {
-  btn.addEventListener('click', () => changeShape(parseInt(btn.dataset.shape)));
-});
-
-// ─── MOUSE / TOUCH INPUT ──────────────────────────────────────────────────────
-let handX = 0.5, handY = 0.5;
-let currentScale = 1.0;
-let targetScale  = 1.0;
-
-window.addEventListener('mousemove', e => {
-  handX = e.clientX / innerWidth;
-  handY = e.clientY / innerHeight;
-  // handX → scale (0.6 … 2.5)
-  targetScale = 0.6 + handX * 1.9;
-});
-
-// Touch support
-window.addEventListener('touchmove', e => {
-  const t = e.touches[0];
-  handX = t.clientX / innerWidth;
-  handY = t.clientY / innerHeight;
-  targetScale = 0.6 + handX * 1.9;
-}, { passive:true });
-
-// ─── WEBCAM MOTION (optional, camera permission) ──────────────────────────────
-(function initCamera() {
-  if (!navigator.mediaDevices?.getUserMedia) return;
-  const video  = document.createElement('video');
-  video.autoplay = true; video.playsInline = true; video.muted = true;
-
-  navigator.mediaDevices.getUserMedia({ video:true, audio:false })
-    .then(stream => {
-      video.srcObject = stream;
-      const offscreen = document.createElement('canvas');
-      offscreen.width = 80; offscreen.height = 60;
-      const cx = offscreen.getContext('2d');
-
-      setInterval(() => {
-        if (video.readyState < video.HAVE_ENOUGH_DATA) return;
-        cx.drawImage(video, 0, 0, 80, 60);
-        const data = cx.getImageData(0, 0, 80, 60).data;
-
-        let skinCount = 0, sumX = 0, sumY = 0;
-        for (let i = 0; i < data.length; i += 4) {
-          const r=data[i], g=data[i+1], b=data[i+2];
-          // Basic skin heuristic
-          if (r>80 && g>30 && b>20 && r>g && r>b && Math.abs(r-g)>15) {
-            skinCount++;
-            const p = i/4;
-            sumX += p % 80;
-            sumY += Math.floor(p / 80);
-          }
-        }
-        if (skinCount > 60) {
-          handX = sumX / skinCount / 80;
-          handY = sumY / skinCount / 60;
-          targetScale = 0.6 + handX * 1.9;
-
-          // Map hand position → shape index (auto switch every 1/6th of screen)
-          const idx = Math.min(Math.floor(handX * SHAPE_KEYS.length), SHAPE_KEYS.length-1);
-          if (idx !== currentShapeIdx) window.changeShape(idx);
-        }
-      }, 250);
-    })
-    .catch(() => {
-      document.getElementById('info').textContent +=
-        ' (Camera unavailable — using mouse)';
-    });
-})();
-
-// ─── RESIZE ───────────────────────────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-  composer.setSize(innerWidth, innerHeight);
-});
-
-// ─── ANIMATION LOOP ───────────────────────────────────────────────────────────
-
-// ✅ FIX 3: Reuse ONE Color object — no per-frame allocations
-const tempColor = new THREE.Color();
-
 let lastTime = performance.now();
-
 function animate() {
-  requestAnimationFrame(animate);
-
-  // ✅ FIX 4: Use delta properly
-  const now   = performance.now();
-  const delta = Math.min((now - lastTime) / 1000, 0.05); // cap at 50ms
-  lastTime    = now;
+  const now = performance.now();
+  let delta = Math.min((now - lastTime) / 1000, 0.033);
+  lastTime = now;
   const elapsed = now / 1000;
-
-  mat.uniforms.uTime.value = elapsed;
-
-  // Smooth scale lerp
-  currentScale += (targetScale - currentScale) * 0.05;
-
-  // When scale changes significantly, re-bake targets
-  // (we re-bake only when needed, not every frame)
-  // We use a lightweight scale multiplier on existing targets instead:
-  const posAttr = geo.attributes.position;
-  const colAttr = geo.attributes.color;
-  const pa      = posAttr.array;
-  const ca      = colAttr.array;
-
-  // Base hue driven by handY
-  const baseHue = (handY * 0.8 + elapsed * 0.05) % 1.0;
-
+  particleMaterial.uniforms.uTime.value = elapsed;
+  
+  currentScale += (targetScale - currentScale) * 0.1;
+  
+  const posAttr = geometry.attributes.position;
+  const posArray = posAttr.array;
   for (let i = 0; i < PARTICLE_COUNT; i++) {
-    const ix = i*3, iy = i*3+1, iz = i*3+2;
-
-    // ✅ FIX 2 continued: targets are stable; lerp current → target
-    const tx = targetPos[ix]   * currentScale / /* cancel stored scale */ 1;
-    const ty = targetPos[iy]   * currentScale / 1;
-    const tz = targetPos[iz]   * currentScale / 1;
-
-    pa[ix] += (tx - pa[ix]) * 0.08;
-    pa[iy] += (ty - pa[iy]) * 0.08;
-    pa[iz] += (tz - pa[iz]) * 0.08;
-
-    // Subtle jitter — motion level from hand movement
-    const jitter = Math.abs(targetScale - currentScale) * 0.04;
-    pa[ix] += (Math.random()-.5) * jitter;
-    pa[iy] += (Math.random()-.5) * jitter;
-    pa[iz] += (Math.random()-.5) * jitter;
-
-    // ✅ FIX 3: Reuse tempColor (zero allocations)
-    const hue = (baseHue + i * 0.00025 + Math.sin(elapsed*1.5 + i*0.01)*0.05) % 1.0;
-    tempColor.setHSL(hue, 0.95, 0.55 + 0.2 * Math.sin(elapsed*2 + i));
-    ca[ix] = tempColor.r;
-    ca[iy] = tempColor.g;
-    ca[iz] = tempColor.b;
+    posArray[i*3] += (targetPositions[i*3] * currentScale - posArray[i*3]) * 0.12;
+    posArray[i*3+1] += (targetPositions[i*3+1] * currentScale - posArray[i*3+1]) * 0.12;
+    posArray[i*3+2] += (targetPositions[i*3+2] * currentScale - posArray[i*3+2]) * 0.12;
   }
-
   posAttr.needsUpdate = true;
+  
+  const colAttr = geometry.attributes.color;
+  const colArray = colAttr.array;
+  const baseHue = (handY * 0.5 + elapsed * 0.05) % 1.0;
+  for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const hue = (baseHue + i * 0.0002) % 1.0;
+    const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
+    colArray[i*3] = color.r;
+    colArray[i*3+1] = color.g;
+    colArray[i*3+2] = color.b;
+  }
   colAttr.needsUpdate = true;
-
-  // Gentle star drift
-  stars.rotation.y += 0.0002 * (delta * 60);
-
-  // Subtle camera sway
-  camera.position.x = Math.sin(elapsed * 0.15) * 1.2;
-  camera.position.y = 1.5 + Math.sin(elapsed * 0.22) * 0.4;
+  
+  stars.rotation.y += 0.002 * (delta * 60);
+  camera.position.x += ((handX - 0.5) * 1.2 - camera.position.x) * 0.05;
+  camera.position.y += ((handY - 0.5) * 0.6 + 1.5 - camera.position.y) * 0.05;
   camera.lookAt(0, 0, 0);
-
+  
   composer.render();
+  requestAnimationFrame(animate);
 }
-
 animate();
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+});
 </script>
 </body>
 </html>
