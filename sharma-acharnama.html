@@ -1,0 +1,3048 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sharma Acharnama™ – Authentic handmade pickles from Khalilabad, Uttar Pradesh. Traditional family recipes passed through generations. Shop premium Indian pickles online.">
+<meta name="keywords" content="Indian pickle, achaar, homemade pickle, mango pickle, Khalilabad, UP pickle, premium achaar, traditional pickle">
+<meta property="og:title" content="Sharma Acharnama™ – दादी के हाथों का स्वाद">
+<meta property="og:description" content="Authentic handmade pickles crafted using traditional family recipes from Khalilabad, UP.">
+<meta property="og:type" content="website">
+<title>Sharma Acharnama™ – दादी के हाथों का स्वाद</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+/* ============================================
+   CSS CUSTOM PROPERTIES & RESET
+============================================ */
+:root {
+  --primary: #C62828;
+  --primary-dark: #8B0000;
+  --primary-light: #EF5350;
+  --secondary: #FFB300;
+  --secondary-dark: #F57F17;
+  --accent: #2E7D32;
+  --accent-light: #4CAF50;
+  --bg: #FFF8E1;
+  --bg-card: rgba(255,255,255,0.85);
+  --dark: #1B1B1B;
+  --dark2: #2C2C2C;
+  --text: #1B1B1B;
+  --text-muted: #6B5E4E;
+  --text-light: #9E8E7E;
+  --border: rgba(198,40,40,0.15);
+  --glass: rgba(255,255,255,0.12);
+  --glass-border: rgba(255,255,255,0.25);
+  --shadow: 0 20px 60px rgba(198,40,40,0.15);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.08);
+  --radius: 20px;
+  --radius-lg: 32px;
+  --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0D0D0D;
+  --bg-card: rgba(28,28,28,0.9);
+  --text: #F5EFE0;
+  --text-muted: #B5A898;
+  --text-light: #7A6B5A;
+  --border: rgba(255,179,0,0.15);
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.1);
+  --shadow: 0 20px 60px rgba(198,40,40,0.3);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  transition: background 0.5s, color 0.5s;
+  cursor: none;
+}
+
+/* ============================================
+   CUSTOM CURSOR
+============================================ */
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--primary);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 99999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+}
+.cursor-follower {
+  width: 36px; height: 36px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 99998;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+  opacity: 0.6;
+}
+.cursor.active { width: 24px; height: 24px; background: var(--secondary); }
+.cursor-follower.active { width: 56px; height: 56px; border-color: var(--secondary); opacity: 0.3; }
+
+/* ============================================
+   LOADING SCREEN
+============================================ */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--dark);
+  z-index: 99997;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease, visibility 0.8s;
+}
+#loader.hide { opacity: 0; visibility: hidden; }
+.loader-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+  animation: loaderPulse 1.5s ease-in-out infinite alternate;
+}
+.loader-logo span { color: var(--secondary); }
+.loader-tagline {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.9rem;
+  margin-bottom: 48px;
+}
+.loader-bar {
+  width: 200px; height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 3px;
+  animation: loaderFill 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.loader-dots {
+  display: flex; gap: 8px; margin-top: 24px;
+}
+.loader-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--secondary);
+  animation: loaderDot 1.2s ease-in-out infinite;
+}
+.loader-dot:nth-child(2) { animation-delay: 0.2s; background: var(--primary); }
+.loader-dot:nth-child(3) { animation-delay: 0.4s; background: var(--accent); }
+
+@keyframes loaderPulse { from { opacity: 0.7; } to { opacity: 1; } }
+@keyframes loaderFill { from { width: 0; } to { width: 100%; } }
+@keyframes loaderDot {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+  50% { transform: translateY(-8px) scale(1.2); opacity: 1; }
+}
+
+/* ============================================
+   NAVIGATION
+============================================ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 0 5%;
+  height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: var(--transition);
+}
+nav.scrolled {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  height: 60px;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-logo .logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.nav-logo span { color: var(--secondary); }
+.nav-links {
+  display: flex; align-items: center; gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: color 0.3s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 2px;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--primary); }
+.nav-links a:hover::after { width: 100%; }
+.nav-actions {
+  display: flex; align-items: center; gap: 12px;
+}
+.btn-icon {
+  width: 42px; height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--glass);
+  color: var(--text);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  transition: var(--transition);
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+.btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+.btn-icon .badge {
+  position: absolute; top: -4px; right: -4px;
+  width: 18px; height: 18px;
+  background: var(--secondary);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--dark);
+}
+.nav-hamburger {
+  display: none;
+  flex-direction: column; gap: 5px;
+  cursor: pointer; padding: 4px;
+}
+.nav-hamburger span {
+  display: block;
+  width: 24px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+.nav-hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.active span:nth-child(2) { opacity: 0; }
+.nav-hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile menu */
+.mobile-menu {
+  position: fixed; inset: 0; top: 60px;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 999;
+  padding: 40px 5%;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mobile-menu.open { transform: translateX(0); }
+.mobile-menu a {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.3s, padding-left 0.3s;
+}
+.mobile-menu a:hover { color: var(--primary); padding-left: 16px; }
+
+/* ============================================
+   HERO SECTION
+============================================ */
+#hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex; align-items: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0D0D0D 0%, #1a0a0a 50%, #0a1a0a 100%);
+}
+#hero-canvas {
+  position: absolute; inset: 0;
+  z-index: 0;
+}
+.hero-content {
+  position: relative; z-index: 10;
+  width: 100%;
+  padding: 120px 5% 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+.hero-text { }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,179,0,0.1);
+  border: 1px solid rgba(255,179,0,0.3);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--secondary);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--secondary);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+.hero-h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: #fff;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+.hero-h1 .highlight {
+  background: linear-gradient(135deg, var(--secondary), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-hindi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+  font-weight: 400;
+}
+.hero-desc {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+.hero-ctas {
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  padding: 16px 32px;
+  border-radius: 100px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none; cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.02em;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--primary-light), var(--primary));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(198,40,40,0.5); }
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary span, .btn-primary svg { position: relative; z-index: 1; }
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent;
+  color: #fff;
+  padding: 15px 32px;
+  border-radius: 100px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.02em;
+}
+.btn-outline:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); transform: translateY(-2px); }
+
+.hero-stats {
+  display: flex; gap: 32px; margin-top: 48px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  display: flex; flex-direction: column;
+}
+.hero-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--secondary);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+/* Hero Visual - Floating Jars */
+.hero-visual {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  height: 520px;
+}
+.jar-scene {
+  position: relative;
+  width: 100%; height: 100%;
+}
+
+/* Floating Jar Elements */
+.floating-jar {
+  position: absolute;
+  animation: floatJar var(--duration, 4s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.floating-jar:hover { transform: scale(1.1) !important; }
+@keyframes floatJar {
+  0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-20px) rotate(var(--rot, 0deg)); }
+}
+.jar-main {
+  width: 180px;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  --duration: 3.5s; --rot: -5deg;
+  z-index: 5;
+}
+.jar-2 {
+  width: 120px;
+  right: 5%; top: 10%;
+  --duration: 4.5s; --delay: -1s; --rot: 10deg;
+  z-index: 4;
+}
+.jar-3 {
+  width: 100px;
+  left: 2%; top: 50%;
+  --duration: 5s; --delay: -2s; --rot: -8deg;
+  z-index: 3;
+}
+.jar-4 {
+  width: 90px;
+  right: 0%; bottom: 15%;
+  --duration: 4s; --delay: -0.5s; --rot: 6deg;
+  z-index: 4;
+}
+.jar-5 {
+  width: 70px;
+  left: 15%; bottom: 5%;
+  --duration: 3.8s; --delay: -3s; --rot: -12deg;
+  z-index: 3;
+}
+
+/* SVG Jar */
+.jar-svg { width: 100%; height: auto; filter: drop-shadow(0 16px 40px rgba(0,0,0,0.5)); }
+
+/* Spice particles */
+.spice-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: spiceFloat var(--d, 6s) ease-in-out infinite;
+  animation-delay: var(--del, 0s);
+  opacity: var(--op, 0.6);
+}
+@keyframes spiceFloat {
+  0% { transform: translateY(0) rotate(0deg); opacity: var(--op, 0.6); }
+  33% { transform: translateY(-30px) rotate(120deg); }
+  66% { transform: translateY(-10px) rotate(240deg); }
+  100% { transform: translateY(0) rotate(360deg); opacity: var(--op, 0.6); }
+}
+
+/* Hero glow orbs */
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: orbPulse 4s ease-in-out infinite alternate;
+}
+.hero-orb-1 {
+  width: 300px; height: 300px;
+  background: rgba(198,40,40,0.3);
+  top: -50px; right: -50px;
+}
+.hero-orb-2 {
+  width: 200px; height: 200px;
+  background: rgba(255,179,0,0.2);
+  bottom: 50px; left: 30px;
+  animation-delay: -2s;
+}
+@keyframes orbPulse {
+  from { transform: scale(1); opacity: 0.5; }
+  to { transform: scale(1.3); opacity: 0.8; }
+}
+
+/* ============================================
+   SECTIONS COMMON
+============================================ */
+section { padding: 100px 5%; }
+.container { max-width: 1300px; margin: 0 auto; }
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 16px;
+  position: relative;
+  padding-left: 24px;
+}
+.section-eyebrow::before {
+  content: '';
+  position: absolute; left: 0; top: 50%;
+  width: 16px; height: 2px;
+  background: var(--primary);
+  transform: translateY(-50%);
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.section-title span { color: var(--primary); }
+.section-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 560px;
+}
+.section-header { margin-bottom: 64px; }
+.text-center { text-align: center; }
+.text-center .section-subtitle { margin: 0 auto; }
+.text-center .section-eyebrow { padding-left: 0; }
+.text-center .section-eyebrow::before { display: none; }
+
+/* ============================================
+   MARQUEE STRIP
+============================================ */
+.marquee-strip {
+  background: var(--primary);
+  padding: 14px 0;
+  overflow: hidden;
+  position: relative;
+}
+.marquee-track {
+  display: flex; gap: 0;
+  animation: marqueeScroll 20s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 32px;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.marquee-item .dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--secondary);
+  flex-shrink: 0;
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ============================================
+   PRODUCTS SECTION
+============================================ */
+#products { background: var(--bg); }
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+}
+
+.product-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+  position: relative;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+.product-card-img {
+  position: relative;
+  background: linear-gradient(135deg, #fff0e0, #ffe0c0);
+  height: 240px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+[data-theme="dark"] .product-card-img { background: linear-gradient(135deg, #2a1a10, #1a2a10); }
+.product-card-img .product-emoji {
+  font-size: 6rem;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.2));
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: floatProduct 3s ease-in-out infinite;
+}
+@keyframes floatProduct {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.product-card:hover .product-emoji { transform: scale(1.15) rotate(-5deg); }
+
+.product-badge {
+  position: absolute; top: 16px; left: 16px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.product-badge.new { background: var(--accent); }
+.product-badge.hot { background: var(--secondary); color: var(--dark); }
+
+.product-wish {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+.product-wish:hover, .product-wish.active { background: var(--primary); }
+.product-wish:hover .wish-icon, .product-wish.active .wish-icon { color: #fff; }
+.wish-icon { transition: color 0.3s; }
+
+.product-card-body { padding: 24px; }
+.product-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.product-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.spice-meter {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px;
+}
+.spice-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.spice-dots {
+  display: flex; gap: 4px;
+}
+.spice-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #e0d8cf;
+  transition: background 0.3s;
+}
+.spice-dot.filled { background: var(--primary); }
+.spice-dot.filled.medium { background: var(--secondary); }
+.spice-dot.filled.mild { background: var(--accent); }
+
+.product-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.product-price {
+  display: flex; flex-direction: column;
+}
+.price-main {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1;
+}
+.price-orig {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+.product-rating {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 0.8rem;
+  color: var(--secondary);
+  font-weight: 600;
+}
+.btn-add-cart {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--primary);
+  color: #fff;
+  border: none; cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: var(--transition);
+  font-family: 'Poppins', sans-serif;
+}
+.btn-add-cart:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+/* ============================================
+   HERITAGE SECTION
+============================================ */
+#heritage {
+  background: var(--dark);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.heritage-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(198,40,40,0.2) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 30%, rgba(255,179,0,0.1) 0%, transparent 60%);
+}
+.heritage-grid {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.heritage-text .section-eyebrow { color: var(--secondary); }
+.heritage-text .section-title { color: #fff; }
+.heritage-text .section-title span { color: var(--secondary); }
+.heritage-text .section-subtitle { color: rgba(255,255,255,0.6); }
+
+.heritage-story {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.7);
+  margin-top: 24px;
+}
+.heritage-story + .heritage-story { margin-top: 16px; }
+.heritage-quote {
+  margin-top: 32px;
+  padding: 24px;
+  border-left: 4px solid var(--secondary);
+  background: rgba(255,179,0,0.05);
+  border-radius: 0 16px 16px 0;
+}
+.heritage-quote p {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.6;
+}
+.heritage-quote cite {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--secondary);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.heritage-visual {
+  display: flex; flex-direction: column; gap: 20px;
+}
+.heritage-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex; gap: 16px; align-items: flex-start;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+.heritage-card:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,179,0,0.3); }
+.heritage-card-icon {
+  width: 48px; height: 48px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+.heritage-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.heritage-card-text { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+/* ============================================
+   PROCESS TIMELINE
+============================================ */
+#process { background: var(--bg); }
+.process-timeline {
+  position: relative;
+  max-width: 900px; margin: 0 auto;
+}
+.process-line {
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--primary), var(--secondary), transparent);
+  transform: translateX(-50%);
+}
+.process-step {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 60px;
+  position: relative;
+}
+.process-step:nth-child(even) { flex-direction: row-reverse; }
+.process-step-content {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+.process-step-content:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-4px);
+}
+.process-step:nth-child(even) .process-step-content { text-align: right; }
+.process-step-num {
+  flex-shrink: 0;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(198,40,40,0.4);
+  position: relative; z-index: 1;
+}
+.process-step-icon { font-size: 2rem; margin-bottom: 10px; }
+.process-step-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.process-step-desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+
+/* ============================================
+   STATS / WHY US
+============================================ */
+#why-us {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #fff;
+}
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.why-item {
+  background: rgba(198,40,40,0.8);
+  padding: 40px 24px;
+  text-align: center;
+  transition: background 0.3s;
+}
+.why-item:hover { background: rgba(139,0,0,0.9); }
+.why-icon { font-size: 2.5rem; margin-bottom: 16px; }
+.why-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.why-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
+
+/* ============================================
+   FOUNDER SECTION
+============================================ */
+#founder {
+  background: var(--bg);
+  overflow: hidden;
+}
+.founder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.founder-visual {
+  position: relative;
+  display: flex; justify-content: center;
+}
+.founder-frame {
+  width: 360px; height: 440px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  animation: morphBlob 8s ease-in-out infinite;
+  overflow: hidden;
+}
+@keyframes morphBlob {
+  0%, 100% { border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%; }
+  33% { border-radius: 60% 40% 40% 60% / 60% 60% 40% 40%; }
+  66% { border-radius: 50% 50% 60% 40% / 40% 60% 50% 50%; }
+}
+.founder-frame::before {
+  content: '';
+  position: absolute; inset: 8px;
+  background: var(--bg);
+  border-radius: inherit;
+  z-index: 1;
+}
+.founder-avatar {
+  position: relative; z-index: 2;
+  font-size: 8rem;
+  text-align: center;
+  line-height: 1;
+  filter: drop-shadow(0 8px 32px rgba(198,40,40,0.3));
+}
+.founder-badge {
+  position: absolute;
+  bottom: 20px; right: -20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-card);
+}
+.founder-badge-title { font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; }
+.founder-badge-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: 4px;
+}
+.founder-badge-sub { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+
+.founder-tag {
+  position: absolute;
+  top: 20px; left: -30px;
+  background: var(--primary);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+  animation: floatJar 3s ease-in-out infinite;
+}
+
+.founder-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.founder-designation {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.founder-bio {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.founder-highlights {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  margin-top: 32px;
+}
+.founder-chip {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  backdrop-filter: blur(10px);
+}
+.founder-chip .emoji { font-size: 1rem; }
+
+/* ============================================
+   TESTIMONIALS
+============================================ */
+#testimonials { background: var(--bg); }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.testimonial-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.testimonial-card::before {
+  content: '"';
+  position: absolute; top: -10px; left: 20px;
+  font-family: 'Playfair Display', serif;
+  font-size: 8rem;
+  color: var(--primary);
+  opacity: 0.07;
+  line-height: 1;
+  pointer-events: none;
+}
+.testimonial-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow);
+  border-color: var(--primary);
+}
+.testimonial-stars {
+  color: var(--secondary);
+  font-size: 1rem;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+.testimonial-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  font-style: italic;
+}
+.testimonial-author {
+  display: flex; align-items: center; gap: 12px;
+}
+.testimonial-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  color: #fff;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  flex-shrink: 0;
+}
+.testimonial-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+.testimonial-place { font-size: 0.78rem; color: var(--text-light); margin-top: 2px; }
+
+/* ============================================
+   GALLERY / INSTAGRAM
+============================================ */
+#gallery { background: var(--dark); }
+.gallery-title { color: #fff; }
+.gallery-subtitle { color: rgba(255,255,255,0.5) !important; }
+.gallery-eyebrow { color: var(--secondary) !important; }
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 160px);
+  gap: 12px;
+}
+.gallery-item {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.gallery-item:hover { transform: scale(1.02); z-index: 2; }
+.gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.gallery-item:nth-child(4) { grid-column: span 2; }
+.gallery-inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  transition: transform 0.5s;
+  position: relative;
+}
+.gallery-item:hover .gallery-inner { transform: scale(1.1); }
+.gallery-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex; align-items: flex-end; padding: 16px;
+}
+.gallery-item:hover .gallery-overlay { opacity: 1; }
+.gallery-overlay-text { color: #fff; font-size: 0.8rem; font-weight: 600; }
+
+.g1 { background: linear-gradient(135deg, #3d1a00, #7a3500); }
+.g2 { background: linear-gradient(135deg, #003d00, #006600); }
+.g3 { background: linear-gradient(135deg, #3d0000, #7a0000); }
+.g4 { background: linear-gradient(135deg, #3d3400, #7a6800); }
+.g5 { background: linear-gradient(135deg, #1a003d, #35007a); }
+.g6 { background: linear-gradient(135deg, #003d3d, #007a7a); }
+.g7 { background: linear-gradient(135deg, #2d1a0e, #5a3520); }
+
+/* ============================================
+   FAQ
+============================================ */
+#faq { background: var(--bg); }
+.faq-grid { max-width: 800px; margin: 0 auto; }
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  transition: var(--transition);
+}
+.faq-item:hover { border-color: var(--primary); }
+.faq-question {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 22px 24px;
+  background: transparent;
+  border: none; cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  transition: var(--transition);
+}
+.faq-question:hover { color: var(--primary); }
+.faq-question.open { color: var(--primary); }
+.faq-chevron {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: var(--transition);
+  font-size: 0.8rem;
+}
+.faq-question.open .faq-chevron { background: var(--primary); border-color: var(--primary); color: #fff; transform: rotate(180deg); }
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.3s;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding: 0 24px;
+}
+.faq-answer.open { max-height: 300px; padding: 0 24px 22px; }
+
+/* ============================================
+   FOOTER
+============================================ */
+footer {
+  background: var(--dark2);
+  color: #fff;
+  padding: 80px 5% 0;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 48px;
+  padding-bottom: 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.footer-brand .logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.footer-brand .logo-text span { color: var(--secondary); }
+.footer-tagline {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.footer-desc { font-size: 0.87rem; color: rgba(255,255,255,0.5); line-height: 1.7; margin-bottom: 28px; }
+.footer-social {
+  display: flex; gap: 10px;
+}
+.social-icon {
+  width: 38px; height: 38px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+.social-icon:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.footer-col h4 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 20px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  font-size: 0.88rem;
+  transition: color 0.3s;
+}
+.footer-links a:hover { color: var(--secondary); }
+
+.newsletter-form {
+  display: flex; gap: 0;
+  margin-top: 16px;
+}
+.newsletter-input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+}
+.newsletter-input::placeholder { color: rgba(255,255,255,0.3); }
+.newsletter-input:focus { border-color: var(--primary); }
+.newsletter-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none; cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 0 12px 12px 0;
+  font-size: 0.85rem;
+  transition: background 0.3s;
+  white-space: nowrap;
+}
+.newsletter-btn:hover { background: var(--primary-dark); }
+
+.footer-bottom {
+  padding: 24px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.3);
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-bottom a { color: rgba(255,255,255,0.4); text-decoration: none; }
+.footer-bottom a:hover { color: var(--secondary); }
+
+/* ============================================
+   CART SIDEBAR
+============================================ */
+.cart-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9990;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s, visibility 0.4s;
+}
+.cart-overlay.open { opacity: 1; visibility: visible; }
+
+.cart-sidebar {
+  position: fixed;
+  top: 0; right: 0;
+  width: 100%;
+  max-width: 420px;
+  height: 100%;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border);
+  z-index: 9991;
+  transform: translateX(100%);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex; flex-direction: column;
+}
+.cart-sidebar.open { transform: translateX(0); }
+
+.cart-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.cart-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.cart-close {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.cart-close:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.cart-items {
+  flex: 1; overflow-y: auto;
+  padding: 24px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.cart-empty {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; text-align: center;
+  color: var(--text-muted);
+}
+.cart-empty-icon { font-size: 4rem; opacity: 0.3; }
+.cart-empty-text { font-size: 0.9rem; }
+
+.cart-item {
+  display: flex; gap: 12px;
+  padding: 16px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  align-items: center;
+}
+.cart-item-emoji { font-size: 2.5rem; flex-shrink: 0; }
+.cart-item-info { flex: 1; min-width: 0; }
+.cart-item-name { font-weight: 600; font-size: 0.9rem; color: var(--text); margin-bottom: 4px; }
+.cart-item-price { font-weight: 700; color: var(--primary); font-size: 0.95rem; }
+.cart-item-controls {
+  display: flex; align-items: center; gap: 8px;
+}
+.qty-btn {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.qty-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+.qty-num { font-weight: 700; font-size: 0.9rem; color: var(--text); min-width: 20px; text-align: center; }
+
+.cart-footer {
+  padding: 24px;
+  border-top: 1px solid var(--border);
+}
+.cart-subtotal {
+  display: flex; justify-content: space-between;
+  font-weight: 700; font-size: 1rem;
+  color: var(--text); margin-bottom: 16px;
+}
+.cart-subtotal-val { color: var(--primary); }
+.coupon-row {
+  display: flex; gap: 8px; margin-bottom: 16px;
+}
+.coupon-input {
+  flex: 1; padding: 10px 14px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: border-color 0.3s;
+}
+.coupon-input:focus { border-color: var(--primary); }
+.coupon-input::placeholder { color: var(--text-light); }
+.coupon-btn {
+  padding: 10px 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none; cursor: pointer;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: var(--transition);
+}
+.coupon-btn:hover { background: #1b5e20; }
+.btn-checkout {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  border: none; cursor: pointer;
+  border-radius: 100px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  transition: var(--transition);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-checkout:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(198,40,40,0.4); }
+
+/* WhatsApp FAB */
+.whatsapp-fab {
+  position: fixed;
+  bottom: 32px; right: 32px;
+  width: 58px; height: 58px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 1.6rem;
+  text-decoration: none;
+  z-index: 8000;
+  box-shadow: 0 8px 32px rgba(37,211,102,0.5);
+  transition: var(--transition);
+  animation: waBounce 3s ease-in-out infinite;
+}
+.whatsapp-fab:hover { transform: scale(1.1); box-shadow: 0 12px 40px rgba(37,211,102,0.7); }
+@keyframes waBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.whatsapp-fab svg { width: 28px; height: 28px; }
+
+/* ============================================
+   REVEAL ANIMATIONS
+============================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-left {
+  opacity: 0; transform: translateX(-60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right {
+  opacity: 0; transform: translateX(60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+.delay-1 { transition-delay: 0.1s !important; }
+.delay-2 { transition-delay: 0.2s !important; }
+.delay-3 { transition-delay: 0.3s !important; }
+.delay-4 { transition-delay: 0.4s !important; }
+.delay-5 { transition-delay: 0.5s !important; }
+
+/* ============================================
+   RECIPE BLOG
+============================================ */
+#recipes { background: var(--bg); }
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+}
+.recipe-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+}
+.recipe-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-card); border-color: var(--primary); }
+.recipe-img {
+  height: 180px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 5rem;
+  background: linear-gradient(135deg, #fff0e0, #ffe0c0);
+}
+[data-theme="dark"] .recipe-img { background: linear-gradient(135deg, #2a1a10, #1a2a10); }
+.recipe-body { padding: 24px; }
+.recipe-tag {
+  display: inline-block;
+  background: rgba(198,40,40,0.1);
+  color: var(--primary);
+  border-radius: 100px;
+  padding: 3px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.recipe-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.recipe-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+.recipe-meta {
+  display: flex; gap: 16px; margin-top: 16px;
+  font-size: 0.78rem; color: var(--text-light);
+}
+
+/* ============================================
+   VILLAGE MAP SECTION
+============================================ */
+#village {
+  background: var(--dark);
+  position: relative;
+  overflow: hidden;
+}
+.village-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(46,125,50,0.2), transparent 60%);
+}
+.village-content {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.village-map-visual {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.village-map-visual::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(46,125,50,0.1), transparent 70%);
+}
+.map-emoji { font-size: 6rem; position: relative; z-index: 1; animation: floatJar 4s ease-in-out infinite; }
+.map-label {
+  margin-top: 20px;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+}
+.map-sub { color: rgba(255,255,255,0.4); font-size: 0.85rem; margin-top: 6px; }
+.map-pin {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 16px;
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.village-text .section-title { color: #fff; }
+.village-text .section-eyebrow { color: var(--accent-light); }
+.village-text .section-subtitle { color: rgba(255,255,255,0.55); }
+.village-text .heritage-story { color: rgba(255,255,255,0.6); }
+
+/* ============================================
+   SCROLL TO TOP
+============================================ */
+.scroll-top {
+  position: fixed;
+  bottom: 104px; right: 32px;
+  width: 48px; height: 48px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 7999;
+  font-size: 1rem; color: var(--text);
+  transition: var(--transition);
+  backdrop-filter: blur(10px);
+  opacity: 0; visibility: hidden;
+  box-shadow: var(--shadow-card);
+}
+.scroll-top.show { opacity: 1; visibility: visible; }
+.scroll-top:hover { background: var(--primary); color: #fff; border-color: var(--primary); transform: translateY(-4px); }
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 1024px) {
+  .hero-content { grid-template-columns: 1fr; gap: 40px; }
+  .hero-visual { height: 360px; }
+  .heritage-grid, .founder-grid, .village-content { grid-template-columns: 1fr; gap: 48px; }
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(4, 140px);
+  }
+  .gallery-item:nth-child(1) { grid-column: 1; grid-row: span 2; }
+  .gallery-item:nth-child(4) { grid-column: span 2; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .process-line { display: none; }
+  .process-step { flex-direction: column !important; text-align: center; align-items: center; }
+  .process-step:nth-child(even) .process-step-content { text-align: center; }
+}
+
+@media (max-width: 768px) {
+  section { padding: 64px 5%; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
+  .hero-h1 { font-size: 2.5rem; }
+  .hero-stats { gap: 20px; }
+  .products-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .why-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(4, 120px); }
+  .gallery-item:nth-child(4) { grid-column: 1; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .hero-ctas { flex-direction: column; align-items: flex-start; }
+  .jar-main { width: 130px; }
+  .jar-2 { width: 90px; }
+  .jar-3 { width: 75px; }
+  .jar-4, .jar-5 { display: none; }
+  .founder-frame { width: 280px; height: 340px; }
+  .founder-badge { right: 0; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+}
+
+/* ============================================
+   NOTIFICATION TOAST
+============================================ */
+.toast {
+  position: fixed;
+  bottom: 110px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--dark);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 100px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  z-index: 99996;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 8px;
+  pointer-events: none;
+  max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Extras */
+.accent-line {
+  width: 60px; height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- Loading Screen -->
+<div id="loader">
+  <div class="loader-logo">Sharma <span>Acharnama™</span></div>
+  <div class="loader-tagline">दादी के हाथों का स्वाद, अब पूरे भारत के लिए</div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+  <div class="loader-dots">
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast">✓ Added to cart!</div>
+
+<!-- Navigation -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">🥒</div>
+    Sharma <span>Acharnama™</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#products">Products</a></li>
+    <li><a href="#heritage">Heritage</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#founder">Founder</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-icon" id="themeToggle" title="Toggle theme" aria-label="Toggle dark/light mode">🌙</button>
+    <button class="btn-icon" id="wishlistBtn" title="Wishlist" aria-label="Open wishlist">
+      ♡
+      <span class="badge" id="wishBadge" style="display:none">0</span>
+    </button>
+    <button class="btn-icon" id="cartBtn" title="Cart" aria-label="Open cart">
+      🛒
+      <span class="badge" id="cartBadge" style="display:none">0</span>
+    </button>
+    <div class="nav-hamburger" id="hamburger" role="button" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#products" onclick="closeMobileMenu()">Products</a>
+  <a href="#heritage" onclick="closeMobileMenu()">Heritage</a>
+  <a href="#process" onclick="closeMobileMenu()">Process</a>
+  <a href="#founder" onclick="closeMobileMenu()">Founder</a>
+  <a href="#testimonials" onclick="closeMobileMenu()">Reviews</a>
+  <a href="#gallery" onclick="closeMobileMenu()">Gallery</a>
+  <a href="#faq" onclick="closeMobileMenu()">FAQ</a>
+</div>
+
+<!-- Cart Sidebar -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <div class="cart-title">🛒 Your Cart</div>
+    <button class="cart-close" id="cartClose">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🥒</div>
+      <div class="cart-empty-text">Your cart is empty.<br>Add some delicious pickles!</div>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-subtotal">
+      <span>Subtotal</span>
+      <span class="cart-subtotal-val" id="cartTotal">₹0</span>
+    </div>
+    <div class="coupon-row">
+      <input class="coupon-input" id="couponInput" type="text" placeholder="Enter coupon code">
+      <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+    </div>
+    <button class="btn-checkout" onclick="checkout()">
+      <span>Proceed to Checkout</span> →
+    </button>
+  </div>
+</div>
+
+<!-- HERO SECTION -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-eyebrow">Est. 2024 · Khalilabad, UP</div>
+      <h1 class="hero-h1">
+        Sharma<br><span class="highlight">Acharnama™</span>
+      </h1>
+      <p class="hero-hindi">दादी के हाथों का स्वाद, अब पूरे भारत के लिए</p>
+      <p class="hero-desc">Authentic handmade pickles crafted using traditional family recipes passed through generations. Pure, natural, and bursting with real Indian flavour.</p>
+      <div class="hero-ctas">
+        <a href="#products" class="btn-primary"><span>Shop Now</span> <span>→</span></a>
+        <a href="#heritage" class="btn-outline">Explore Our Story</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num">100%</span>
+          <span class="hero-stat-label">Homemade</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">0</span>
+          <span class="hero-stat-label">Preservatives</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">5★</span>
+          <span class="hero-stat-label">Rating</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-num">2K+</span>
+          <span class="hero-stat-label">Happy Families</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+      <div class="jar-scene">
+
+        <!-- Main Jar -->
+        <div class="floating-jar jar-main">
+          <svg class="jar-svg" viewBox="0 0 140 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="jarGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#4CAF50"/>
+                <stop offset="50%" stop-color="#2E7D32"/>
+                <stop offset="100%" stop-color="#1B5E20"/>
+              </linearGradient>
+              <linearGradient id="lidGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#D32F2F"/>
+                <stop offset="100%" stop-color="#8B0000"/>
+              </linearGradient>
+              <linearGradient id="labelGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFF8E1"/>
+                <stop offset="100%" stop-color="#FFF3CD"/>
+              </linearGradient>
+            </defs>
+            <!-- Lid -->
+            <rect x="25" y="10" width="90" height="28" rx="14" fill="url(#lidGrad)"/>
+            <rect x="30" y="6" width="80" height="12" rx="6" fill="#C62828"/>
+            <!-- Jar body -->
+            <path d="M20 38 Q15 45 15 55 L15 170 Q15 185 30 185 L110 185 Q125 185 125 170 L125 55 Q125 45 120 38 Z" fill="url(#jarGrad)"/>
+            <!-- Glass shine -->
+            <path d="M28 45 Q25 55 25 65 L25 150" stroke="rgba(255,255,255,0.25)" stroke-width="5" stroke-linecap="round"/>
+            <!-- Contents -->
+            <ellipse cx="70" cy="130" rx="44" ry="44" fill="rgba(255,160,0,0.4)"/>
+            <circle cx="55" cy="120" r="10" fill="rgba(255,100,0,0.7)"/>
+            <circle cx="80" cy="115" r="7" fill="rgba(200,50,0,0.8)"/>
+            <circle cx="65" cy="140" r="8" fill="rgba(180,100,0,0.7)"/>
+            <circle cx="88" cy="135" r="6" fill="rgba(255,200,0,0.6)"/>
+            <!-- Label -->
+            <rect x="30" y="80" width="80" height="60" rx="8" fill="url(#labelGrad)" opacity="0.95"/>
+            <text x="70" y="102" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="8" fill="#C62828">SHARMA</text>
+            <text x="70" y="114" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="7" fill="#1B1B1B">ACHARNAMA™</text>
+            <rect x="38" y="118" width="64" height="1" fill="rgba(0,0,0,0.15)"/>
+            <text x="70" y="128" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="5.5" fill="#555">Mango Pickle</text>
+            <text x="70" y="136" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="4.5" fill="#888">500g · Premium Quality</text>
+          </svg>
+        </div>
+
+        <!-- Small Jar 2 -->
+        <div class="floating-jar jar-2">
+          <svg class="jar-svg" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="jg2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FF7043"/><stop offset="100%" stop-color="#BF360C"/>
+              </linearGradient>
+            </defs>
+            <rect x="18" y="8" width="64" height="20" rx="10" fill="#8B0000"/>
+            <rect x="22" y="4" width="56" height="10" rx="5" fill="#C62828"/>
+            <path d="M14 28 Q10 34 10 42 L10 128 Q10 140 22 140 L78 140 Q90 140 90 128 L90 42 Q90 34 86 28 Z" fill="url(#jg2)"/>
+            <path d="M20 34 Q18 42 18 50 L18 115" stroke="rgba(255,255,255,0.2)" stroke-width="4" stroke-linecap="round"/>
+            <rect x="22" y="58" width="56" height="44" rx="6" fill="rgba(255,248,225,0.9)"/>
+            <text x="50" y="76" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="6" fill="#C62828">SHARMA</text>
+            <text x="50" y="87" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="4.5" fill="#333">Red Chilli</text>
+            <text x="50" y="97" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="4" fill="#888">250g</text>
+          </svg>
+        </div>
+
+        <!-- Small Jar 3 -->
+        <div class="floating-jar jar-3">
+          <svg class="jar-svg" viewBox="0 0 90 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="jg3" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FDD835"/><stop offset="100%" stop-color="#F57F17"/>
+              </linearGradient>
+            </defs>
+            <rect x="16" y="7" width="58" height="18" rx="9" fill="#8B0000"/>
+            <rect x="20" y="3" width="50" height="9" rx="4.5" fill="#C62828"/>
+            <path d="M12 25 Q8 30 8 38 L8 114 Q8 126 20 126 L70 126 Q82 126 82 114 L82 38 Q82 30 78 25 Z" fill="url(#jg3)"/>
+            <path d="M18 30 Q16 38 16 46 L16 103" stroke="rgba(255,255,255,0.2)" stroke-width="3.5" stroke-linecap="round"/>
+            <rect x="18" y="52" width="54" height="38" rx="5" fill="rgba(255,248,225,0.9)"/>
+            <text x="45" y="68" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="5.5" fill="#C62828">SHARMA</text>
+            <text x="45" y="78" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="4.2" fill="#333">Lemon Pickle</text>
+            <text x="45" y="86" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="3.8" fill="#888">250g</text>
+          </svg>
+        </div>
+
+        <!-- Small Jar 4 -->
+        <div class="floating-jar jar-4">
+          <svg class="jar-svg" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="jg4" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#7B1FA2"/><stop offset="100%" stop-color="#4A148C"/>
+              </linearGradient>
+            </defs>
+            <rect x="12" y="6" width="56" height="17" rx="8.5" fill="#4A148C"/>
+            <rect x="16" y="2" width="48" height="8" rx="4" fill="#7B1FA2"/>
+            <path d="M10 23 Q6 28 6 35 L6 100 Q6 112 18 112 L62 112 Q74 112 74 100 L74 35 Q74 28 70 23 Z" fill="url(#jg4)"/>
+            <path d="M15 28 Q13 35 13 43 L13 90" stroke="rgba(255,255,255,0.2)" stroke-width="3" stroke-linecap="round"/>
+            <rect x="15" y="46" width="50" height="35" rx="5" fill="rgba(255,248,225,0.9)"/>
+            <text x="40" y="61" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="5" fill="#C62828">SHARMA</text>
+            <text x="40" y="71" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="4" fill="#333">Garlic Pickle</text>
+            <text x="40" y="78" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="3.5" fill="#888">200g</text>
+          </svg>
+        </div>
+
+        <!-- Small Jar 5 -->
+        <div class="floating-jar jar-5">
+          <svg class="jar-svg" viewBox="0 0 70 105" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="jg5" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0277BD"/><stop offset="100%" stop-color="#01579B"/>
+              </linearGradient>
+            </defs>
+            <rect x="10" y="5" width="50" height="15" rx="7.5" fill="#01579B"/>
+            <rect x="14" y="1" width="42" height="8" rx="4" fill="#0277BD"/>
+            <path d="M8 20 Q5 24 5 31 L5 88 Q5 98 15 98 L55 98 Q65 98 65 88 L65 31 Q65 24 62 20 Z" fill="url(#jg5)"/>
+            <path d="M13 25 Q11 31 11 38 L11 80" stroke="rgba(255,255,255,0.2)" stroke-width="3" stroke-linecap="round"/>
+            <rect x="12" y="40" width="46" height="32" rx="4" fill="rgba(255,248,225,0.9)"/>
+            <text x="35" y="54" text-anchor="middle" font-family="'Playfair Display', serif" font-weight="900" font-size="4.5" fill="#C62828">SHARMA</text>
+            <text x="35" y="63" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="3.8" fill="#333">Mixed Pickle</text>
+            <text x="35" y="69" text-anchor="middle" font-family="'Poppins', sans-serif" font-size="3.2" fill="#888">200g</text>
+          </svg>
+        </div>
+
+        <!-- Floating spice particles -->
+        <div class="spice-particle" style="width:8px;height:8px;background:#FFB300;top:15%;left:20%;--d:5s;--del:-1s;--op:0.7;"></div>
+        <div class="spice-particle" style="width:6px;height:6px;background:#C62828;top:60%;left:10%;--d:6s;--del:-3s;--op:0.5;border-radius:3px;"></div>
+        <div class="spice-particle" style="width:10px;height:10px;background:#2E7D32;top:25%;right:15%;--d:7s;--del:-2s;--op:0.4;"></div>
+        <div class="spice-particle" style="width:5px;height:5px;background:#FFB300;top:70%;right:25%;--d:4.5s;--del:-4s;--op:0.6;"></div>
+        <div class="spice-particle" style="width:7px;height:7px;background:#EF5350;top:80%;left:30%;--d:5.5s;--del:-1.5s;--op:0.5;border-radius:2px;"></div>
+        <div class="spice-particle" style="width:4px;height:12px;background:#FFB300;top:40%;right:5%;--d:6.5s;--del:-2.5s;--op:0.4;border-radius:2px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-strip">
+  <div class="marquee-track" id="marqueeTrack">
+    <div class="marquee-item"><span class="dot"></span>100% Homemade</div>
+    <div class="marquee-item"><span class="dot"></span>Sun-Cured Pickles</div>
+    <div class="marquee-item"><span class="dot"></span>Traditional Recipes</div>
+    <div class="marquee-item"><span class="dot"></span>No Artificial Preservatives</div>
+    <div class="marquee-item"><span class="dot"></span>Khalilabad, UP</div>
+    <div class="marquee-item"><span class="dot"></span>Family Heritage</div>
+    <div class="marquee-item"><span class="dot"></span>Premium Quality</div>
+    <div class="marquee-item"><span class="dot"></span>Pan-India Delivery</div>
+    <div class="marquee-item"><span class="dot"></span>100% Homemade</div>
+    <div class="marquee-item"><span class="dot"></span>Sun-Cured Pickles</div>
+    <div class="marquee-item"><span class="dot"></span>Traditional Recipes</div>
+    <div class="marquee-item"><span class="dot"></span>No Artificial Preservatives</div>
+    <div class="marquee-item"><span class="dot"></span>Khalilabad, UP</div>
+    <div class="marquee-item"><span class="dot"></span>Family Heritage</div>
+    <div class="marquee-item"><span class="dot"></span>Premium Quality</div>
+    <div class="marquee-item"><span class="dot"></span>Pan-India Delivery</div>
+  </div>
+</div>
+
+<!-- PRODUCTS SECTION -->
+<section id="products">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-eyebrow">Our Collection</span>
+      <h2 class="section-title">Handcrafted <span>Pickle</span> Collection</h2>
+      <p class="section-subtitle">Every jar is filled with love, tradition, and the authentic flavors of Khalilabad — made in small batches to ensure perfection.</p>
+    </div>
+    <div class="products-grid" id="productsGrid">
+      <!-- Products injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- HERITAGE SECTION -->
+<section id="heritage">
+  <div class="heritage-bg"></div>
+  <div class="container">
+    <div class="heritage-grid">
+      <div class="heritage-text reveal-left">
+        <span class="section-eyebrow">Our Heritage</span>
+        <h2 class="section-title">A Legacy Born in<br><span>Khalilabad</span></h2>
+        <p class="heritage-story">Deep in the heartland of Uttar Pradesh, in the ancient town of Khalilabad, the Sharma family has been crafting pickles using time-honoured recipes for over three generations. Every jar carries the essence of this land — its sunlight, its soil, and its soul.</p>
+        <p class="heritage-story">Our dadi's kitchen was always fragrant with mustard seeds crackling in oil, raw mangoes being sliced with precision, and the earthy warmth of hand-ground masalas. Those flavours became our identity. Sharma Acharnama™ is our tribute to her — a promise to keep her recipes alive.</p>
+        <div class="heritage-quote">
+          <p>"जो स्वाद घर में है, वो बाजार में नहीं मिलता — इसीलिए हम घर का स्वाद आप तक लाते हैं।"</p>
+          <cite>— Durgesh Sharma, Founder</cite>
+        </div>
+      </div>
+      <div class="heritage-visual reveal-right">
+        <div class="heritage-card delay-1">
+          <div class="heritage-card-icon">🌿</div>
+          <div>
+            <div class="heritage-card-title">Three Generations of Recipes</div>
+            <div class="heritage-card-text">Our recipes have been lovingly passed from grandmothers to mothers to sons, preserving every nuance of authentic taste.</div>
+          </div>
+        </div>
+        <div class="heritage-card delay-2">
+          <div class="heritage-card-icon">☀️</div>
+          <div>
+            <div class="heritage-card-title">Sun-Cured in UP Sunshine</div>
+            <div class="heritage-card-text">Every jar is sun-cured for the perfect duration under the Khalilabad sky — nature's most ancient preserving method.</div>
+          </div>
+        </div>
+        <div class="heritage-card delay-3">
+          <div class="heritage-card-icon">🌶️</div>
+          <div>
+            <div class="heritage-card-title">Hand-Ground Masalas</div>
+            <div class="heritage-card-text">No factory. No shortcuts. Our spices are sourced locally and ground by hand using traditional sil-batta for unmatched aroma.</div>
+          </div>
+        </div>
+        <div class="heritage-card delay-4">
+          <div class="heritage-card-icon">🏺</div>
+          <div>
+            <div class="heritage-card-title">Clay Pot Fermentation</div>
+            <div class="heritage-card-text">We honour the ancient tradition of fermenting pickles in clay pots (matkis), which lend a unique character no steel vessel can replicate.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS SECTION -->
+<section id="process">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-eyebrow">Our Craft</span>
+      <h2 class="section-title">From Farm to <span>Your Table</span></h2>
+      <p class="section-subtitle">Every pickle jar is a result of a meticulous, love-filled process that honours both tradition and quality.</p>
+    </div>
+    <div class="process-timeline">
+      <div class="process-line"></div>
+
+      <div class="process-step reveal">
+        <div class="process-step-content">
+          <div class="process-step-icon">🌱</div>
+          <div class="process-step-title">Fresh Ingredient Selection</div>
+          <div class="process-step-desc">We source the finest raw mangoes, lemons, chillis, and garlic directly from local UP farmers at the peak of their season — freshness guaranteed.</div>
+        </div>
+        <div class="process-step-num">01</div>
+        <div style="flex:1"></div>
+      </div>
+
+      <div class="process-step reveal delay-1">
+        <div style="flex:1"></div>
+        <div class="process-step-num">02</div>
+        <div class="process-step-content">
+          <div class="process-step-icon">🌶️</div>
+          <div class="process-step-title">Traditional Spice Preparation</div>
+          <div class="process-step-desc">Whole spices — methi, kalonji, saunf, rai — are dry-roasted and ground fresh on sil-batta. No packaged masala ever touches our pickles.</div>
+        </div>
+      </div>
+
+      <div class="process-step reveal delay-2">
+        <div class="process-step-content">
+          <div class="process-step-icon">🤲</div>
+          <div class="process-step-title">Hand Filling</div>
+          <div class="process-step-desc">Each ingredient is cut and stuffed by hand with love and care. Our artisans ensure every piece is coated evenly with our signature masala blend.</div>
+        </div>
+        <div class="process-step-num">03</div>
+        <div style="flex:1"></div>
+      </div>
+
+      <div class="process-step reveal delay-3">
+        <div style="flex:1"></div>
+        <div class="process-step-num">04</div>
+        <div class="process-step-content">
+          <div class="process-step-icon">☀️</div>
+          <div class="process-step-title">Sun Curing</div>
+          <div class="process-step-desc">Jars are placed under the open Khalilabad sun for 7–21 days. The sun's warmth activates natural fermentation, building deep, complex flavours.</div>
+        </div>
+      </div>
+
+      <div class="process-step reveal delay-4">
+        <div class="process-step-content">
+          <div class="process-step-icon">✅</div>
+          <div class="process-step-title">Quality Inspection</div>
+          <div class="process-step-desc">Every batch is tasted and inspected by our founder personally. Only pickles that meet our heritage standard of taste and aroma are approved.</div>
+        </div>
+        <div class="process-step-num">05</div>
+        <div style="flex:1"></div>
+      </div>
+
+      <div class="process-step reveal delay-5">
+        <div style="flex:1"></div>
+        <div class="process-step-num">06</div>
+        <div class="process-step-content">
+          <div class="process-step-icon">📦</div>
+          <div class="process-step-title">Premium Packaging</div>
+          <div class="process-step-desc">Sealed in premium glass jars with tamper-proof lids, wrapped with our signature label. Ready to be delivered safely to your doorstep across India.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section id="why-us">
+  <div class="container">
+    <div class="section-header text-center reveal" style="color:#fff;">
+      <span class="section-eyebrow" style="color:var(--secondary);">Why Sharma Acharnama™</span>
+      <h2 class="section-title" style="color:#fff;">What Makes Us <span style="color:var(--secondary);">Different</span></h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-item reveal delay-1">
+        <div class="why-icon">🏠</div>
+        <div class="why-title">100% Homemade</div>
+        <div class="why-desc">Made in a real home kitchen, not a factory. You taste the difference in every bite.</div>
+      </div>
+      <div class="why-item reveal delay-2">
+        <div class="why-icon">🌿</div>
+        <div class="why-title">No Artificial Preservatives</div>
+        <div class="why-desc">Pure mustard oil and natural spices are all the preservation our pickles need.</div>
+      </div>
+      <div class="why-item reveal delay-3">
+        <div class="why-icon">🧑‍🍳</div>
+        <div class="why-title">Family Recipe</div>
+        <div class="why-desc">3-generation-old recipes that have never been altered. Authenticity you can taste.</div>
+      </div>
+      <div class="why-item reveal delay-4">
+        <div class="why-icon">🎁</div>
+        <div class="why-title">Premium Packaging</div>
+        <div class="why-desc">Gift-worthy glass jars that preserve freshness and look beautiful on your dining table.</div>
+      </div>
+      <div class="why-item reveal delay-5">
+        <div class="why-icon">🚚</div>
+        <div class="why-title">Pan-India Delivery</div>
+        <div class="why-desc">From Khalilabad to your door — fast, safe, and always fresh across all of India.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER SECTION -->
+<section id="founder">
+  <div class="container">
+    <div class="founder-grid">
+      <div class="founder-visual reveal-left">
+        <div class="founder-frame">
+          <div class="founder-avatar">👨‍🍳</div>
+        </div>
+        <div class="founder-badge">
+          <div class="founder-badge-title">Founder & Visionary</div>
+          <div class="founder-badge-val">Durgesh Sharma</div>
+          <div class="founder-badge-sub">🏡 Khalilabad, UP</div>
+        </div>
+        <div class="founder-tag">✨ Est. 2024</div>
+      </div>
+      <div class="founder-text reveal-right">
+        <span class="section-eyebrow">Meet the Founder</span>
+        <div class="accent-line"></div>
+        <h2 class="founder-name">Durgesh<br>Sharma</h2>
+        <div class="founder-designation">Founder & Visionary · Sharma Acharnama™</div>
+        <p class="founder-bio">Born and raised in the cultural heartland of Khalilabad, Uttar Pradesh, Durgesh Sharma grew up watching his dadi and mother craft the most soul-satisfying pickles — each jar a labour of love, each recipe a family secret.</p>
+        <p class="founder-bio">Armed with a passion for India's culinary heritage and a modern entrepreneurial vision, Durgesh founded Sharma Acharnama™ to bridge the gap between authentic homemade flavours and India's growing appetite for real, pure food. His mission: put the taste of every Indian grandmother's kitchen on every Indian family's table.</p>
+        <p class="founder-bio">Today, Sharma Acharnama™ is more than a brand — it is a movement to celebrate and preserve the culinary traditions of rural India.</p>
+        <div class="founder-highlights">
+          <div class="founder-chip"><span class="emoji">🏡</span> Khalilabad, UP</div>
+          <div class="founder-chip"><span class="emoji">🌶️</span> 5+ Pickle Varieties</div>
+          <div class="founder-chip"><span class="emoji">👨‍👩‍👧‍👦</span> 2000+ Families Served</div>
+          <div class="founder-chip"><span class="emoji">🏆</span> 5★ Rated Brand</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-eyebrow">Customer Love</span>
+      <h2 class="section-title">What Our <span>Families</span> Say</h2>
+      <p class="section-subtitle">Real reviews from real families who have made Sharma Acharnama™ a part of their daily dining experience.</p>
+    </div>
+    <div class="testimonials-grid" id="testimonialsGrid">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- VILLAGE ORIGIN -->
+<section id="village">
+  <div class="village-bg"></div>
+  <div class="container">
+    <div class="village-content">
+      <div class="village-map-visual reveal-left">
+        <div class="map-emoji">🗺️</div>
+        <div class="map-label">Khalilabad</div>
+        <div class="map-sub">Sant Kabir Nagar, Uttar Pradesh</div>
+        <div class="map-pin">📍 Our Home Town</div>
+        <div style="margin-top:28px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:#fff;">26.8°N</div>
+            <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Latitude</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:#fff;">83.1°E</div>
+            <div style="font-size:0.72rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;">Longitude</div>
+          </div>
+        </div>
+      </div>
+      <div class="village-text reveal-right">
+        <span class="section-eyebrow">Village Origin</span>
+        <h2 class="section-title">Rooted in the<br>Heart of <span style="color:var(--accent-light);">UP</span></h2>
+        <p class="section-subtitle" style="color:rgba(255,255,255,0.55);">Where ancient traditions meet the fertile plains of the Ganga basin</p>
+        <p class="heritage-story" style="margin-top:24px;">Khalilabad is one of UP's oldest towns — a place where time moves differently, where neighbours share food freely, and where the art of making achaar is considered as sacred as prayer. The town's fertile land, clean air, and warm sun create the perfect environment for our pickles to mature.</p>
+        <p class="heritage-story">The Sharma family home in Khalilabad is where every jar begins its journey — from the first slice of a fresh mango to the last seal of a filled glass jar. When you open a Sharma Acharnama™ product, you open a window into this beautiful world.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;">
+          <div style="background:rgba(46,125,50,0.15);border:1px solid rgba(76,175,80,0.3);border-radius:100px;padding:8px 18px;font-size:0.82rem;font-weight:600;color:#81C784;">🌾 Fertile Ganga Plains</div>
+          <div style="background:rgba(255,179,0,0.1);border:1px solid rgba(255,179,0,0.3);border-radius:100px;padding:8px 18px;font-size:0.82rem;font-weight:600;color:#FFD54F;">☀️ Perfect Climate</div>
+          <div style="background:rgba(198,40,40,0.1);border:1px solid rgba(239,83,80,0.3);border-radius:100px;padding:8px 18px;font-size:0.82rem;font-weight:600;color:#EF9A9A;">🏺 Ancient Traditions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-eyebrow gallery-eyebrow">Life at Sharma Acharnama™</span>
+      <h2 class="section-title gallery-title">A Glimpse into <span style="color:var(--secondary);">Our World</span></h2>
+      <p class="section-subtitle gallery-subtitle">Follow the journey from farm to jar — the colours, the smells, the hands that make it all happen.</p>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item g1">
+        <div class="gallery-inner">🥭</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Fresh Raw Mango Harvest</div></div>
+      </div>
+      <div class="gallery-item g2">
+        <div class="gallery-inner">🌿</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Village Garden</div></div>
+      </div>
+      <div class="gallery-item g3">
+        <div class="gallery-inner">🌶️</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Red Chilli Drying</div></div>
+      </div>
+      <div class="gallery-item g4">
+        <div class="gallery-inner">🫙</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Pickle Jars in Sun</div></div>
+      </div>
+      <div class="gallery-item g5">
+        <div class="gallery-inner">🏺</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Traditional Clay Pots</div></div>
+      </div>
+      <div class="gallery-item g6">
+        <div class="gallery-inner">🌾</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Farm Fields, Khalilabad</div></div>
+      </div>
+      <div class="gallery-item g7">
+        <div class="gallery-inner">👨‍🍳</div>
+        <div class="gallery-overlay"><div class="gallery-overlay-text">Traditional Cooking</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECIPES -->
+<section id="recipes">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-eyebrow">Recipes & Ideas</span>
+      <h2 class="section-title">Cooking with <span>Our Pickles</span></h2>
+      <p class="section-subtitle">Discover new ways to enjoy our pickles beyond the dal-chawal plate. From parathas to fusion dishes!</p>
+    </div>
+    <div class="recipe-grid">
+      <div class="recipe-card reveal delay-1">
+        <div class="recipe-img">🥙</div>
+        <div class="recipe-body">
+          <span class="recipe-tag">Breakfast</span>
+          <div class="recipe-title">Achaar Aloo Paratha</div>
+          <div class="recipe-desc">Spiced potato stuffing elevated with our signature mango pickle mixed right into the dough for an unforgettable morning.</div>
+          <div class="recipe-meta"><span>⏱ 25 mins</span><span>👨‍🍳 Easy</span></div>
+        </div>
+      </div>
+      <div class="recipe-card reveal delay-2">
+        <div class="recipe-img">🍚</div>
+        <div class="recipe-body">
+          <span class="recipe-tag">Lunch</span>
+          <div class="recipe-title">Pickle Fried Rice</div>
+          <div class="recipe-desc">A bold fusion take on fried rice using our tangy lemon pickle as the seasoning base — no soy sauce needed!</div>
+          <div class="recipe-meta"><span>⏱ 15 mins</span><span>👨‍🍳 Easy</span></div>
+        </div>
+      </div>
+      <div class="recipe-card reveal delay-3">
+        <div class="recipe-img">🥗</div>
+        <div class="recipe-body">
+          <span class="recipe-tag">Snack</span>
+          <div class="recipe-title">Achaar Paneer Tikka</div>
+          <div class="recipe-desc">Marinate paneer cubes overnight in our garlic pickle oil. Grill until charred. The most flavourful tikka you'll ever taste.</div>
+          <div class="recipe-meta"><span>⏱ 40 mins</span><span>👨‍🍳 Medium</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div class="section-header text-center reveal">
+      <span class="section-eyebrow">Got Questions?</span>
+      <h2 class="section-title">Frequently <span>Asked</span> Questions</h2>
+    </div>
+    <div class="faq-grid" id="faqGrid">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo-text">Sharma <span>Acharnama™</span></div>
+        <div class="footer-tagline">खट्टा, तीखा, देसी<br>Khata, Teekha, Desi</div>
+        <div class="footer-desc">Authentic handmade pickles from Khalilabad, UP. Crafted with love, tradition, and the finest ingredients — delivered to your doorstep across India.</div>
+        <div class="footer-social">
+          <a href="#" class="social-icon" aria-label="Instagram">📸</a>
+          <a href="#" class="social-icon" aria-label="Facebook">📘</a>
+          <a href="#" class="social-icon" aria-label="YouTube">▶️</a>
+          <a href="#" class="social-icon" aria-label="WhatsApp">💬</a>
+          <a href="#" class="social-icon" aria-label="Twitter">🐦</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Products</h4>
+        <ul class="footer-links">
+          <li><a href="#products">Mango Pickle</a></li>
+          <li><a href="#products">Lemon Pickle</a></li>
+          <li><a href="#products">Red Chilli Pickle</a></li>
+          <li><a href="#products">Garlic Pickle</a></li>
+          <li><a href="#products">Mixed Pickle</a></li>
+          <li><a href="#products">Gift Packs</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul class="footer-links">
+          <li><a href="#heritage">Our Heritage</a></li>
+          <li><a href="#founder">Meet the Founder</a></li>
+          <li><a href="#process">Our Process</a></li>
+          <li><a href="#village">Khalilabad</a></li>
+          <li><a href="#recipes">Recipes</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Newsletter</h4>
+        <p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:16px;line-height:1.6;">Subscribe for new recipes, seasonal pickle offers, and heritage stories from Khalilabad.</p>
+        <div class="newsletter-form">
+          <input class="newsletter-input" type="email" placeholder="your@email.com">
+          <button class="newsletter-btn">Subscribe →</button>
+        </div>
+        <div style="margin-top:24px;">
+          <h4 style="margin-bottom:12px;">Contact Us</h4>
+          <div style="font-size:0.85rem;color:rgba(255,255,255,0.45);line-height:2;">
+            <div>📍 Khalilabad, UP, India</div>
+            <div>📞 +91 98765 43210</div>
+            <div>📧 hello@sharmaacharnama.in</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Sharma Acharnama™. All rights reserved. Made with ❤️ in Khalilabad.</span>
+      <div style="display:flex;gap:16px;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Shipping Policy</a>
+        <a href="#">Refund Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp FAB -->
+<a href="https://wa.me/919876543210?text=Hi!%20I%20am%20interested%20in%20Sharma%20Acharnama%20pickles%20🥒" 
+   class="whatsapp-fab" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="white">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+<script>
+// ============================================
+// DATA
+// ============================================
+const products = [
+  {
+    name: "Stuffed Red Chilli Pickle",
+    desc: "Whole red chillis stuffed with hand-ground masalas, cured in pure mustard oil.",
+    emoji: "🌶️",
+    price: 249,
+    origPrice: 349,
+    badge: "Bestseller",
+    badgeType: "",
+    spice: 5,
+    rating: 4.9,
+    reviews: 284,
+    weight: "250g"
+  },
+  {
+    name: "Aam ka Achaar",
+    desc: "Classic raw mango pickle made from Dasheri mangoes with our secret family masala.",
+    emoji: "🥭",
+    price: 199,
+    origPrice: 280,
+    badge: "Fan Favourite",
+    badgeType: "hot",
+    spice: 4,
+    rating: 5.0,
+    reviews: 512,
+    weight: "500g"
+  },
+  {
+    name: "Nimbu ka Achaar",
+    desc: "Sun-cured lemon pickle with a tangy-spicy balance that awakens every meal.",
+    emoji: "🍋",
+    price: 179,
+    origPrice: 230,
+    badge: "New",
+    badgeType: "new",
+    spice: 3,
+    rating: 4.8,
+    reviews: 198,
+    weight: "250g"
+  },
+  {
+    name: "Mixed Vegetable Achaar",
+    desc: "A medley of seasonal vegetables pickled together — carrot, cauliflower, turnip, and chilli.",
+    emoji: "🥗",
+    price: 219,
+    origPrice: 299,
+    badge: "",
+    badgeType: "",
+    spice: 3,
+    rating: 4.7,
+    reviews: 156,
+    weight: "400g"
+  },
+  {
+    name: "Lahsun ka Achaar",
+    desc: "Whole garlic cloves marinated in spiced mustard oil — bold, pungent, irresistible.",
+    emoji: "🧄",
+    price: 269,
+    origPrice: 350,
+    badge: "Premium",
+    badgeType: "",
+    spice: 4,
+    rating: 4.9,
+    reviews: 97,
+    weight: "200g"
+  }
+];
+
+const faqs = [
+  {
+    q: "Are your pickles really made at home?",
+    a: "Absolutely. Every jar of Sharma Acharnama™ is made in our home kitchen in Khalilabad, UP, following the exact same recipes our dadi used. No factory, no machines — just hands, love, and tradition."
+  },
+  {
+    q: "What is the shelf life of your pickles?",
+    a: "Our pickles have a shelf life of 12 months from the date of production when stored in a cool, dry place. Once opened, refrigerate and consume within 3 months. The pure mustard oil acts as a natural preservative."
+  },
+  {
+    q: "Do you use any artificial preservatives or colours?",
+    a: "Never. We are proud to say our pickles contain zero artificial preservatives, no artificial colours, and no synthetic additives of any kind. Ingredients: fresh vegetables, pure mustard oil, and hand-ground spices. That's all."
+  },
+  {
+    q: "Do you deliver pan-India?",
+    a: "Yes! We deliver to all major cities and most pin codes across India via trusted courier partners. Delivery typically takes 3–5 business days. Orders above ₹499 qualify for free shipping."
+  },
+  {
+    q: "Can I order a gift pack for someone?",
+    a: "Of course! We offer curated gift packs with 3 and 5 jar combinations. You can also add a personalised handwritten note. WhatsApp us at +91 98765 43210 to place a custom gift order."
+  },
+  {
+    q: "What is your return & refund policy?",
+    a: "If your product arrives damaged or you are not satisfied, contact us within 48 hours of delivery. We offer full refunds or replacements — no questions asked. Your satisfaction is our family's honour."
+  }
+];
+
+const testimonials = [
+  {
+    name: "Priya Sharma",
+    location: "Lucknow, UP",
+    avatar: "P",
+    stars: 5,
+    text: "The mango pickle is absolutely incredible — it tastes exactly like what my nani used to make. I've ordered 6 jars and sharing them with everyone I know!"
+  },
+  {
+    name: "Rahul Verma",
+    location: "Delhi",
+    avatar: "R",
+    stars: 5,
+    text: "I was skeptical at first, but the stuffed red chilli pickle changed everything. It's bold, complex, and deeply satisfying. My entire family is hooked."
+  },
+  {
+    name: "Anita Singh",
+    location: "Mumbai",
+    avatar: "A",
+    stars: 5,
+    text: "Finally found a pickle brand that tastes homemade! The quality and packaging are both premium. Worth every rupee. Subscribing to monthly delivery."
+  },
+  {
+    name: "Vikram Joshi",
+    location: "Bangalore",
+    avatar: "V",
+    stars: 5,
+    text: "As a Uttar Pradeshi living in Bangalore, Sharma Acharnama™ is my biggest comfort — the garlic pickle especially. It's pure nostalgia in a jar!"
+  },
+  {
+    name: "Meena Agarwal",
+    location: "Jaipur",
+    avatar: "M",
+    stars: 5,
+    text: "I ordered 10 jars as Diwali gifts and every single person loved them. The packaging is beautiful and the taste is phenomenal. Highly recommended!"
+  },
+  {
+    name: "Suresh Patel",
+    location: "Ahmedabad",
+    avatar: "S",
+    stars: 5,
+    text: "The lemon pickle is a revelation. Just the right balance of sour, spicy, and salty. Goes with absolutely everything. Please never stop making these!"
+  }
+];
+
+// ============================================
+// CART STATE
+// ============================================
+let cart = [];
+let wishlist = [];
+let cartOpen = false;
+
+// ============================================
+// RENDER PRODUCTS
+// ============================================
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.map((p, i) => `
+    <div class="product-card reveal delay-${(i % 4) + 1}" data-index="${i}">
+      <div class="product-card-img">
+        ${p.badge ? `<span class="product-badge ${p.badgeType}">${p.badge}</span>` : ''}
+        <button class="product-wish" onclick="toggleWish(${i}, this)" aria-label="Add to wishlist">
+          <span class="wish-icon">♡</span>
+        </button>
+        <div class="product-emoji">${p.emoji}</div>
+      </div>
+      <div class="product-card-body">
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="spice-meter">
+          <span class="spice-label">Spice</span>
+          <div class="spice-dots">
+            ${[1,2,3,4,5].map(d => `<div class="spice-dot ${d <= p.spice ? (p.spice >= 5 ? 'filled' : p.spice >= 4 ? 'filled' : p.spice >= 3 ? 'filled medium' : 'filled mild') : ''}"></div>`).join('')}
+          </div>
+        </div>
+        <div class="product-footer">
+          <div class="product-price">
+            <span class="price-main">₹${p.price} <span style="font-size:0.7rem;color:var(--text-light);font-weight:400;">${p.weight}</span></span>
+            <span class="price-orig">₹${p.origPrice}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+            <div class="product-rating">★ ${p.rating} <span style="color:var(--text-light);font-weight:400;">(${p.reviews})</span></div>
+            <button class="btn-add-cart" onclick="addToCart(${i})">+ Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// CART
+// ============================================
+function addToCart(index) {
+  const product = products[index];
+  const existing = cart.find(item => item.index === index);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...product, index, qty: 1 });
+  }
+  updateCartUI();
+  showToast(`🥒 ${product.name} added to cart!`);
+}
+
+function removeFromCart(index) {
+  cart = cart.filter(item => item.index !== index);
+  updateCartUI();
+}
+
+function updateQty(index, delta) {
+  const item = cart.find(i => i.index === index);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeFromCart(index);
+  else updateCartUI();
+}
+
+function updateCartUI() {
+  const badge = document.getElementById('cartBadge');
+  const total = cart.reduce((sum, i) => sum + i.qty, 0);
+  if (total > 0) { badge.style.display = 'flex'; badge.textContent = total; }
+  else { badge.style.display = 'none'; }
+
+  const itemsEl = document.getElementById('cartItems');
+  const totalEl = document.getElementById('cartTotal');
+  const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  totalEl.textContent = '₹' + subtotal;
+
+  if (cart.length === 0) {
+    itemsEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🥒</div><div class="cart-empty-text">Your cart is empty.<br>Add some delicious pickles!</div></div>`;
+    return;
+  }
+  itemsEl.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-emoji">${item.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">₹${item.price} × ${item.qty}</div>
+      </div>
+      <div class="cart-item-controls">
+        <button class="qty-btn" onclick="updateQty(${item.index}, -1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="updateQty(${item.index}, 1)">+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartSidebar').classList.add('open');
+  cartOpen = true;
+}
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartSidebar').classList.remove('open');
+  cartOpen = false;
+}
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  if (code === 'SHARMA10') showToast('🎉 10% discount applied!');
+  else if (code === 'DESI20') showToast('🎉 20% discount applied!');
+  else showToast('❌ Invalid coupon code');
+}
+function checkout() {
+  if (cart.length === 0) { showToast('🛒 Your cart is empty!'); return; }
+  showToast('🚀 Redirecting to checkout...');
+}
+
+// ============================================
+// WISHLIST
+// ============================================
+function toggleWish(index, btn) {
+  const i = wishlist.indexOf(index);
+  if (i === -1) {
+    wishlist.push(index);
+    btn.classList.add('active');
+    btn.querySelector('.wish-icon').textContent = '♥';
+    showToast('♥ Added to wishlist!');
+  } else {
+    wishlist.splice(i, 1);
+    btn.classList.remove('active');
+    btn.querySelector('.wish-icon').textContent = '♡';
+    showToast('Removed from wishlist');
+  }
+  const badge = document.getElementById('wishBadge');
+  if (wishlist.length > 0) { badge.style.display = 'flex'; badge.textContent = wishlist.length; }
+  else badge.style.display = 'none';
+}
+
+// ============================================
+// TOAST
+// ============================================
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// ============================================
+// RENDER TESTIMONIALS
+// ============================================
+function renderTestimonials() {
+  const grid = document.getElementById('testimonialsGrid');
+  grid.innerHTML = testimonials.map((t, i) => `
+    <div class="testimonial-card reveal delay-${(i % 3) + 1}">
+      <div class="testimonial-stars">${'★'.repeat(t.stars)}</div>
+      <div class="testimonial-text">"${t.text}"</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">${t.avatar}</div>
+        <div>
+          <div class="testimonial-name">${t.name}</div>
+          <div class="testimonial-place">📍 ${t.location}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// RENDER FAQ
+// ============================================
+function renderFaq() {
+  const grid = document.getElementById('faqGrid');
+  grid.innerHTML = faqs.map((f, i) => `
+    <div class="faq-item reveal delay-${(i % 3) + 1}">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        <span>${f.q}</span>
+        <span class="faq-chevron">▼</span>
+      </button>
+      <div class="faq-answer">${f.a}</div>
+    </div>
+  `).join('');
+}
+
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const answer = item.querySelector('.faq-answer');
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.faq-question.open').forEach(q => {
+    q.classList.remove('open');
+    q.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) { btn.classList.add('open'); answer.classList.add('open'); }
+}
+
+// ============================================
+// THEME TOGGLE
+// ============================================
+const themeBtn = document.getElementById('themeToggle');
+let dark = false;
+themeBtn.addEventListener('click', () => {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  themeBtn.textContent = dark ? '☀️' : '🌙';
+});
+
+// ============================================
+// NAVBAR SCROLL
+// ============================================
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  const scrollTop = document.getElementById('scrollTop');
+  if (window.scrollY > 50) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+  if (window.scrollY > 400) scrollTop.classList.add('show');
+  else scrollTop.classList.remove('show');
+});
+
+// ============================================
+// HAMBURGER
+// ============================================
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('active');
+  mobileMenu.classList.toggle('open');
+});
+function closeMobileMenu() {
+  hamburger.classList.remove('active');
+  mobileMenu.classList.remove('open');
+}
+
+// ============================================
+// CART EVENTS
+// ============================================
+document.getElementById('cartBtn').addEventListener('click', openCart);
+document.getElementById('cartClose').addEventListener('click', closeCart);
+document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+// ============================================
+// SCROLL TO TOP
+// ============================================
+document.getElementById('scrollTop').addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ============================================
+// CUSTOM CURSOR
+// ============================================
+const cursor = document.getElementById('cursor');
+const follower = document.getElementById('cursorFollower');
+let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+});
+(function animate() {
+  followerX += (mouseX - followerX) * 0.12;
+  followerY += (mouseY - followerY) * 0.12;
+  follower.style.left = followerX + 'px';
+  follower.style.top = followerY + 'px';
+  requestAnimationFrame(animate);
+})();
+document.querySelectorAll('a, button, .product-card, .faq-question').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.classList.add('active'); follower.classList.add('active'); });
+  el.addEventListener('mouseleave', () => { cursor.classList.remove('active'); follower.classList.remove('active'); });
+});
+
+// ============================================
+// SCROLL REVEAL
+// ============================================
+function initReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
+}
+
+// ============================================
+// THREE.JS HERO BACKGROUND
+// ============================================
+function initThreeJS() {
+  const canvas = document.getElementById('hero-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  camera.position.z = 5;
+
+  // Create particle system
+  const geometry = new THREE.BufferGeometry();
+  const count = 1200;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+
+  const colorPalette = [
+    new THREE.Color(0xC62828),
+    new THREE.Color(0xFFB300),
+    new THREE.Color(0x2E7D32),
+    new THREE.Color(0xEF5350),
+    new THREE.Color(0xFFF8E1),
+  ];
+
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 30;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 15;
+    const c = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+    colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const material = new THREE.PointsMaterial({
+    size: 0.06,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.7,
+    sizeAttenuation: true,
+  });
+
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+
+  // Floating tori (rings representing spice rings)
+  const torusGeo = new THREE.TorusGeometry(0.8, 0.05, 8, 60);
+  const torusMat1 = new THREE.MeshBasicMaterial({ color: 0xC62828, wireframe: true, transparent: true, opacity: 0.3 });
+  const torus1 = new THREE.Mesh(torusGeo, torusMat1);
+  torus1.position.set(-3, 1, -3);
+  scene.add(torus1);
+
+  const torusMat2 = new THREE.MeshBasicMaterial({ color: 0xFFB300, wireframe: true, transparent: true, opacity: 0.2 });
+  const torus2 = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.04, 8, 40), torusMat2);
+  torus2.position.set(3, -1, -2);
+  scene.add(torus2);
+
+  const torusMat3 = new THREE.MeshBasicMaterial({ color: 0x2E7D32, wireframe: true, transparent: true, opacity: 0.25 });
+  const torus3 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.06, 8, 80), torusMat3);
+  torus3.position.set(1, 2, -5);
+  scene.add(torus3);
+
+  // Mouse parallax
+  let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth - 0.5) * 2;
+    my = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  function animate(t) {
+    requestAnimationFrame(animate);
+    const time = t * 0.001;
+    points.rotation.y = time * 0.04;
+    points.rotation.x = time * 0.02;
+    camera.position.x += (mx * 0.5 - camera.position.x) * 0.03;
+    camera.position.y += (-my * 0.3 - camera.position.y) * 0.03;
+    torus1.rotation.x = time * 0.5; torus1.rotation.y = time * 0.3;
+    torus2.rotation.y = time * 0.8; torus2.rotation.z = time * 0.4;
+    torus3.rotation.x = time * 0.2; torus3.rotation.z = time * 0.6;
+    renderer.render(scene, camera);
+  }
+  animate(0);
+
+  function resize() {
+    const hero = document.getElementById('hero');
+    const w = hero.offsetWidth, h = hero.offsetHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  resize();
+}
+
+// ============================================
+// GSAP ANIMATIONS
+// ============================================
+function initGSAP() {
+  if (typeof gsap === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Hero text animation
+  gsap.fromTo('.hero-eyebrow', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.2 });
+  gsap.fromTo('.hero-h1', { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1, delay: 0.4 });
+  gsap.fromTo('.hero-hindi', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.6 });
+  gsap.fromTo('.hero-desc', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.7 });
+  gsap.fromTo('.hero-ctas', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, delay: 0.85 });
+  gsap.fromTo('.hero-stats', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, delay: 1 });
+
+  // Magnetic buttons
+  document.querySelectorAll('.btn-primary, .btn-outline').forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      gsap.to(btn, { x: x * 0.25, y: y * 0.25, duration: 0.3, ease: 'power2.out' });
+    });
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+    });
+  });
+
+  // Product cards stagger on scroll
+  ScrollTrigger.batch('.product-card', {
+    onEnter: batch => gsap.fromTo(batch, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out' }),
+  });
+}
+
+// ============================================
+// LOADER
+// ============================================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+    initThreeJS();
+    initGSAP();
+    initReveal();
+  }, 2400);
+});
+
+// ============================================
+// INIT
+// ============================================
+renderProducts();
+renderTestimonials();
+renderFaq();
+
+// On DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  updateCartUI();
+});
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeCart();
+    closeMobileMenu();
+  }
+});
+</script>
+</body>
+</html>
