@@ -1,0 +1,265 @@
+ <!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="description" content="Shikha Sharma - Architecture Professional | AutoCAD Certified | SketchUp Expert">
+  <meta name="keywords" content="Shikha Sharma, Architect, AutoCAD, SketchUp, Architecture Portfolio">
+  <meta name="author" content="Shikha Sharma">
+  <title>Shikha Sharma | Architecture Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #05080f;
+      color: #EFF3F8;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.75; }
+    .content { position: relative; z-index: 10; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #0F172A; }
+    ::-webkit-scrollbar-thumb { background: #F59E0B; border-radius: 10px; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 28px; width: 100%; }
+    .glass-card, .project-card, .about-card, .exp-card, .contact-card {
+      background: rgba(10, 20, 30, 0.55);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 32px;
+      transition: all 0.5s cubic-bezier(0.2, 0.95, 0.4, 1.1);
+    }
+    .glass-card:hover, .project-card:hover { border-color: #F59E0B; transform: translateY(-8px); box-shadow: 0 30px 50px -15px rgba(245,158,11,0.25); }
+    header { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 18px 0; transition: 0.4s; background: transparent; }
+    header.scrolled { background: rgba(5, 8, 15, 0.95); backdrop-filter: blur(24px); border-bottom: 1px solid rgba(245,158,11,0.5); padding: 12px 0; }
+    .nav-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #FDE047, #F59E0B, #D97706); -webkit-background-clip: text; background-clip: text; color: transparent; letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 42px; list-style: none; }
+    .nav-links a { text-decoration: none; color: #CBD5E1; font-weight: 500; transition: 0.3s; font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase; }
+    .nav-links a:hover { color: #FBBF24; letter-spacing: 1px; }
+    .menu-btn { display: none; font-size: 1.7rem; cursor: pointer; color: #F59E0B; }
+    .hero { min-height: 100vh; display: flex; align-items: center; padding: 140px 0 80px; }
+    .hero-grid { display: flex; flex-wrap: wrap; align-items: center; gap: 60px; justify-content: space-between; }
+    .hero-content { flex: 1.2; }
+    .badge { background: rgba(245,158,11,0.18); backdrop-filter: blur(8px); display: inline-block; padding: 8px 22px; border-radius: 60px; font-size: 0.7rem; font-weight: 600; border: 1px solid rgba(245,158,11,0.5); margin-bottom: 28px; color: #FDE047; text-transform: uppercase; letter-spacing: 1.5px; }
+    .hero-content h1 { font-size: 4rem; font-weight: 700; line-height: 1.15; letter-spacing: -3px; font-family: 'Cormorant Garamond', serif; }
+    .hero-content h1 span { color: #F59E0B; text-shadow: 0 0 20px rgba(245,158,11,0.3); }
+    .hero-desc { color: #94A3B8; margin: 28px 0 42px; font-size: 1.1rem; max-width: 550px; line-height: 1.7; }
+    .btn-group { display: flex; gap: 24px; flex-wrap: wrap; }
+    .btn-primary { background: linear-gradient(115deg, #F59E0B, #D97706, #B45309); border: none; padding: 15px 38px; border-radius: 60px; font-weight: 700; color: #020617; cursor: pointer; transition: all 0.4s; box-shadow: 0 10px 28px rgba(245,158,11,0.4); text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; }
+    .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(245,158,11,0.5); filter: brightness(1.08); }
+    .btn-outline { background: transparent; border: 1.5px solid #F59E0B; padding: 15px 38px; border-radius: 60px; font-weight: 600; transition: 0.4s; color: #FFFBEB; text-decoration: none; display: inline-block; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; }
+    .btn-outline:hover { background: rgba(245,158,11,0.15); transform: translateY(-3px); border-color: #FBBF24; }
+    .profile-img { flex: 0.8; display: flex; justify-content: center; }
+    .circle-img { width: 290px; height: 290px; border-radius: 50%; background: linear-gradient(145deg, #1E293B, #0F172A); display: flex; align-items: center; justify-content: center; border: 3px solid #F59E0B; box-shadow: 0 25px 45px -12px rgba(245,158,11,0.4); overflow: hidden; transition: 0.5s; }
+    .circle-img:hover { transform: scale(1.02); border-color: #FBBF24; box-shadow: 0 30px 55px -12px #F59E0B; }
+    .circle-img img { width: 100%; height: 100%; object-fit: cover; }
+    section { padding: 110px 0; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 700; text-align: center; letter-spacing: -1px; }
+    .section-title span { color: #F59E0B; border-bottom: 3px solid #F59E0B; padding-bottom: 6px; }
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 40px; }
+    .project-card { overflow: hidden; cursor: pointer; }
+    .project-img { height: 260px; background: #0F172A; overflow: hidden; position: relative; }
+    .project-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.8s; }
+    .project-card:hover .project-img img { transform: scale(1.08); }
+    .project-info { padding: 28px; }
+    .project-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; font-family: 'Cormorant Garamond', serif; }
+    .skills-container { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 35px 0; }
+    .skill-pill { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.35); padding: 10px 28px; border-radius: 60px; font-weight: 500; font-size: 0.85rem; transition: 0.3s; }
+    .skill-pill:hover { background: rgba(245,158,11,0.25); border-color: #F59E0B; transform: translateY(-2px); }
+    .exp-card { padding: 32px; margin-bottom: 28px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+    .exp-left h4 { font-size: 1.25rem; font-weight: 700; color: #F59E0B; margin-bottom: 6px; }
+    .contact-grid { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 40px; }
+    .contact-card { flex: 1; padding: 42px 32px; text-align: center; min-width: 240px; }
+    .contact-card i { font-size: 2.2rem; color: #F59E0B; margin-bottom: 22px; }
+    .contact-card a { color: #EDF2F8; text-decoration: none; transition: 0.3s; }
+    .contact-card a:hover { color: #FBBF24; }
+    .footer { text-align: center; padding: 55px 20px; border-top: 1px solid rgba(245,158,11,0.2); background: rgba(5,7,10,0.8); backdrop-filter: blur(12px); }
+    .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25D366; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; z-index: 1000; box-shadow: 0 8px 25px rgba(0,0,0,0.4); transition: 0.3s; text-decoration: none; color: white; }
+    .whatsapp-float:hover { transform: scale(1.1); background: #128C7E; }
+    .personal-info { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 25px; }
+    .info-chip { background: rgba(245,158,11,0.12); padding: 8px 22px; border-radius: 50px; font-size: 0.8rem; border: 1px solid rgba(245,158,11,0.3); }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 2000; justify-content: center; align-items: center; }
+    .modal-content { background: rgba(15,25,45,0.95); backdrop-filter: blur(20px); border-radius: 32px; max-width: 500px; width: 90%; padding: 32px; border: 1px solid #F59E0B; text-align: center; }
+    .close-modal { position: absolute; top: 20px; right: 30px; font-size: 2rem; cursor: pointer; color: white; transition: 0.3s; }
+    .close-modal:hover { color: #F59E0B; }
+    @media (max-width: 900px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 80px; left: 0; width: 100%; background: #0B1120ee; backdrop-filter: blur(24px); padding: 32px; text-align: center; border-radius: 0 0 32px 32px; gap: 20px; }
+      .nav-links.show { display: flex; }
+      .menu-btn { display: block; }
+      .hero-grid { flex-direction: column-reverse; text-align: center; }
+      .hero-content h1 { font-size: 2.8rem; }
+      .btn-group { justify-content: center; }
+      .circle-img { width: 220px; height: 220px; }
+      .section-title { font-size: 2.2rem; }
+      .container { padding: 0 24px; }
+    }
+    @media (max-width: 580px) {
+      .circle-img { width: 170px; height: 170px; }
+      section { padding: 70px 0; }
+      .projects-grid { gap: 24px; }
+      .btn-primary, .btn-outline { padding: 12px 28px; font-size: 0.75rem; }
+      .hero { padding: 120px 0 50px; }
+    }
+    .fade-up { opacity: 0; transform: translateY(45px); transition: all 0.9s cubic-bezier(0.2, 0.95, 0.4, 1.1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .counter-num { font-size: 2.3rem; font-weight: 800; color: #F59E0B; font-family: 'Cormorant Garamond', serif; }
+  </style>
+</head>
+<body>
+<div id="canvas-container"></div>
+<div id="projectModal" class="modal"><div class="modal-content"><span class="close-modal">&times;</span><h3 id="modalTitle" style="color:#F59E0B;"></h3><p id="modalDesc" style="margin-top:15px;"></p><button class="btn-primary" style="margin-top:20px;" onclick="closeModal()">Close</button></div></div>
+<a href="https://wa.me/918604562956?text=Hello%20Shikha%2C%20I%20saw%20your%20architecture%20portfolio" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+
+<div class="content">
+  <header id="navbar">
+    <div class="container nav-container">
+      <div class="logo">◈ SHIKHA SHARMA ◈</div>
+      <div class="menu-btn" id="menuToggle"><i class="fas fa-gem"></i></div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home">HOME</a></li><li><a href="#about">ABOUT</a></li><li><a href="#projects">PROJECTS</a></li>
+        <li><a href="#experience">EXPERIENCE</a></li><li><a href="#contact">CONTACT</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <section id="home" class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content"><div class="badge"><i class="fas fa-drafting-compass"></i> ARCHITECTURE & DESIGN</div>
+        <h1>Shikha <span>Sharma</span></h1><p class="hero-desc">Diploma in Architecture | AutoCAD Certified | SketchUp Expert | Creating functional, aesthetic, and sustainable spaces.</p>
+        <div class="btn-group"><a href="#projects" class="btn-primary">VIEW PROJECTS</a><a href="#contact" class="btn-outline">CONTACT ME</a></div>
+      </div>
+      <div class="profile-img"><div class="circle-img"><img src="https://i.ibb.co/R4t2HDcD/IMG-20251114-WA0001.jpg" alt="Shikha Sharma"></div></div>
+    </div>
+  </section>
+
+  <section id="about"><div class="container"><h2 class="section-title fade-up"><span>About</span> Me</h2>
+    <div class="about-card glass-card fade-up" style="padding: 48px; text-align: center; max-width: 950px; margin: 0 auto;"><p style="font-size: 1.15rem; line-height: 1.7;">Motivated and detail-oriented Architecture professional with hands-on experience in architectural planning, design development, and internships across reputed firms. Skilled in AutoCAD and SketchUp, with a strong desire to grow within a dynamic organization while contributing effectively to project success and professional excellence.</p>
+    <div class="skills-container"><span class="skill-pill">AutoCAD (Certified)</span><span class="skill-pill">SketchUp Pro</span><span class="skill-pill">Lumion</span><span class="skill-pill">3ds Max</span><span class="skill-pill">Photoshop</span><span class="skill-pill">Architectural Drafting</span><span class="skill-pill">Planning & Documentation</span></div>
+    <div class="personal-info"><div class="info-chip"><i class="fas fa-calendar-alt"></i> DOB: 12 April 2005</div><div class="info-chip"><i class="fas fa-venus"></i> Female</div><div class="info-chip"><i class="fas fa-flag-india"></i> Indian</div><div class="info-chip"><i class="fas fa-language"></i> Hindi, English</div><div class="info-chip"><i class="fas fa-user-friends"></i> Father: Raj Kumar</div></div>
+    </div></div></section>
+
+  <section id="projects"><div class="container"><h2 class="section-title fade-up"><span>Featured</span> Projects</h2><div class="projects-grid" id="projectsGrid"></div></div></section>
+
+  <section id="experience"><div class="container"><h2 class="section-title fade-up">Work <span>Experience</span></h2><div id="expContainer"></div></div></section>
+
+  <section id="contact"><div class="container"><h2 class="section-title fade-up">Get In <span>Touch</span></h2>
+    <div class="contact-grid">
+      <div class="contact-card glass-card fade-up"><i class="fas fa-map-marker-alt"></i><h3>Location</h3><p>Noida, Sector 135</p><p>Uttar Pradesh - 201304</p></div>
+      <div class="contact-card glass-card fade-up"><i class="fas fa-phone-alt"></i><h3>Phone</h3><p><a href="tel:+918604562956">+91 86045 62956</a></p></div>
+      <div class="contact-card glass-card fade-up"><i class="fas fa-envelope"></i><h3>Email</h3><p><a href="mailto:dali56aj7@gmail.com">dali56aj7@gmail.com</a></p></div>
+    </div>
+    <div class="contact-card glass-card fade-up" style="margin-top: 40px; padding: 32px; max-width: 650px; margin-left: auto; margin-right: auto;">
+      <h3><i class="fas fa-paper-plane"></i> Send Inquiry</h3>
+      <form id="quickContact" style="margin-top: 20px;"><input type="text" id="guestName" placeholder="Full Name" style="width:100%; background:#0F172A; border:1px solid #334155; border-radius: 60px; padding: 14px 20px; margin-bottom: 16px; color:white;"><input type="email" id="guestEmail" placeholder="Email" style="width:100%; background:#0F172A; border:1px solid #334155; border-radius: 60px; padding: 14px 20px; margin-bottom: 16px; color:white;"><textarea id="guestMsg" rows="3" placeholder="Project brief or message" style="width:100%; background:#0F172A; border-radius: 24px; padding: 14px; border:1px solid #334155; color:white;"></textarea><button type="submit" class="btn-primary" style="width:100%; margin-top: 14px;">Send via WhatsApp <i class="fab fa-whatsapp"></i></button></form>
+      <p style="font-size:0.7rem; margin-top:16px; color:#7E8A9A;">I hereby declare that the information provided is true and correct to the best of my knowledge.</p>
+    </div>
+  </div></section>
+
+  <footer class="footer"><p>© 2026 Shikha Sharma | Architecture Portfolio</p><p style="font-size: 0.7rem; margin-top: 8px;">Designed with ❤️ by Durgesh Sharma</p><p style="font-size:0.7rem;">Date: 30 April 2025 | Place: Uttar Pradesh</p></footer>
+</div>
+
+<script type="importmap">{ "imports": { "three": "https://unpkg.com/three@0.128.0/build/three.module.js" } }</script>
+<script type="module">
+  import * as THREE from 'three';
+  const container = document.getElementById('canvas-container');
+  const scene = new THREE.Scene(); scene.background = new THREE.Color(0x050B1A); scene.fog = new THREE.FogExp2(0x050B1A, 0.002);
+  const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 1000);
+  camera.position.set(0, 2.2, 14);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(innerWidth, innerHeight); renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+  const ambient = new THREE.AmbientLight(0x1a1a2e); scene.add(ambient);
+  const keyLight = new THREE.DirectionalLight(0xffeebb, 1.2); keyLight.position.set(5, 8, 6); scene.add(keyLight);
+  const fillLight = new THREE.PointLight(0xF59E0B, 0.5); fillLight.position.set(-3, 2, -4); scene.add(fillLight);
+  const backLight = new THREE.PointLight(0xFBBF24, 0.4); backLight.position.set(2, 3, -6); scene.add(backLight);
+  const starCount = 2500; const starGeo = new THREE.BufferGeometry(); const starPos = new Float32Array(starCount * 3);
+  for (let i = 0; i < starCount; i++) { starPos[i*3] = (Math.random() - 0.5) * 220; starPos[i*3+1] = (Math.random() - 0.5) * 120; starPos[i*3+2] = (Math.random() - 0.5) * 90 - 45; }
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xFFCC88, size: 0.07, transparent: true, opacity: 0.6 }));
+  scene.add(stars);
+  const goldRing = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.06, 128, 300), new THREE.MeshStandardMaterial({ color: 0xF59E0B, emissive: 0x552200, metalness: 0.9, roughness: 0.2 }));
+  goldRing.position.set(-2.2, 1.3, -2.8); scene.add(goldRing);
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.04, 96, 200), new THREE.MeshStandardMaterial({ color: 0xFBBF24, emissive: 0x332200, metalness: 0.85 }));
+  ring2.position.set(2, 1.6, -3.2); scene.add(ring2);
+  const particleCount = 2000; const particleGeo = new THREE.BufferGeometry(); const particlePos = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) { particlePos[i*3] = (Math.random() - 0.5) * 40; particlePos[i*3+1] = (Math.random() - 0.5) * 20; particlePos[i*3+2] = (Math.random() - 0.5) * 30 - 10; }
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
+  const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ color: 0xF59E0B, size: 0.045, transparent: true, opacity: 0.45 }));
+  scene.add(particles);
+  let time = 0;
+  function animate() { requestAnimationFrame(animate); time += 0.007; stars.rotation.y += 0.0003; stars.rotation.x = Math.sin(time * 0.1) * 0.05; particles.rotation.y = time * 0.02; goldRing.rotation.x = Math.sin(time * 0.6) * 0.4; goldRing.rotation.y = time * 0.5; ring2.rotation.z = time * 0.7; ring2.rotation.x = Math.cos(time * 0.5) * 0.3; renderer.render(scene, camera); }
+  animate();
+  window.addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+</script>
+
+<script>
+  const projectsData = [
+    { title: "G+6 Residential Building", desc: "Planning & architectural documentation | Gomti Greens, Sector 7, Lucknow", img: "https://images.pexels.com/photos/1732414/pexels-photo-1732414.jpeg?auto=compress&cs=tinysrgb&w=800" },
+    { title: "Commercial Complex", desc: "3D modeling and elevation design | Sector 132, Noida", img: "https://images.pexels.com/photos/2587054/pexels-photo-2587054.jpeg?auto=compress&cs=tinysrgb&w=800" },
+    { title: "Residential Villa", desc: "Conceptual design and 3D views | Luxury Villa Project", img: "https://images.pexels.com/photos/276724/pexels-photo-276724.jpeg?auto=compress&cs=tinysrgb&w=800" },
+    { title: "Interior Layout", desc: "Space planning for 3BHK apartment | Vibhuti Khand, Lucknow", img: "https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=800" }
+  ];
+
+  const experiences = [
+    { role: "Planner", org: "Srishti Anthwall Architects – Noida", year: "Sector 132", desc: "Assisted in planning and architectural design tasks. Supported layout development and documentation. Coordinated with senior architects." },
+    { role: "Architect", org: "Pankaj Kumar & Associates", year: "", desc: "Prepared architectural drawings and design drafts. Assisted in project coordination and presentations." },
+    { role: "Architect Intern", org: "Mark Design, Lucknow", year: "4 Months", desc: "Assisted senior architects with drafting and conceptual designs." },
+    { role: "Architect Intern", org: "Vibhuti Khand, Gomti Nagar, Lucknow", year: "G+6 Residential", desc: "Assisted in planning and architectural documentation for G+6 Residential Building at Gomti Greens, Sector 7." }
+  ];
+
+  function renderProjects() {
+    const grid = document.getElementById('projectsGrid');
+    if(grid) grid.innerHTML = projectsData.map(p => `<div class="project-card glass-card fade-up" onclick="showProjectModal('${p.title.replace(/'/g, "\\'")}', '${p.desc.replace(/'/g, "\\'")}')"><div class="project-img"><img src="${p.img}" alt="${p.title}" loading="lazy" onerror="this.src='https://placehold.co/800x600?text=Architecture+Project'"></div><div class="project-info"><div class="project-title">${p.title}</div><div class="project-desc" style="color:#94A3B8; font-size:0.85rem;">${p.desc}</div><a href="#" class="project-link" style="color:#F59E0B;">View Details →</a></div></div>`).join('');
+  }
+
+  function renderExperience() {
+    const expDiv = document.getElementById('expContainer');
+    if(expDiv) expDiv.innerHTML = experiences.map(exp => `<div class="exp-card glass-card fade-up"><div class="exp-left"><h4>${exp.role}</h4><p style="font-weight:500; color:#CBD5E1;">${exp.org} ${exp.year ? '| ' + exp.year : ''}</p><p style="color:#94A3B8; margin-top:8px;">${exp.desc}</p></div><div><i class="fas fa-building" style="color:#F59E0B; font-size:1.3rem;"></i></div></div>`).join('');
+  }
+
+  window.showProjectModal = (title, desc) => {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalDesc').innerText = desc;
+    document.getElementById('projectModal').style.display = 'flex';
+  };
+  window.closeModal = () => { document.getElementById('projectModal').style.display = 'none'; };
+  document.querySelector('.close-modal')?.addEventListener('click', closeModal);
+  window.onclick = (e) => { if(e.target === document.getElementById('projectModal')) closeModal(); };
+
+  renderProjects(); renderExperience();
+
+  document.getElementById('quickContact')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('guestName').value;
+    const email = document.getElementById('guestEmail').value;
+    const msg = document.getElementById('guestMsg').value;
+    const waNum = "918604562956";
+    const text = `*Architecture Portfolio Query*%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Message:* ${msg}`;
+    window.open(`https://wa.me/${waNum}?text=${text}`, '_blank');
+    alert("✓ Message sent! Shikha will get back to you soon.");
+    e.target.reset();
+  });
+
+  const faders = document.querySelectorAll('.fade-up');
+  const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
+  faders.forEach(el => observer.observe(el));
+
+  const header = document.getElementById('navbar');
+  window.addEventListener('scroll', () => { if(window.scrollY > 50) header.classList.add('scrolled'); else header.classList.remove('scrolled'); });
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  if(menuToggle) menuToggle.addEventListener('click', () => navLinks.classList.toggle('show'));
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if(target) target.scrollIntoView({ behavior: 'smooth' });
+      navLinks.classList.remove('show');
+    });
+  });
+</script>
+</body>
+</html>
