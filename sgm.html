@@ -1,20 +1,17 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <meta name="description" content="Sharma Gold Masala™ – Premium pure spices. Traditional grinding, no preservatives. 100% natural Onion, Garlic, Ginger, Oregano, Turmeric, Coriander, Red Chilli powder. Wholesale & retail.">
-  <meta name="keywords" content="Sharma Gold Masala, Pure Spices, Onion Powder, Garlic Powder, Ginger Powder, Turmeric, Coriander, Red Chilli, Wholesale Spices, Indian Masala">
-  <meta name="author" content="Sharma Gold Masala">
-  <title>Sharma Gold Masala™ | Pure Spices, Golden Taste</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Sharma Gold Masala™ | Premium Spices</title>
+  <meta name="description" content="Sharma Gold Masala – 100% pure spices, traditional grinding, no preservatives. Wholesale & retail.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
     }
 
     :root {
@@ -27,33 +24,23 @@
       --accent: #2E7D32;
       --accent-light: #4CAF50;
       --bg: #FFF8E1;
-      --bg-card: rgba(255, 248, 225, 0.85);
-      --dark: #1B1B1B;
-      --dark2: #2C2C2C;
+      --bg-card: rgba(255, 248, 225, 0.92);
       --text: #1B1B1B;
       --text-muted: #6B5E4E;
-      --text-light: #9E8E7E;
-      --border: rgba(198, 40, 40, 0.15);
-      --glass: rgba(255, 255, 255, 0.12);
-      --glass-border: rgba(255, 215, 0, 0.25);
-      --shadow: 0 20px 60px rgba(198, 40, 40, 0.15);
-      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.08);
+      --border: rgba(198, 40, 40, 0.12);
+      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
       --radius: 20px;
       --radius-lg: 32px;
-      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition: all 0.5s cubic-bezier(0.2, 0.95, 0.4, 1.1);
     }
 
     [data-theme="dark"] {
-      --bg: #0D0D0D;
-      --bg-card: rgba(28, 28, 28, 0.9);
+      --bg: #0A0A0A;
+      --bg-card: rgba(20, 20, 20, 0.92);
       --text: #F5EFE0;
-      --text-muted: #B5A898;
-      --text-light: #7A6B5A;
-      --border: rgba(255, 215, 0, 0.15);
-      --glass: rgba(255, 255, 255, 0.05);
-      --glass-border: rgba(255, 215, 0, 0.15);
-      --shadow: 0 20px 60px rgba(198, 40, 40, 0.3);
-      --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+      --text-muted: #C5B8A0;
+      --border: rgba(255, 215, 0, 0.12);
+      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
 
     body {
@@ -61,160 +48,10 @@
       background: var(--bg);
       color: var(--text);
       overflow-x: hidden;
-      transition: background 0.5s, color 0.5s;
-      cursor: none;
+      transition: background 0.4s ease;
     }
 
-    /* Custom Cursor */
-    .cursor {
-      width: 12px;
-      height: 12px;
-      background: var(--secondary);
-      border-radius: 50%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 99999;
-      transform: translate(-50%, -50%);
-      transition: transform 0.1s, width 0.3s, height 0.3s;
-    }
-
-    .cursor-follower {
-      width: 36px;
-      height: 36px;
-      border: 2px solid var(--secondary);
-      border-radius: 50%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 99998;
-      transform: translate(-50%, -50%);
-      transition: all 0.15s ease;
-      opacity: 0.6;
-    }
-
-    .cursor.active {
-      width: 24px;
-      height: 24px;
-      background: var(--secondary);
-    }
-
-    .cursor-follower.active {
-      width: 56px;
-      height: 56px;
-      border-color: var(--secondary);
-      opacity: 0.3;
-    }
-
-    /* Loader */
-    #loader {
-      position: fixed;
-      inset: 0;
-      background: var(--dark);
-      z-index: 99997;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.8s ease, visibility 0.8s;
-    }
-
-    #loader.hide {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .loader-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2rem, 6vw, 4rem);
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-      animation: loaderPulse 1.5s ease-in-out infinite alternate;
-    }
-
-    .loader-logo span {
-      color: var(--secondary);
-    }
-
-    .loader-tagline {
-      font-size: 0.9rem;
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 48px;
-    }
-
-    .loader-bar {
-      width: 200px;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .loader-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      border-radius: 3px;
-      animation: loaderFill 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    .loader-dots {
-      display: flex;
-      gap: 8px;
-      margin-top: 24px;
-    }
-
-    .loader-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--secondary);
-      animation: loaderDot 1.2s ease-in-out infinite;
-    }
-
-    .loader-dot:nth-child(2) {
-      animation-delay: 0.2s;
-      background: var(--primary);
-    }
-
-    .loader-dot:nth-child(3) {
-      animation-delay: 0.4s;
-      background: var(--accent);
-    }
-
-    @keyframes loaderPulse {
-      from {
-        opacity: 0.7;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes loaderFill {
-      from {
-        width: 0;
-      }
-      to {
-        width: 100%;
-      }
-    }
-
-    @keyframes loaderDot {
-      0%, 100% {
-        transform: translateY(0) scale(1);
-        opacity: 0.5;
-      }
-      50% {
-        transform: translateY(-8px) scale(1.2);
-        opacity: 1;
-      }
-    }
-
-    /* Canvas 3D Background */
+    /* 3D Canvas */
     #canvas-container {
       position: fixed;
       top: 0;
@@ -223,48 +60,22 @@
       height: 100%;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.7;
     }
+    .content { position: relative; z-index: 10; }
 
-    .content {
-      position: relative;
-      z-index: 10;
-    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--text-light); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
 
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--text-light);
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--secondary);
-      border-radius: 10px;
-    }
-
-    /* Glass Card */
-    .glass-card,
-    .product-card,
-    .about-card,
-    .exp-card,
-    .contact-card,
-    .founder-card,
-    .process-step,
-    .wholesale-card {
+    /* Glassmorphism */
+    .glass-card, .product-card, .founder-card, .step-card, .wholesale-card, .admin-card {
       background: var(--bg-card);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       transition: var(--transition);
     }
-
-    .glass-card:hover,
-    .product-card:hover,
-    .founder-card:hover {
+    .glass-card:hover, .product-card:hover, .founder-card:hover {
       border-color: var(--secondary);
       transform: translateY(-8px);
       box-shadow: var(--shadow);
@@ -274,101 +85,62 @@
     header {
       position: fixed;
       top: 0;
-      width: 100%;
+      left: 0;
+      right: 0;
       z-index: 1000;
-      padding: 18px 5%;
-      transition: 0.4s;
+      padding: 20px 5%;
+      transition: 0.3s;
       background: transparent;
     }
-
     header.scrolled {
       background: var(--bg-card);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       padding: 12px 5%;
     }
-
     .nav-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: 1400px;
+      max-width: 1440px;
       margin: 0 auto;
     }
-
-    .logo-img {
-      height: 55px;
-      width: auto;
-      max-width: 200px;
-      object-fit: contain;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 42px;
-      list-style: none;
-    }
-
+    .logo-img { height: 56px; width: auto; max-width: 220px; object-fit: contain; }
+    .nav-links { display: flex; gap: 48px; list-style: none; }
     .nav-links a {
       text-decoration: none;
       color: var(--text-muted);
       font-weight: 500;
-      transition: 0.3s;
       font-size: 0.9rem;
       letter-spacing: 0.5px;
       text-transform: uppercase;
+      transition: 0.3s;
       position: relative;
     }
-
     .nav-links a::after {
       content: '';
       position: absolute;
-      bottom: -4px;
+      bottom: -6px;
       left: 0;
       width: 0;
       height: 2px;
       background: var(--secondary);
-      border-radius: 2px;
       transition: width 0.3s;
     }
-
-    .nav-links a:hover {
-      color: var(--secondary);
-    }
-
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-
-    .menu-btn {
-      display: none;
-      font-size: 1.7rem;
-      cursor: pointer;
-      color: var(--secondary);
-    }
-
-    .nav-actions {
-      display: flex;
-      gap: 12px;
-    }
-
+    .nav-links a:hover { color: var(--secondary); }
+    .nav-links a:hover::after { width: 100%; }
+    .menu-btn { display: none; font-size: 1.8rem; cursor: pointer; color: var(--secondary); }
     .theme-btn {
-      width: 42px;
-      height: 42px;
+      width: 44px; height: 44px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      background: var(--glass);
+      border-radius: 14px;
+      background: var(--bg-card);
       color: var(--text);
       cursor: pointer;
       font-size: 1.2rem;
       transition: var(--transition);
     }
-
-    .theme-btn:hover {
-      background: var(--secondary);
-      color: var(--dark);
-      border-color: var(--secondary);
-    }
+    .theme-btn:hover { background: var(--secondary); color: #000; }
 
     /* Mobile Menu */
     .mobile-menu {
@@ -376,802 +148,371 @@
       inset: 0;
       top: 70px;
       background: var(--bg-card);
-      backdrop-filter: blur(24px);
+      backdrop-filter: blur(32px);
       z-index: 999;
       padding: 40px 5%;
       transform: translateX(100%);
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.4s;
     }
-
-    .mobile-menu.open {
-      transform: translateX(0);
-    }
-
+    .mobile-menu.open { transform: translateX(0); }
     .mobile-menu a {
       display: block;
-      font-family: 'Cormorant Garamond', serif;
       font-size: 1.8rem;
       font-weight: 600;
+      font-family: 'Playfair Display', serif;
       color: var(--text);
       text-decoration: none;
-      padding: 16px 0;
+      padding: 20px 0;
       border-bottom: 1px solid var(--border);
-      transition: color 0.3s, padding-left 0.3s;
     }
 
-    .mobile-menu a:hover {
-      color: var(--secondary);
-      padding-left: 16px;
-    }
-
-    /* Hero Section */
+    /* Hero */
     .hero {
       min-height: 100vh;
       display: flex;
       align-items: center;
       padding: 140px 5% 80px;
-      position: relative;
-      overflow: hidden;
     }
-
     .hero-grid {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      gap: 60px;
-      justify-content: space-between;
-      max-width: 1400px;
+      gap: 80px;
+      max-width: 1440px;
       margin: 0 auto;
+      flex-wrap: wrap;
     }
-
-    .hero-content {
-      flex: 1.2;
-    }
-
+    .hero-content { flex: 1.2; }
     .badge {
-      background: rgba(255, 215, 0, 0.15);
-      backdrop-filter: blur(8px);
+      background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
       display: inline-block;
-      padding: 6px 18px;
+      padding: 8px 22px;
       border-radius: 60px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      border: 1px solid var(--glass-border);
-      margin-bottom: 28px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,215,0,0.4);
+      margin-bottom: 32px;
       color: var(--secondary);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
     }
-
     .hero-content h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 4rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
       font-weight: 800;
-      line-height: 1.15;
+      line-height: 1.1;
       letter-spacing: -2px;
+      margin-bottom: 20px;
     }
-
-    .hero-content h1 span {
-      color: var(--secondary);
-      text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-    }
-
+    .hero-content h1 span { color: var(--secondary); text-shadow: 0 0 20px rgba(255,215,0,0.3); }
     .hero-desc {
       color: var(--text-muted);
-      margin: 28px 0 42px;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       max-width: 550px;
       line-height: 1.7;
+      margin-bottom: 40px;
     }
-
-    .btn-group {
-      display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
+    .btn-group { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 50px; }
     .btn-primary {
-      background: linear-gradient(115deg, var(--secondary), var(--secondary-dark), #F5B800);
-      border: none;
-      padding: 15px 38px;
+      background: linear-gradient(115deg, var(--secondary), #E6B800);
+      padding: 16px 42px;
       border-radius: 60px;
       font-weight: 700;
-      color: var(--dark);
-      cursor: pointer;
-      transition: all 0.4s;
-      box-shadow: 0 10px 28px rgba(255, 215, 0, 0.4);
+      color: #1B1B1B;
       text-decoration: none;
       display: inline-block;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 0.85rem;
+      transition: 0.3s;
+      box-shadow: 0 12px 28px rgba(255,215,0,0.3);
     }
-
-    .btn-primary:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 35px rgba(255, 215, 0, 0.5);
-      filter: brightness(1.08);
-    }
-
+    .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 20px 35px rgba(255,215,0,0.4); }
     .btn-outline {
       background: transparent;
-      border: 1.5px solid var(--secondary);
-      padding: 15px 38px;
+      border: 2px solid var(--secondary);
+      padding: 16px 42px;
       border-radius: 60px;
       font-weight: 600;
-      transition: 0.4s;
       color: var(--text);
       text-decoration: none;
-      display: inline-block;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 0.85rem;
+      transition: 0.3s;
     }
-
-    .btn-outline:hover {
-      background: rgba(255, 215, 0, 0.15);
-      transform: translateY(-3px);
-      border-color: var(--secondary-light);
+    .btn-outline:hover { background: rgba(255,215,0,0.1); transform: translateY(-3px); }
+    .trust-badges { display: flex; flex-wrap: wrap; gap: 16px; }
+    .trust-badge {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      padding: 8px 20px;
+      border-radius: 60px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
     }
+    .hero-visual { flex: 0.9; display: flex; justify-content: center; }
+    .floating-spice { width: 100%; max-width: 500px; animation: float3D 6s ease-in-out infinite; }
+    @keyframes float3D { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-25px) rotate(3deg); } }
 
-    .profile-img {
-      flex: 0.8;
-      display: flex;
-      justify-content: center;
+    section { padding: 120px 5%; }
+    .container { max-width: 1440px; margin: 0 auto; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 60px;
     }
+    .section-title span { color: var(--secondary); border-bottom: 3px solid var(--secondary); padding-bottom: 8px; }
 
-    .circle-img {
-      width: 290px;
-      height: 290px;
-      border-radius: 50%;
-      background: linear-gradient(145deg, var(--secondary), var(--primary));
+    /* Products Grid with Color-specific Hover Glow - MODERN VERSION */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 50px;
+    }
+    .product-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border-radius: 32px;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.2, 0.95, 0.4, 1.1);
+      border: 1px solid var(--border);
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 32px;
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+      z-index: -1;
+    }
+    /* Product-specific glow colors */
+    .product-card[data-glow="yellow"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(255,215,0,0.6); }
+    .product-card[data-glow="pink"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(255,105,180,0.6); }
+    .product-card[data-glow="red"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(198,40,40,0.6); }
+    .product-card[data-glow="green"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(46,125,50,0.6); }
+    .product-card[data-glow="brown"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(139,69,19,0.6); }
+    .product-card[data-glow="orange"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(255,165,0,0.6); }
+
+    .product-card:hover { transform: translateY(-12px); border-color: var(--secondary); box-shadow: 0 30px 50px rgba(0,0,0,0.2); }
+    .product-img {
+      width: 100%;
+      height: 380px;
+      background: linear-gradient(145deg, #fff5e6, #ffe8d4);
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 3px solid var(--secondary);
-      box-shadow: 0 25px 45px -12px rgba(255, 215, 0, 0.4);
-      overflow: hidden;
-      transition: 0.5s;
-      animation: float 4s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-15px);
-      }
-    }
-
-    .circle-img:hover {
-      transform: scale(1.02);
-      border-color: var(--secondary-light);
-      box-shadow: 0 30px 55px -12px var(--secondary);
-    }
-
-    .circle-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Floating Spice Particles */
-    .spice-particle {
-      position: absolute;
-      pointer-events: none;
-      animation: spiceFloat 6s ease-in-out infinite;
-      opacity: 0.6;
-      font-size: 1.5rem;
-    }
-
-    @keyframes spiceFloat {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.6;
-      }
-      33% {
-        transform: translateY(-30px) rotate(120deg);
-      }
-      66% {
-        transform: translateY(-10px) rotate(240deg);
-      }
-      100% {
-        transform: translateY(0) rotate(360deg);
-        opacity: 0.6;
-      }
-    }
-
-    /* Sections */
-    section {
-      padding: 110px 0;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 28px;
-    }
-
-    .section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.8rem;
-      font-weight: 800;
-      text-align: center;
-      letter-spacing: -1px;
-      margin-bottom: 50px;
-    }
-
-    .section-title span {
-      color: var(--secondary);
-      border-bottom: 3px solid var(--secondary);
-      padding-bottom: 6px;
-    }
-
-    /* Products Grid */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 40px;
-    }
-
-    .product-card {
-      overflow: hidden;
-      cursor: pointer;
-      padding: 28px;
-      text-align: center;
       position: relative;
+      overflow: hidden;
+      padding: 20px;
     }
-
-    .product-img {
-      width: 100%;
-      height: 220px;
-      object-fit: contain;
-      margin-bottom: 20px;
-      transition: transform 0.5s;
-    }
-
-    .product-card:hover .product-img {
-      transform: scale(1.05);
-    }
-
-    .product-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-      font-family: 'Cormorant Garamond', serif;
-    }
-
-    .product-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .product-price {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 16px;
-    }
-
-    .price-item {
-      background: rgba(255, 215, 0, 0.1);
-      padding: 6px 14px;
-      border-radius: 40px;
-      font-weight: 700;
-      color: var(--secondary);
-    }
-
-    .pack-options {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .pack-badge {
-      background: rgba(255, 215, 0, 0.12);
-      padding: 5px 12px;
-      border-radius: 40px;
-      font-size: 0.7rem;
-      border: 1px solid var(--border);
-    }
-
-    .btn-add {
+    body.dark .product-img { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); }
+   .product-img {
+    aspect-ratio: 9 / 16;
+     width: 100%;
+    background: linear-gradient(145deg, #fff5e6, #ffe8d4);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+      padding: 20px;
+}
+    .product-card:hover .product-img img { transform: scale(1.08); }
+    .product-info { padding: 28px; }
+    .product-title { font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 10px; }
+    .product-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 18px; line-height: 1.5; }
+    .price-row { display: flex; justify-content: space-between; margin: 18px 0; flex-wrap: wrap; gap: 12px; }
+    .price-tag { background: rgba(255,215,0,0.15); padding: 8px 18px; border-radius: 40px; font-weight: 700; color: var(--secondary); font-size: 1rem; }
+    .btn-wa {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 10px 24px;
+      padding: 14px 20px;
       border-radius: 40px;
+      font-weight: 600;
       cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s;
       width: 100%;
+      transition: 0.3s;
+      font-size: 1rem;
     }
+    .btn-wa:hover { background: var(--secondary); color: #000; }
 
-    .btn-add:hover {
-      background: var(--secondary);
-      color: var(--dark);
-    }
-
-    /* Founders Grid */
-    .founders-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 45px;
-    }
-
+    /* Founders */
+    .founders-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 50px; }
     .founder-card {
-      padding: 38px 28px;
-      text-align: center;
-    }
-
-    .founder-avatar {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      overflow: hidden;
-      transition: 0.5s;
-    }
-
-    .founder-avatar:hover {
-      transform: scale(1.05);
-    }
-
-    .founder-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .founder-name {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--secondary);
-      margin-bottom: 6px;
-      font-family: 'Cormorant Garamond', serif;
-    }
-
-    .founder-role {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    .founder-contact {
-      margin-top: 20px;
-    }
-
-    .founder-contact a {
-      color: var(--secondary);
-      text-decoration: none;
-      font-size: 0.9rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: 0.3s;
-    }
-
-    .founder-contact a:hover {
-      color: var(--secondary-light);
-    }
-
-    /* Process Timeline */
-    .process-timeline {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-      margin-top: 40px;
-      position: relative;
-    }
-
-    .process-step {
-      flex: 1;
-      min-width: 170px;
-      text-align: center;
-      padding: 30px 20px;
-    }
-
-    .process-num {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
-      color: var(--dark);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-weight: 800;
-      font-size: 1.2rem;
-    }
-
-    /* Trust Badges */
-    .trust-badges {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin: 50px 0 20px;
-    }
-
-    .trust-badge {
       background: var(--bg-card);
-      padding: 12px 28px;
-      border-radius: 60px;
+      backdrop-filter: blur(16px);
+      border-radius: 40px;
+      padding: 40px;
+      text-align: center;
       border: 1px solid var(--border);
-      font-weight: 600;
-      font-size: 0.85rem;
-      transition: 0.3s;
     }
+    .founder-avatar { width: 160px; height: 160px; border-radius: 50%; overflow: hidden; margin: 0 auto 24px; border: 3px solid var(--secondary); }
+    .founder-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .founder-name { font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
+    .founder-role { color: var(--text-muted); margin-bottom: 16px; }
+    .founder-contact a { color: var(--secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 
-    .trust-badge:hover {
-      border-color: var(--secondary);
-      transform: translateY(-2px);
-    }
-
-    /* Contact Grid */
-    .contact-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 40px;
-      margin-top: 40px;
-    }
-
-    .contact-card {
+    /* Process Steps */
+    .process-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+    .step-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border-radius: 32px;
+      padding: 35px 25px;
+      text-align: center;
       flex: 1;
-      padding: 45px 32px;
-      text-align: center;
-      min-width: 240px;
+      min-width: 180px;
+      border: 1px solid var(--border);
+    }
+    .step-num {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--secondary), #E6B800);
+      color: #000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      margin: 0 auto 20px;
     }
 
-    .contact-card i {
-      font-size: 2.2rem;
-      color: var(--secondary);
-      margin-bottom: 22px;
+    /* Wholesale Form with Neon Glow Loop */
+    .wholesale-section { max-width: 750px; margin: 0 auto; }
+    .wholesale-card { padding: 50px; text-align: center; position: relative; overflow: hidden; }
+    .wholesale-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, var(--secondary), var(--primary), var(--secondary), var(--accent));
+      background-size: 400% 400%;
+      border-radius: var(--radius-lg);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.5s;
     }
+    .wholesale-card:hover::before { opacity: 0.5; animation: neonGlow 3s ease infinite; }
+    @keyframes neonGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    .contact-card a {
-      color: var(--text);
-      text-decoration: none;
-      transition: 0.3s;
-    }
-
-    .contact-card a:hover {
-      color: var(--secondary);
-    }
-
-    /* Wholesale Card */
-    .wholesale-card {
-      padding: 48px;
-      max-width: 750px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
+    .form-group { margin-bottom: 24px; position: relative; }
+    .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 16px 22px;
+      padding: 16px 24px;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 60px;
       color: var(--text);
       font-family: 'Inter', sans-serif;
+      font-size: 1rem;
       transition: 0.3s;
     }
-
-    .form-group textarea {
-      border-radius: 28px;
-      resize: vertical;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
       outline: none;
       border-color: var(--secondary);
+      box-shadow: 0 0 20px rgba(255,215,0,0.6);
     }
-
-    /* WhatsApp Float */
-    .whatsapp-float {
-      position: fixed;
-      bottom: 32px;
-      right: 32px;
-      background: #25D366;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      z-index: 1000;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-      transition: 0.3s;
-      text-decoration: none;
-      color: white;
-    }
-
-    .whatsapp-float:hover {
-      transform: scale(1.1);
-      background: #128C7E;
-    }
-
-    /* Scroll Top */
-    .scroll-top {
-      position: fixed;
-      bottom: 110px;
-      right: 32px;
-      width: 48px;
-      height: 48px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .form-group textarea { border-radius: 32px; }
+    .submit-btn {
+      background: linear-gradient(115deg, var(--secondary), #E6B800);
+      width: 100%;
+      padding: 16px;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #000;
+      border: none;
       cursor: pointer;
-      z-index: 999;
       font-size: 1rem;
-      color: var(--text);
-      transition: var(--transition);
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      visibility: hidden;
+      transition: 0.3s;
     }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,215,0,0.4); }
 
-    .scroll-top.show {
-      opacity: 1;
-      visibility: visible;
+    /* Admin Panel - Password Protected */
+    .admin-section { margin-top: 60px; }
+    .admin-card { padding: 40px; text-align: center; }
+    .admin-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+    .admin-row input, .admin-row select { flex: 1; padding: 12px 20px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 60px; color: var(--text); }
+    .admin-btn { background: var(--secondary); color: #000; border: none; padding: 12px 24px; border-radius: 60px; font-weight: 600; cursor: pointer; margin: 5px; }
+    .admin-password-section { margin-bottom: 20px; }
+    .password-input { width: 250px; margin: 0 auto 15px; }
+    .admin-panel-content { display: none; }
+
+    /* Contact Section - No underline on phone/email */
+    .contact-card a {
+      text-decoration: none;
     }
-
-    .scroll-top:hover {
-      background: var(--secondary);
-      color: var(--dark);
-      border-color: var(--secondary);
-      transform: translateY(-4px);
+    .contact-card a:hover {
+      color: var(--secondary);
     }
 
     /* Footer */
     .footer {
-      text-align: center;
-      padding: 55px 20px;
-      border-top: 1px solid var(--border);
       background: var(--bg-card);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(20px);
+      padding: 60px 5% 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
     }
+    .social-icons { display: flex; justify-content: center; gap: 30px; margin-bottom: 30px; }
+    .social-icons a { color: var(--text-muted); font-size: 1.8rem; transition: 0.3s; }
+    .social-icons a:hover { color: var(--secondary); transform: translateY(-4px); }
 
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 25px;
-      margin-bottom: 25px;
-    }
+    @media (max-width: 1024px) { .hero-content h1 { font-size: 3.5rem; } .products-grid { gap: 30px; } .founders-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .nav-links { display: none; } .menu-btn { display: block; } .hero-content h1 { font-size: 2.5rem; } .hero-grid { flex-direction: column; text-align: center; } .btn-group { justify-content: center; } .trust-badges { justify-content: center; } .product-img { height: 280px; } .product-img img { width: 100%; height: 100%; object-fit: cover; } }
+    @media (max-width: 768px) {
+  .product-img {
+    aspect-ratio: 9 / 16;
+    height: auto;
+  }
 
-    .social-links a {
-      color: var(--text-muted);
-      font-size: 1.6rem;
-      transition: 0.3s;
-    }
+  .product-img img {
+    object-fit: contain;
+  }
+}
 
-    .social-links a:hover {
-      color: var(--secondary);
-      transform: translateY(-3px);
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-      .products-grid {
-        gap: 25px;
-      }
-    }
-
-    @media (max-width: 900px) {
-      .nav-links {
-        display: none;
-      }
-
-      .menu-btn {
-        display: block;
-      }
-
-      .hero-grid {
-        flex-direction: column-reverse;
-        text-align: center;
-      }
-
-      .hero-content h1 {
-        font-size: 2.8rem;
-      }
-
-      .btn-group {
-        justify-content: center;
-      }
-
-      .circle-img {
-        width: 220px;
-        height: 220px;
-      }
-
-      .section-title {
-        font-size: 2.2rem;
-      }
-
-      .container {
-        padding: 0 24px;
-      }
-    }
-
-    @media (max-width: 580px) {
-      .circle-img {
-        width: 180px;
-        height: 180px;
-      }
-
-      section {
-        padding: 70px 0;
-      }
-
-      .btn-primary,
-      .btn-outline {
-        padding: 12px 28px;
-        font-size: 0.75rem;
-      }
-
-      .hero {
-        padding: 120px 0 50px;
-      }
-
-      .product-card {
-        padding: 20px;
-      }
-
-      .product-img {
-        height: 180px;
-      }
-    }
-
-    /* Reveal Animations */
-    .fade-up {
-      opacity: 0;
-      transform: translateY(45px);
-      transition: all 0.9s cubic-bezier(0.2, 0.95, 0.4, 1.1);
-    }
-
-    .fade-up.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      bottom: 110px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--dark);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 100px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      z-index: 99996;
-      opacity: 0;
-      transition: opacity 0.3s, transform 0.3s;
-      white-space: nowrap;
-      border: 1px solid var(--secondary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      pointer-events: none;
-      max-width: 90vw;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    /* Fade Up Animation */
+    .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
 
-<!-- Custom Cursor -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-follower" id="cursorFollower"></div>
-
-<!-- Loading Screen -->
-<div id="loader">
-  <div class="loader-logo">Sharma <span>Gold</span> Masala™</div>
-  <div class="loader-tagline">Pure Spices · Golden Taste</div>
-  <div class="loader-bar">
-    <div class="loader-bar-fill"></div>
-  </div>
-  <div class="loader-dots">
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-    <div class="loader-dot"></div>
-  </div>
-</div>
-
-<!-- Toast Notification -->
-<div class="toast" id="toast">✓ Added to cart!</div>
-
-<!-- Canvas 3D Background -->
 <div id="canvas-container"></div>
 
 <div class="content">
   <header id="navbar">
     <div class="nav-container">
-      <img src="https://i.ibb.co/qFFcTHjQ/Gemini-Generated-Image-1yt9jb1yt9jb1yt9.png" alt="Sharma Gold Masala Logo" class="logo-img">
+      <img src="https://i.ibb.co/qFFcTHjQ/Gemini-Generated-Image-1yt9jb1yt9jb1yt9.png" alt="Logo" class="logo-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27200%27 height=%2750%27%3E%3Crect width=%27200%27 height=%2750%27 fill=%27%23C62828%27/%3E%3Ctext x=%27100%27 y=%2732%27 text-anchor=%27middle%27 fill=%27%23FFD700%27 font-size=%2718%27%3ESharma Gold%3C/text%3E%3C/svg%3E'">
       <div class="menu-btn" id="menuToggle"><i class="fas fa-gem"></i></div>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#home">Home</a></li>
-        <li><a href="#products">Products</a></li>
-        <li><a href="#founders">Founders</a></li>
-        <li><a href="#process">Process</a></li>
-        <li><a href="#wholesale">Wholesale</a></li>
-        <li><a href="#contact">Contact</a></li>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li><li><a href="#products">Products</a></li><li><a href="#founders">Founders</a></li>
+        <li><a href="#process">Process</a></li><li><a href="#wholesale">Wholesale</a></li><li><a href="#contact">Contact</a></li>
       </ul>
-      <div class="nav-actions">
-        <button class="theme-btn" id="themeToggle">🌙</button>
-      </div>
+      <div class="nav-actions"><button class="theme-btn" id="themeToggle">🌙</button></div>
     </div>
   </header>
 
-  <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#home" onclick="closeMobileMenu()">Home</a>
-    <a href="#products" onclick="closeMobileMenu()">Products</a>
-    <a href="#founders" onclick="closeMobileMenu()">Founders</a>
-    <a href="#process" onclick="closeMobileMenu()">Process</a>
-    <a href="#wholesale" onclick="closeMobileMenu()">Wholesale</a>
-    <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+    <a href="#home">Home</a><a href="#products">Products</a><a href="#founders">Founders</a>
+    <a href="#process">Process</a><a href="#wholesale">Wholesale</a><a href="#contact">Contact</a>
   </div>
 
   <!-- Hero Section -->
   <section id="home" class="hero">
     <div class="hero-grid">
       <div class="hero-content">
-        <div class="badge"><i class="fas fa-crown"></i> Since 2024 · Pure Spices</div>
+        <div class="badge"><i class="fas fa-crown"></i> Since 2024 ·Noida sector 135 , UP</div>
         <h1>Sharma <span>Gold</span> Masala™</h1>
-        <p class="hero-desc">"सोना है असली, मसाला है शुद्ध" — Premium Indian spices, traditional grinding, no preservatives. Trusted by families across India.</p>
-        <div class="btn-group">
-          <a href="#products" class="btn-primary">Shop Now</a>
-          <a href="#wholesale" class="btn-outline">Wholesale Inquiry</a>
-        </div>
-        <div class="trust-badges">
-          <span class="trust-badge">✅ 100% Pure</span>
-          <span class="trust-badge">🌿 No Preservatives</span>
-          <span class="trust-badge">🔬 Traditional Grinding</span>
-          <span class="trust-badge">📦 Pan India Delivery</span>
-        </div>
+        <p class="hero-desc">"सोना है असली, मसाला है शुद्ध" — Premium Indian spices, traditional grinding on sil-batta, no preservatives. Trusted by families across India.</p>
+        <div class="btn-group"><a href="#products" class="btn-primary">Shop Now →</a><a href="#wholesale" class="btn-outline">Wholesale Inquiry</a></div>
+        <div class="trust-badges"><span class="trust-badge">✅ 100% Pure</span><span class="trust-badge">🌿 No Preservatives</span><span class="trust-badge">🔬 Traditional Grinding</span><span class="trust-badge">📦 Pan India Delivery</span></div>
       </div>
-      <div class="profile-img">
-        <div class="circle-img">
-          <img src="https://i.ibb.co/60HZv5CC/IMG-20251114-WA0003.jpg" alt="Sharma Gold Masala">
-        </div>
-      </div>
+      <div class="hero-visual"><div class="floating-spice"><div style="font-size: 18rem; text-align: center; filter: drop-shadow(0 20px 40px rgba(255,215,0,0.3));">🌶️</div></div></div>
     </div>
-    <!-- Floating Spice Particles -->
-    <div class="spice-particle" style="top: 15%; left: 5%; animation-delay: 0s;">🌶️</div>
-    <div class="spice-particle" style="top: 70%; left: 10%; animation-delay: 1s;">🟡</div>
-    <div class="spice-particle" style="top: 85%; right: 8%; animation-delay: 2s;">🌿</div>
-    <div class="spice-particle" style="top: 30%; right: 12%; animation-delay: 0.5s;">🧄</div>
-    <div class="spice-particle" style="top: 50%; left: 85%; animation-delay: 1.5s;">🧅</div>
   </section>
 
   <!-- Products Section -->
@@ -1182,32 +523,44 @@
     </div>
   </section>
 
+  <!-- Admin Panel - Password Protected -->
+  <div class="container admin-section">
+    <div class="admin-card glass-card" id="adminPanel">
+      <h3>🔐 Admin Panel</h3>
+      <div class="admin-password-section">
+        <input type="password" id="adminPassword" class="password-input" placeholder="Enter Admin Password" style="width:250px; padding:12px 20px; border-radius:60px; border:1px solid var(--border); background:var(--bg-card); color:var(--text);">
+        <button class="admin-btn" id="unlockAdminBtn">Unlock Panel</button>
+        
+      </div>
+      <div id="adminPanelContent" class="admin-panel-content">
+        <div class="admin-row"><input type="text" id="newProductName" placeholder="Product Name"><input type="text" id="newProductImage" placeholder="Image URL (any placeholder)"></div>
+        <div class="admin-row"><input type="text" id="newProductDesc" placeholder="Description"><input type="text" id="newProductPrice100" placeholder="Price 100g"><input type="text" id="newProductPrice200" placeholder="Price 200g"></div>
+        <div class="admin-row"><select id="newProductGlow"><option value="yellow">Yellow Glow</option><option value="pink">Pink Glow</option><option value="red">Red Glow</option><option value="green">Green Glow</option><option value="brown">Brown Glow</option><option value="orange">Orange Glow</option></select></div>
+        <button class="admin-btn" id="addProductBtn">➕ Add New Product</button>
+        <button class="admin-btn" id="resetProductsBtn" style="background:#C62828;">↺ Reset to Default</button>
+        <p style="margin-top:15px; font-size:12px;">💡 Admin Panel se product add karein (Delete only from panel, not from product card)</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Founders Section -->
   <section id="founders">
     <div class="container">
       <h2 class="section-title fade-up">Meet Our <span>Founders</span></h2>
       <div class="founders-grid">
-        <div class="founder-card glass-card fade-up">
-          <div class="founder-avatar">
-            <img src="https://i.ibb.co/60HZv5CC/IMG-20251114-WA0003.jpg" alt="Shikha Sharma">
-          </div>
+        <div class="founder-card fade-up">
+          <div class="founder-avatar"><img src="https://i.ibb.co/R4t2HDcD/IMG-20251114-WA0001.jpg" alt="Shikha"></div>
           <div class="founder-name">Shikha Sharma</div>
           <div class="founder-role">Co-founder & Quality Head</div>
-          <p style="color: var(--text-muted);">Ensuring every spice meets gold-standard purity. Passionate about traditional Indian flavors and quality control.</p>
-          <div class="founder-contact">
-            <a href="https://wa.me/918604562956" target="_blank"><i class="fab fa-whatsapp"></i> +91 86045 62956</a>
-          </div>
+          <p style="color:var(--text-muted);">Ensuring every spice meets gold-standard purity.</p>
+          <div class="founder-contact"><a href="https://wa.me/918604562956"><i class="fab fa-whatsapp"></i> +91 86045 62956</a></div>
         </div>
-        <div class="founder-card glass-card fade-up">
-          <div class="founder-avatar">
-            <img src="https://i.ibb.co/DDknmZ9Q/caf467f0-a3f7-11f0-9881-c30a906b9cd4.jpg" alt="Durgesh Sharma">
-          </div>
+        <div class="founder-card fade-up">
+          <div class="founder-avatar"><img src="https://i.ibb.co/DDknmZ9Q/caf467f0-a3f7-11f0-9881-c30a906b9cd4.jpg" alt="Durgesh"></div>
           <div class="founder-name">Durgesh Sharma</div>
-          <div class="founder-role">Founder & Operations Head</div>
-          <p style="color: var(--text-muted);">Bringing traditional grinding methods back to life. Passionate about pure, authentic Indian spices.</p>
-          <div class="founder-contact">
-            <a href="https://wa.me/919355780203" target="_blank"><i class="fab fa-whatsapp"></i> +91 93557 80203</a>
-          </div>
+          <div class="founder-role">Founder & Operations</div>
+          <p style="color:var(--text-muted);">Bringing traditional grinding methods back to life.</p>
+          <div class="founder-contact"><a href="https://wa.me/919355780203"><i class="fab fa-whatsapp"></i> +91 93557 80203</a></div>
         </div>
       </div>
     </div>
@@ -1217,406 +570,745 @@
   <section id="process">
     <div class="container">
       <h2 class="section-title fade-up"><span>Traditional</span> Process</h2>
-      <div class="process-timeline">
-        <div class="process-step glass-card fade-up">
-          <div class="process-num">1</div>
-          <div class="founder-name">Farm Selection</div>
-          <p style="color: var(--text-muted);">MP, Rajasthan, Kerala farms</p>
-        </div>
-        <div class="process-step glass-card fade-up">
-          <div class="process-num">2</div>
-          <div class="founder-name">Sun Drying</div>
-          <p style="color: var(--text-muted);">Natural sun-curing process</p>
-        </div>
-        <div class="process-step glass-card fade-up">
-          <div class="process-num">3</div>
-          <div class="founder-name">Sil-Batta Grinding</div>
-          <p style="color: var(--text-muted);">Traditional stone grinding</p>
-        </div>
-        <div class="process-step glass-card fade-up">
-          <div class="process-num">4</div>
-          <div class="founder-name">Quality Testing</div>
-          <p style="color: var(--text-muted);">Purity certified lab test</p>
-        </div>
-        <div class="process-step glass-card fade-up">
-          <div class="process-num">5</div>
-          <div class="founder-name">Premium Packing</div>
-          <p style="color: var(--text-muted);">Airtight gold-standard</p>
-        </div>
+      <div class="process-steps">
+        <div class="step-card"><div class="step-num">1</div><h3>Farm Selection</h3><p>MP, Rajasthan, Kerala</p></div>
+        <div class="step-card"><div class="step-num">2</div><h3>Sun Drying</h3><p>Natural sun-curing</p></div>
+        <div class="step-card"><div class="step-num">3</div><h3>Sil-Batta Grinding</h3><p>Traditional stone grinding</p></div>
+        <div class="step-card"><div class="step-num">4</div><h3>Quality Testing</h3><p>Purity certified</p></div>
+        <div class="step-card"><div class="step-num">5</div><h3>Premium Packing</h3><p>Airtight gold-standard</p></div>
       </div>
     </div>
   </section>
 
   <!-- Wholesale Section -->
   <section id="wholesale">
-    <div class="container">
+    <div class="container wholesale-section">
       <h2 class="section-title fade-up"><span>Wholesale</span> Inquiry</h2>
       <div class="wholesale-card glass-card fade-up">
-        <i class="fas fa-truck" style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 16px; display: block;"></i>
-        <h3 style="margin-bottom: 20px;">Bulk Order / Distributor Enquiry</h3>
+        <i class="fas fa-truck" style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 20px; display: block;"></i>
+        <h3>Bulk Order / Distributor Enquiry</h3>
         <form id="wholesaleForm">
-          <div class="form-group">
-            <input type="text" id="wholesaleName" placeholder="Full Name *" required>
-          </div>
-          <div class="form-group">
-            <input type="text" id="wholesaleCompany" placeholder="Company Name (if any)">
-          </div>
-          <div class="form-group">
-            <input type="email" id="wholesaleEmail" placeholder="Email *" required>
-          </div>
-          <div class="form-group">
-            <input type="tel" id="wholesalePhone" placeholder="Phone Number *" required>
-          </div>
-          <div class="form-group">
-            <select id="wholesaleProduct">
-              <option value="">Select Product</option>
-              <option>Onion Powder</option>
-              <option>Garlic Powder</option>
-              <option>Ginger Powder</option>
-              <option>Oregano</option>
-              <option>Turmeric (Haldi)</option>
-              <option>Coriander (Dhaniya)</option>
-              <option>Red Chilli (Mirch)</option>
-              <option>Complete Combo Pack</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <input type="text" id="wholesaleQuantity" placeholder="Quantity Required (kg)">
-          </div>
-          <div class="form-group">
-            <textarea id="wholesaleMessage" rows="3" placeholder="Your Message..."></textarea>
-          </div>
-          <button type="submit" class="btn-primary" style="width: 100%;">Send WhatsApp Inquiry →</button>
+          <div class="form-group"><input type="text" id="wName" placeholder="Full Name *" required></div>
+          <div class="form-group"><input type="text" id="wCompany" placeholder="Company Name"></div>
+          <div class="form-group"><input type="email" id="wEmail" placeholder="Email *" required></div>
+          <div class="form-group"><input type="tel" id="wPhone" placeholder="Phone Number *" required></div>
+          <div class="form-group"><select id="wProduct"><option>Select Product</option><option>Onion Powder</option><option>Garlic Powder</option><option>Ginger Powder</option><option>Oregano</option><option>Turmeric</option><option>Coriander</option><option>Red Chilli</option><option>Complete Combo</option></select></div>
+          <div class="form-group"><input type="text" id="wQty" placeholder="Quantity (kg)"></div>
+          <div class="form-group"><textarea id="wMsg" rows="3" placeholder="Your Message..."></textarea></div>
+          <button type="submit" class="submit-btn">Send WhatsApp Inquiry →</button>
         </form>
       </div>
     </div>
   </section>
 
-  <!-- Contact Section -->
+  <!-- Contact Section - -->
   <section id="contact">
     <div class="container">
       <h2 class="section-title fade-up">Get In <span>Touch</span></h2>
-      <div class="contact-grid">
-        <div class="contact-card glass-card fade-up">
-          <i class="fas fa-map-marker-alt"></i>
+      <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
+        <div class="glass-card contact-card" style="padding: 40px; text-align: center; min-width: 240px;">
+          <i class="fas fa-map-marker-alt" style="font-size: 2rem; color: var(--secondary);"></i>
           <h3>Location</h3>
-          <p>Noida, Uttar Pradesh<br>India - 201304</p>
+          <p>Sector 135, Noida - 201304</p>
         </div>
-        <div class="contact-card glass-card fade-up">
-          <i class="fas fa-phone-alt"></i>
+        <div class="glass-card contact-card" style="padding: 40px; text-align: center; min-width: 240px;">
+          <i class="fas fa-phone-alt" style="font-size: 2rem; color: var(--secondary);"></i>
           <h3>Call Us</h3>
-          <p><a href="tel:+919355780203">+91 93557 80203</a><br><a href="tel:+918604562956">+91 86045 62956</a></p>
+          <p><a href="tel:+919355780203" style="color:var(--text);">+91 93557 80203</a><br><a href="tel:+918604562956" style="color:var(--text);">+91 86045 62956</a></p>
         </div>
-        <div class="contact-card glass-card fade-up">
-          <i class="fas fa-envelope"></i>
+        <div class="glass-card contact-card" style="padding: 40px; text-align: center; min-width: 240px;">
+          <i class="fas fa-envelope" style="font-size: 2rem; color: var(--secondary);"></i>
           <h3>Email</h3>
-          <p><a href="mailto:Sharmadurgesh9022@gmail.com">Sharmadurgesh9022@gmail.com</a></p>
+          <p><a href="mailto:Sharmadurgesh9022@gmail.com" style="color:var(--text);">Sharmadurgesh9022@gmail.com</a></p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
   <footer class="footer">
-    <div class="social-links">
-      <a href="https://www.instagram.com/durgesh_sain.01" target="_blank"><i class="fab fa-instagram"></i></a>
-      <a href="https://www.facebook.com/share/18wGGCMjWN/" target="_blank"><i class="fab fa-facebook"></i></a>
-    </div>
+    <div class="social-icons"><a href="https://www.instagram.com/durgesh_sain.01" target="_blank"><i class="fab fa-instagram"></i></a><a href="https://www.facebook.com/share/18wGGCMjWN/" target="_blank"><i class="fab fa-facebook"></i></a></div>
     <p>© 2026 Sharma Gold Masala™ | Pure Spices, Golden Taste</p>
-    <p style="font-size: 0.7rem; margin-top: 10px;">FSSAI: Coming Soon | GST Registered</p>
+    <p style="font-size: 0.75rem; margin-top: 12px;">FSSAI: Coming Soon | GST Registered</p>
   </footer>
 </div>
 
-<a href="https://wa.me/918604562956" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
-<div class="scroll-top" id="scrollTop"><i class="fas fa-arrow-up"></i></div>
+<a href="https://wa.me/919355780203?text=Hello%20Sharma%20Gold%20Masala%2C%20I%20want%20to%20know%20more%20about%20your%20products" 
+   target="_blank" 
+   id="whatsappButton" 
+   class="whatsapp-float" 
+   style="position: fixed; bottom: 28px; right: 28px; background: #25D366; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; text-decoration: none; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+   <i class="fab fa-whatsapp"></i>
+</a>
 
-<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
-  // ============================================
-  // CUSTOM CURSOR
-  // ============================================
-  const cursor = document.getElementById('cursor');
-  const cursorFollower = document.getElementById('cursorFollower');
+// ============================================
+// SHARMA GOLD MASALA - UPGRADED JAVASCRIPT
+// ============================================
 
-  document.addEventListener('mousemove', (e) => {
-    gsap.to(cursor, {
-      x: e.clientX,
-      y: e.clientY,
-      duration: 0.05,
-      ease: 'power2.out'
-    });
-    gsap.to(cursorFollower, {
-      x: e.clientX,
-      y: e.clientY,
-      duration: 0.15,
-      ease: 'power2.out'
-    });
-  });
+// ============================================
+// 1. DOM Elements Cache
+// ============================================
+const dom = {
+  themeToggle: document.getElementById('themeToggle'),
+  navbar: document.getElementById('navbar'),
+  menuToggle: document.getElementById('menuToggle'),
+  mobileMenu: document.getElementById('mobileMenu'),
+  productsGrid: document.getElementById('productsGrid'),
+  unlockBtn: document.getElementById('unlockAdminBtn'),
+  passwordInput: document.getElementById('adminPassword'),
+  adminContent: document.getElementById('adminPanelContent'),
+  adminPanel: document.querySelector('#adminPanel h3'),
+  addProductBtn: document.getElementById('addProductBtn'),
+  resetProductsBtn: document.getElementById('resetProductsBtn'),
+  wholesaleForm: document.getElementById('wholesaleForm'),
+  canvasContainer: document.getElementById('canvas-container')
+};
 
-  document.querySelectorAll('a, button, .product-card, .btn-add').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('active');
-      cursorFollower.classList.add('active');
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('active');
-      cursorFollower.classList.remove('active');
-    });
-  });
-
-  // ============================================
-  // LOADER
-  // ============================================
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      document.getElementById('loader').classList.add('hide');
-    }, 2000);
-  });
-
-  // ============================================
-  // THEME TOGGLE
-  // ============================================
-  const themeToggle = document.getElementById('themeToggle');
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
-    localStorage.setItem('theme', newTheme);
-  });
-
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+// ============================================
+// 2. Configuration Constants
+// ============================================
+const CONFIG = {
+  ADMIN_PASSWORD: '902256',
+  WHATSAPP_NUMBERS: {
+    order: '918604562956',
+    wholesale: '918604562956' // all WhatsApp goes to co-founder
+  },
+  DEFAULT_IMAGE: 'https://placehold.co/800x1067/C62828/white?text=',
+  STORAGE_KEYS: {
+    products: 'sgm_products',
+    theme: 'sgm_theme',
+    adminHash: 'sgm_admin_hash'
   }
+};
 
-  // ============================================
-  // SCROLL TOP BUTTON
-  // ============================================
-  const scrollTop = document.getElementById('scrollTop');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) {
-      scrollTop.classList.add('show');
+// ============================================
+// 3. Default Products (Single Source of Truth)
+// ============================================
+const DEFAULT_PRODUCTS = [
+  { id: 1, name: "Onion Powder", desc: "Sun-dried, pure onion powder", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Onion+Powder", glow: "pink" },
+  { id: 2, name: "Garlic Powder", desc: "Strong aroma, premium quality", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Garlic+Powder", glow: "brown" },
+  { id: 3, name: "Ginger Powder", desc: "Warm & zesty flavor", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Ginger+Powder", glow: "orange" },
+  { id: 4, name: "Oregano", desc: "Imported quality for pizza/pasta", price100: 79, price200: 200, img: "https://placehold.co/800x1067/2E7D32/white?text=Oregano", glow: "green" },
+  { id: 5, name: "Turmeric (Haldi)", desc: "High curcumin, sun-dried", price100: 90, price200: 120, img: "https://placehold.co/800x1067/FFD700/black?text=Turmeric", glow: "yellow" },
+  { id: 6, name: "Coriander (Dhaniya)", desc: "Aroma-rich, pure", price100: 50, price200: 80, img: "https://placehold.co/800x1067/2E7D32/white?text=Coriander", glow: "green" },
+  { id: 7, name: "Red Chilli (Mirch)", desc: "High color, medium spice", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Red+Chilli", glow: "red" }
+];
+
+// ============================================
+// 4. State
+// ============================================
+let products = [];
+let nextId = 8;
+let adminUnlocked = false;
+let fadeObserver = null;
+
+// ============================================
+// 5. Utility Functions
+// ============================================
+function normalizeProductName(name) {
+  if (!name || typeof name !== 'string') return '';
+  return name.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function isValidImageUrl(url) {
+  if (!url || url.trim() === '') return false;
+  return url.trim().startsWith('http://') || url.trim().startsWith('https://');
+}
+
+function getValidImageUrl(url, productName) {
+  if (url && isValidImageUrl(url)) return url.trim();
+  return `${CONFIG.DEFAULT_IMAGE}${encodeURIComponent(productName)}`;
+}
+
+// ============================================
+// 6. Toast Notification System
+// ============================================
+function createToastContainer() {
+  if (!document.querySelector('.toast-container')) {
+    const container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+  return document.querySelector('.toast-container');
+}
+
+function showToast(message, type = 'info') {
+  const container = createToastContainer();
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+function showSuccess(message) { showToast(message, 'success'); }
+function showError(message) { showToast(message, 'error'); }
+function showInfo(message) { showToast(message, 'info'); }
+
+// ============================================
+// 7. Product CRUD Operations (No Duplicates)
+// ============================================
+function findProductIndexByName(name) {
+  const normalized = normalizeProductName(name);
+  return products.findIndex(p => normalizeProductName(p.name) === normalized);
+}
+
+function removeDuplicateProducts() {
+  const uniqueMap = new Map();
+  for (const product of products) {
+    const key = normalizeProductName(product.name);
+    if (!uniqueMap.has(key) || product.id > uniqueMap.get(key).id) {
+      uniqueMap.set(key, product);
+    }
+  }
+  const newProducts = Array.from(uniqueMap.values());
+  if (newProducts.length !== products.length) {
+    products = newProducts;
+    return true;
+  }
+  return false;
+}
+
+function ensureProductFields(product, index = 0) {
+  if (!product.id || typeof product.id !== 'number') product.id = Date.now() + index;
+  if (!product.glow) {
+    const name = product.name.toLowerCase();
+    if (name.includes('onion')) product.glow = 'pink';
+    else if (name.includes('garlic')) product.glow = 'brown';
+    else if (name.includes('ginger')) product.glow = 'orange';
+    else if (name.includes('oregano')) product.glow = 'green';
+    else if (name.includes('turmeric')) product.glow = 'yellow';
+    else if (name.includes('chilli')) product.glow = 'red';
+    else product.glow = 'yellow';
+  }
+  if (!product.img || !isValidImageUrl(product.img)) {
+    product.img = getValidImageUrl(null, product.name);
+  }
+  if (product.name) product.name = product.name.trim();
+  if (product.desc) product.desc = product.desc.trim();
+  if (typeof product.price100 !== 'number') product.price100 = parseInt(product.price100) || 50;
+  if (typeof product.price200 !== 'number') product.price200 = parseInt(product.price200) || 80;
+  return product;
+}
+
+function isValidProduct(product) {
+  if (!product.name || product.name.trim() === '') return false;
+  if (!product.desc || product.desc.trim() === '') return false;
+  if (typeof product.price100 !== 'number' || product.price100 <= 0) return false;
+  if (typeof product.price200 !== 'number' || product.price200 <= 0) return false;
+  return true;
+}
+
+function saveProducts() {
+  try {
+    localStorage.setItem(CONFIG.STORAGE_KEYS.products, JSON.stringify(products));
+    renderProducts();
+    if (adminUnlocked) renderAdminList();
+  } catch (e) {
+    console.error('Failed to save products:', e);
+    showError('Failed to save products');
+  }
+}
+
+function loadProducts() {
+  try {
+    const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.products);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        products = parsed.map((p, idx) => ensureProductFields(p, idx));
+        removeDuplicateProducts();
+        const validProducts = products.filter(isValidProduct);
+        if (validProducts.length !== products.length) {
+          products = validProducts;
+          showInfo('Removed invalid products');
+        }
+        nextId = Math.max(...products.map(p => p.id), 0) + 1;
+        saveProducts();
+        return;
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to load products:', e);
+    localStorage.removeItem(CONFIG.STORAGE_KEYS.products);
+    showError('Product data corrupted. Resetting to defaults.');
+  }
+  resetToDefaultProducts();
+}
+
+function resetToDefaultProducts() {
+  products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  nextId = Math.max(...products.map(p => p.id), 0) + 1;
+  saveProducts();
+  showSuccess('Products reset to default');
+}
+
+function addOrUpdateProduct(productData) {
+  const { name, desc, price100, price200, img, glow } = productData;
+  
+  if (!name || name.trim() === '') { showError('Product name is required'); return false; }
+  if (!desc || desc.trim() === '') { showError('Product description is required'); return false; }
+  const p100 = parseInt(price100);
+  const p200 = parseInt(price200);
+  if (isNaN(p100) || p100 <= 0) { showError('Invalid 100g price'); return false; }
+  if (isNaN(p200) || p200 <= 0) { showError('Invalid 200g price'); return false; }
+  
+  const existingIndex = findProductIndexByName(name);
+  if (existingIndex !== -1) {
+    const existingProduct = products[existingIndex];
+    existingProduct.name = name.trim();
+    existingProduct.desc = desc.trim();
+    existingProduct.price100 = p100;
+    existingProduct.price200 = p200;
+    if (img && isValidImageUrl(img)) existingProduct.img = img.trim();
+    if (glow) existingProduct.glow = glow;
+    saveProducts();
+    showSuccess(`Product "${name.trim()}" updated successfully`);
+    return true;
+  }
+  
+  const newProduct = {
+    id: nextId++,
+    name: name.trim(),
+    desc: desc.trim(),
+    price100: p100,
+    price200: p200,
+    img: getValidImageUrl(img, name),
+    glow: glow || 'yellow'
+  };
+  products.push(newProduct);
+  saveProducts();
+  showSuccess(`Product "${name.trim()}" added successfully`);
+  return true;
+}
+
+function deleteProduct(id) {
+  const product = products.find(p => p.id === id);
+  if (product && confirm(`Delete "${product.name}"?`)) {
+    products = products.filter(p => p.id !== id);
+    saveProducts();
+    showSuccess(`Product "${product.name}" deleted`);
+  }
+}
+
+window.deleteProduct = deleteProduct;
+window.orderProduct = orderProduct;
+
+// ============================================
+// 8. Rendering Functions
+// ============================================
+function renderProducts() {
+  if (!dom.productsGrid) return;
+  const fragment = document.createDocumentFragment();
+  products.forEach(p => {
+    const card = document.createElement('div');
+    card.className = `product-card fade-up`;
+    card.setAttribute('data-glow', p.glow);
+    card.innerHTML = `
+      <div class="product-img"><img src="${p.img}" alt="${p.name}" onerror="this.src='${CONFIG.DEFAULT_IMAGE}${encodeURIComponent(p.name)}'"></div>
+      <div class="product-info">
+        <div class="product-title">${escapeHtml(p.name)}</div>
+        <div class="product-desc">${escapeHtml(p.desc)}</div>
+        <div class="price-row"><span class="price-tag">100g - ₹${p.price100}</span><span class="price-tag">200g - ₹${p.price200}</span></div>
+        <button class="btn-wa" onclick="orderProduct('${escapeHtml(p.name)}',${p.price100},${p.price200})">Order on WhatsApp →</button>
+      </div>
+    `;
+    fragment.appendChild(card);
+  });
+  dom.productsGrid.innerHTML = '';
+  dom.productsGrid.appendChild(fragment);
+  observeFadeElements();
+}
+
+function renderAdminList() {
+  let listDiv = document.getElementById('adminProductList');
+  if (!listDiv) {
+    listDiv = document.createElement('div');
+    listDiv.id = 'adminProductList';
+    dom.adminContent.appendChild(listDiv);
+  }
+  if (!adminUnlocked) return;
+  
+  listDiv.innerHTML = '<h4 style="margin-bottom:10px;">📋 Current Products (Click to Delete):</h4>';
+  products.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'admin-product-item';
+    item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin:5px 0; border-bottom:1px solid var(--border);';
+    item.innerHTML = `
+      <span><strong>${escapeHtml(p.name)}</strong> - 100g:₹${p.price100} / 200g:₹${p.price200}</span>
+      <button onclick="deleteProduct(${p.id})" style="background:#C62828; color:white; border:none; padding:4px 12px; border-radius:20px; cursor:pointer;">🗑️</button>
+    `;
+    listDiv.appendChild(item);
+  });
+}
+
+function observeFadeElements() {
+  if (fadeObserver) fadeObserver.disconnect();
+  fadeObserver = new IntersectionObserver(
+    (entries) => entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+}
+
+// ============================================
+// 9. WhatsApp Functions (All to Co-founder)
+// ============================================
+function orderProduct(name, price100, price200) {
+  const message = `Hello Sharma Gold Masala, I want to order ${name} (100g ₹${price100} / 200g ₹${price200})`;
+  const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBERS.order}?text=${encodeURIComponent(message)}`;
+  window.open(url, '_blank');
+}
+
+function sendWholesaleEnquiry(data) {
+  const { name, company, email, phone, product, qty, msg } = data;
+  const message = `*Wholesale Enquiry*%0A%0A*Name:* ${name}%0A*Company:* ${company}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Product:* ${product}%0A*Quantity:* ${qty} kg%0A*Message:* ${msg}`;
+  const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBERS.wholesale}?text=${message}`;
+  window.open(url, '_blank');
+}
+
+// ============================================
+// 10. Theme Management
+// ============================================
+function initTheme() {
+  try {
+    const savedTheme = localStorage.getItem(CONFIG.STORAGE_KEYS.theme);
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      if (dom.themeToggle) dom.themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+    }
+  } catch (e) { console.warn('Theme load error:', e); }
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  if (dom.themeToggle) dom.themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
+  localStorage.setItem(CONFIG.STORAGE_KEYS.theme, newTheme);
+}
+
+// ============================================
+// 11. Admin Panel (Secure, No LocalStorage Password Exposure)
+// ============================================
+function initAdminPanel() {
+  if (!dom.unlockBtn || !dom.passwordInput || !dom.adminContent) return;
+  
+  dom.unlockBtn.addEventListener('click', () => {
+    const entered = dom.passwordInput.value;
+    if (entered === CONFIG.ADMIN_PASSWORD) {
+      adminUnlocked = true;
+      dom.adminContent.style.display = 'block';
+      dom.passwordInput.style.display = 'none';
+      dom.unlockBtn.style.display = 'none';
+      if (dom.adminPanel) dom.adminPanel.innerHTML = '⚙️ Admin Panel - Manage Products (Unlocked)';
+      renderAdminList();
+      showSuccess('Admin panel unlocked');
     } else {
-      scrollTop.classList.remove('show');
+      showError('Wrong password!');
+      dom.passwordInput.value = '';
     }
   });
+}
 
-  scrollTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function initAddProductButton() {
+  if (!dom.addProductBtn) return;
+  dom.addProductBtn.addEventListener('click', () => {
+    if (!adminUnlocked) { showError('Please unlock admin panel first'); return; }
+    const name = document.getElementById('newProductName')?.value.trim();
+    const img = document.getElementById('newProductImage')?.value.trim();
+    const desc = document.getElementById('newProductDesc')?.value.trim();
+    const price100 = parseInt(document.getElementById('newProductPrice100')?.value);
+    const price200 = parseInt(document.getElementById('newProductPrice200')?.value);
+    const glow = document.getElementById('newProductGlow')?.value;
+    if (!name || !desc || isNaN(price100) || isNaN(price200)) {
+      showError('Please fill all fields correctly');
+      return;
+    }
+    if (img && !isValidImageUrl(img)) {
+      showError('Invalid image URL. Must start with http:// or https://');
+      return;
+    }
+    addOrUpdateProduct({ name, desc, price100, price200, img, glow });
+    ['newProductName', 'newProductImage', 'newProductDesc', 'newProductPrice100', 'newProductPrice200'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
   });
+}
 
-  // ============================================
-  // NAVBAR SCROLL
-  // ============================================
+function initResetButton() {
+  if (!dom.resetProductsBtn) return;
+  dom.resetProductsBtn.addEventListener('click', () => {
+    if (!adminUnlocked) { showError('Please unlock admin panel first'); return; }
+    if (confirm('Reset to default products? This will delete all added products.')) {
+      resetToDefaultProducts();
+    }
+  });
+}
+
+// ============================================
+// 12. Wholesale Form Handler
+// ============================================
+function initWholesaleForm() {
+  if (!dom.wholesaleForm) return;
+  dom.wholesaleForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+      name: document.getElementById('wName')?.value || '',
+      company: document.getElementById('wCompany')?.value || '',
+      email: document.getElementById('wEmail')?.value || '',
+      phone: document.getElementById('wPhone')?.value || '',
+      product: document.getElementById('wProduct')?.value || '',
+      qty: document.getElementById('wQty')?.value || '',
+      msg: document.getElementById('wMsg')?.value || ''
+    };
+    if (!data.name || !data.email || !data.phone) {
+      showError('Please fill name, email and phone');
+      return;
+    }
+    sendWholesaleEnquiry(data);
+    showSuccess('Inquiry sent! We will contact you soon.');
+    dom.wholesaleForm.reset();
+  });
+}
+
+// ============================================
+// 13. Navigation & UI Handlers
+// ============================================
+function initNavbarScroll() {
   window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    if (dom.navbar) dom.navbar.classList.toggle('scrolled', window.scrollY > 50);
   });
+}
 
-  // ============================================
-  // MOBILE MENU
-  // ============================================
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileMenu = document.getElementById('mobileMenu');
-  menuToggle.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
+function initMobileMenu() {
+  if (!dom.menuToggle || !dom.mobileMenu) return;
+  dom.menuToggle.addEventListener('click', () => {
+    dom.mobileMenu.classList.toggle('open');
   });
-
-  window.closeMobileMenu = () => {
-    mobileMenu.classList.remove('open');
-  };
-
   document.querySelectorAll('.mobile-menu a').forEach(link => {
     link.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
+      dom.mobileMenu.classList.remove('open');
     });
   });
+}
 
-  // ============================================
-  // PRODUCTS DATA (Replace image links with yours)
-  // ============================================
-  const products = [
-    { name: "Onion Powder", emoji: "🧅", price100: 140, price200: 240, img: "https://via.placeholder.com/300x200?text=Onion+Powder" },
-    { name: "Garlic Powder", emoji: "🧄", price100: 140, price200: 240, img: "https://via.placeholder.com/300x200?text=Garlic+Powder" },
-    { name: "Ginger Powder", emoji: "🟤", price100: 140, price200: 240, img: "https://via.placeholder.com/300x200?text=Ginger+Powder" },
-    { name: "Oregano", emoji: "🌿", price100: 79, price200: 200, img: "https://via.placeholder.com/300x200?text=Oregano" },
-    { name: "Turmeric (Haldi)", emoji: "🟡", price100: 90, price200: 120, img: "https://via.placeholder.com/300x200?text=Turmeric" },
-    { name: "Coriander (Dhaniya)", emoji: "🌿", price100: 50, price200: 80, img: "https://via.placeholder.com/300x200?text=Coriander" },
-    { name: "Red Chilli (Mirch)", emoji: "🔴", price100: 140, price200: 240, img: "https://via.placeholder.com/300x200?text=Red+Chilli" }
-  ];
-
-  function renderProducts() {
-    const grid = document.getElementById('productsGrid');
-    if (grid) {
-      grid.innerHTML = products.map(p => `
-        <div class="product-card glass-card fade-up">
-          <img src="${p.img}" alt="${p.name}" class="product-img" onerror="this.src='https://via.placeholder.com/300x200?text=${p.name}'">
-          <div class="product-title">${p.name}</div>
-          <div class="pack-options">
-            <span class="pack-badge">100g - ₹${p.price100}</span>
-            <span class="pack-badge">200g - ₹${p.price200}</span>
-          </div>
-          <button class="btn-add" onclick="orderWhatsApp('${p.name}', ${p.price100}, ${p.price200})">Order on WhatsApp →</button>
-        </div>
-      `).join('');
-    }
-  }
-  renderProducts();
-
-  window.orderWhatsApp = (name, price100, price200) => {
-    window.open(`https://wa.me/918604562956?text=Hello%20Sharma%20Gold%20Masala,%20I%20want%20to%20order%20${name}%20(100g%20₹${price100}%20/%20200g%20₹${price20})`, '_blank');
-  };
-
-  // ============================================
-  // WHOLESALE FORM
-  // ============================================
-  document.getElementById('wholesaleForm')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('wholesaleName').value;
-    const company = document.getElementById('wholesaleCompany').value;
-    const email = document.getElementById('wholesaleEmail').value;
-    const phone = document.getElementById('wholesalePhone').value;
-    const product = document.getElementById('wholesaleProduct').value;
-    const qty = document.getElementById('wholesaleQuantity').value;
-    const msg = document.getElementById('wholesaleMessage').value;
-    const text = `*Wholesale Enquiry - Sharma Gold Masala*%0A%0A*Name:* ${name}%0A*Company:* ${company}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Product:* ${product}%0A*Quantity:* ${qty} kg%0A*Message:* ${msg}`;
-    window.open(`https://wa.me/919355780203?text=${text}`, '_blank');
-    const toast = document.getElementById('toast');
-    toast.textContent = "✓ Inquiry sent! We'll contact you soon.";
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-    e.target.reset();
-  });
-
-  // ============================================
-  // FADE-UP OBSERVER
-  // ============================================
-  const faders = document.querySelectorAll('.fade-up');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
+function initSmoothScroll() {
+  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
       }
     });
-  }, { threshold: 0.1 });
-  faders.forEach(el => observer.observe(el));
-
-  // ============================================
-  // GSAP SCROLL ANIMATIONS
-  // ============================================
-  gsap.registerPlugin(ScrollTrigger);
-
-  gsap.utils.toArray('.product-card, .founder-card, .process-step, .contact-card').forEach(el => {
-    gsap.from(el, {
-      scrollTrigger: {
-        trigger: el,
-        start: "top 85%",
-        toggleActions: "play none none none"
-      },
-      opacity: 0,
-      y: 50,
-      duration: 0.8,
-      ease: "power2.out"
-    });
   });
+}
 
-  // ============================================
-  // 3D BACKGROUND WITH THREE.JS
-  // ============================================
-  const container = document.getElementById('canvas-container');
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x050b1a);
-  scene.fog = new THREE.FogExp2(0x050b1a, 0.002);
+// ============================================
+// 14. Three.js Background (Preserved)
+// ============================================
+let threeScene, threeCamera, threeRenderer, threeStars, threeParticles, threeRings = [];
+let threeMouseX = 0, threeMouseY = 0;
+let threeAnimationId = null;
 
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 2.2, 14);
-
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  container.appendChild(renderer.domElement);
-
-  // Lights
+function initThreeBackground() {
+  if (!dom.canvasContainer) return;
+  const isMobile = window.innerWidth <= 768;
+  const starCount = isMobile ? 4000 : 9000;
+  const particleCount = isMobile ? 3000 : 7000;
+  
+  threeScene = new THREE.Scene();
+  threeScene.background = new THREE.Color(0x050b1a);
+  threeScene.fog = new THREE.FogExp2(0x050b1a, 0.0015);
+  
+  threeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  threeCamera.position.set(0, 2, 14);
+  
+  threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  threeRenderer.setSize(window.innerWidth, window.innerHeight);
+  threeRenderer.setPixelRatio(window.devicePixelRatio);
+  dom.canvasContainer.appendChild(threeRenderer.domElement);
+  
+  // Lighting
   const ambientLight = new THREE.AmbientLight(0x1a1a2e);
-  scene.add(ambientLight);
-
-  const mainLight = new THREE.DirectionalLight(0xffeebb, 1.2);
-  mainLight.position.set(5, 8, 6);
-  scene.add(mainLight);
-
+  threeScene.add(ambientLight);
+  const keyLight = new THREE.DirectionalLight(0xffeebb, 1.2);
+  keyLight.position.set(5, 8, 6);
+  threeScene.add(keyLight);
   const fillLight = new THREE.PointLight(0xFFD700, 0.5);
   fillLight.position.set(-3, 2, -4);
-  scene.add(fillLight);
-
-  const backLight = new THREE.PointLight(0xFFD700, 0.4);
+  threeScene.add(fillLight);
+  const backLight = new THREE.PointLight(0xFF6600, 0.4);
   backLight.position.set(2, 3, -6);
-  scene.add(backLight);
-
-  // Stars
-  const starCount = 2500;
+  threeScene.add(backLight);
+  
+  // Stars with colors
   const starGeo = new THREE.BufferGeometry();
   const starPositions = new Float32Array(starCount * 3);
+  const starColors = new Float32Array(starCount * 3);
   for (let i = 0; i < starCount; i++) {
-    starPositions[i * 3] = (Math.random() - 0.5) * 220;
-    starPositions[i * 3 + 1] = (Math.random() - 0.5) * 120;
-    starPositions[i * 3 + 2] = (Math.random() - 0.5) * 90 - 45;
+    starPositions[i*3] = (Math.random() - 0.5) * 220;
+    starPositions[i*3+1] = (Math.random() - 0.5) * 120;
+    starPositions[i*3+2] = (Math.random() - 0.5) * 90 - 45;
+    const colorRand = Math.random();
+    if (colorRand < 0.4) {
+      starColors[i*3] = 1; starColors[i*3+1] = 0.8; starColors[i*3+2] = 0;
+    } else if (colorRand < 0.7) {
+      starColors[i*3] = 1; starColors[i*3+1] = 0.2; starColors[i*3+2] = 0.2;
+    } else if (colorRand < 0.9) {
+      starColors[i*3] = 1; starColors[i*3+1] = 0.5; starColors[i*3+2] = 0;
+    } else {
+      starColors[i*3] = 1; starColors[i*3+1] = 1; starColors[i*3+2] = 1;
+    }
   }
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xFFD700, size: 0.07, transparent: true, opacity: 0.5 }));
-  scene.add(stars);
-
-  // Floating Golden Ring
-  const goldRing = new THREE.Mesh(
-    new THREE.TorusGeometry(1.4, 0.06, 128, 300),
-    new THREE.MeshStandardMaterial({ color: 0xFFD700, emissive: 0x552200, metalness: 0.9, roughness: 0.2 })
-  );
-  goldRing.position.set(-2.2, 1.3, -2.8);
-  scene.add(goldRing);
-
-  const ring2 = new THREE.Mesh(
-    new THREE.TorusGeometry(1.0, 0.04, 96, 200),
-    new THREE.MeshStandardMaterial({ color: 0xFFE44D, emissive: 0x332200, metalness: 0.85 })
-  );
-  ring2.position.set(2, 1.6, -3.2);
-  scene.add(ring2);
-
-  // Floating Particles
-  const particleCount = 2000;
+  starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+  threeStars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.1, vertexColors: true, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending }));
+  threeScene.add(threeStars);
+  
+  // Floating particles
   const particleGeo = new THREE.BufferGeometry();
-  const particlePos = new Float32Array(particleCount * 3);
+  const particlePositions = new Float32Array(particleCount * 3);
+  const particleColorsArr = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
-    particlePos[i * 3] = (Math.random() - 0.5) * 40;
-    particlePos[i * 3 + 1] = (Math.random() - 0.5) * 20;
-    particlePos[i * 3 + 2] = (Math.random() - 0.5) * 30 - 10;
+    particlePositions[i*3] = (Math.random() - 0.5) * 50;
+    particlePositions[i*3+1] = (Math.random() - 0.5) * 25;
+    particlePositions[i*3+2] = (Math.random() - 0.5) * 40 - 10;
+    const colorChoice = Math.random();
+    if (colorChoice < 0.33) {
+      particleColorsArr[i*3] = 1; particleColorsArr[i*3+1] = 0.8; particleColorsArr[i*3+2] = 0;
+    } else if (colorChoice < 0.66) {
+      particleColorsArr[i*3] = 1; particleColorsArr[i*3+1] = 0.3; particleColorsArr[i*3+2] = 0.3;
+    } else {
+      particleColorsArr[i*3] = 1; particleColorsArr[i*3+1] = 0.5; particleColorsArr[i*3+2] = 0;
+    }
   }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
-  const particles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ color: 0xFFD700, size: 0.045, transparent: true, opacity: 0.4 }));
-  scene.add(particles);
-
-  let time = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    time += 0.007;
-    stars.rotation.y += 0.0003;
-    stars.rotation.x = Math.sin(time * 0.1) * 0.05;
-    particles.rotation.y = time * 0.02;
-    goldRing.rotation.x = Math.sin(time * 0.6) * 0.4;
-    goldRing.rotation.y = time * 0.5;
-    ring2.rotation.z = time * 0.7;
-    ring2.rotation.x = Math.cos(time * 0.5) * 0.3;
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColorsArr, 3));
+  threeParticles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }));
+  threeScene.add(threeParticles);
+  
+  // Rings
+  const ringMat = new THREE.MeshStandardMaterial({ color: 0xFFD700, emissive: 0x552200, metalness: 0.9, roughness: 0.2, emissiveIntensity: 0.8 });
+  const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.05, 128, 300), ringMat);
+  ring1.position.set(-2.2, 1.3, -2.8);
+  threeScene.add(ring1);
+  threeRings.push(ring1);
+  
+  const ring2Mat = new THREE.MeshStandardMaterial({ color: 0xFFE44D, emissive: 0x332200, metalness: 0.85, emissiveIntensity: 0.6 });
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.04, 96, 200), ring2Mat);
+  ring2.position.set(2.2, 1.6, -3.2);
+  threeScene.add(ring2);
+  threeRings.push(ring2);
+  
+  const ring3Mat = new THREE.MeshStandardMaterial({ color: 0xFF6600, emissive: 0x441100, metalness: 0.8, emissiveIntensity: 0.5 });
+  const ring3 = new THREE.Mesh(new THREE.TorusGeometry(0.7, 0.03, 80, 160), ring3Mat);
+  ring3.position.set(-0.5, 2.2, -3.5);
+  threeScene.add(ring3);
+  threeRings.push(ring3);
+  
+  // Mouse parallax
+  document.addEventListener('mousemove', (e) => {
+    threeMouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+    threeMouseY = (e.clientY / window.innerHeight - 0.5) * 0.3;
   });
+  
+  let threeTime = 0;
+  let fillLightIntensity = 0.5;
+  let backLightIntensity = 0.4;
+  
+  function animateThree() {
+    threeAnimationId = requestAnimationFrame(animateThree);
+    threeTime += 0.008;
+    
+    threeCamera.position.x += (threeMouseX * 0.5 - threeCamera.position.x) * 0.05;
+    threeCamera.position.y += (-threeMouseY * 0.3 - threeCamera.position.y) * 0.05;
+    threeCamera.lookAt(0, 2, 0);
+    
+    threeStars.rotation.y += 0.0004;
+    threeStars.rotation.x = Math.sin(threeTime * 0.08) * 0.03;
+    
+    threeParticles.rotation.y = threeTime * 0.025;
+    threeParticles.rotation.x = Math.sin(threeTime * 0.1) * 0.02;
+    
+    threeRings[0].rotation.x = Math.sin(threeTime * 0.6) * 0.4;
+    threeRings[0].rotation.y = threeTime * 0.5;
+    threeRings[1].rotation.z = threeTime * 0.7;
+    threeRings[1].rotation.x = Math.cos(threeTime * 0.5) * 0.3;
+    threeRings[2].rotation.x = Math.sin(threeTime * 0.8) * 0.5;
+    threeRings[2].rotation.y = threeTime * 0.4;
+    
+    fillLightIntensity = 0.5 + Math.sin(threeTime * 2) * 0.2;
+    backLightIntensity = fillLightIntensity * 0.8;
+    fillLight.intensity = fillLightIntensity;
+    backLight.intensity = backLightIntensity;
+    
+    threeRenderer.render(threeScene, threeCamera);
+  }
+  
+  animateThree();
+}
+
+function cleanupThreeBackground() {
+  if (threeAnimationId) cancelAnimationFrame(threeAnimationId);
+  if (threeRenderer && threeRenderer.domElement && threeRenderer.domElement.parentNode) {
+    threeRenderer.domElement.parentNode.removeChild(threeRenderer.domElement);
+  }
+}
+
+// ============================================
+// 15. Resize Handler
+// ============================================
+let resizeTimeout;
+function handleResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    if (threeCamera && threeRenderer) {
+      threeCamera.aspect = window.innerWidth / window.innerHeight;
+      threeCamera.updateProjectionMatrix();
+      threeRenderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    observeFadeElements();
+  }, 200);
+}
+
+// ============================================
+// 16. Initialization
+// ============================================
+function init() {
+  loadProducts();
+  initTheme();
+  initAdminPanel();
+  initAddProductButton();
+  initResetButton();
+  initWholesaleForm();
+  initNavbarScroll();
+  initMobileMenu();
+  initSmoothScroll();
+  initThreeBackground();
+  window.addEventListener('resize', handleResize);
+  
+  if (dom.themeToggle) dom.themeToggle.addEventListener('click', toggleTheme);
+  
+  observeFadeElements();
+  
+  console.log('Sharma Gold Masala - Admin Panel Upgraded with Secure Password');
+}
+
+// Start the application
+init();
 </script>
 </body>
-</html>
+          </html>
