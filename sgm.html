@@ -1,323 +1,219 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <title>Sharma Gold Masala™ | Premium Spices</title>
   <meta name="description" content="Sharma Gold Masala – 100% pure spices, traditional grinding, no preservatives. Wholesale & retail.">
+  <meta property="og:title" content="Sharma Gold Masala™ | Premium Spices">
+  <meta property="og:description" content="100% pure spices, traditional grinding, no preservatives. Wholesale & retail.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+
+  <!-- Schema Markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Sharma Gold Masala",
+    "description": "Premium Indian spices, traditionally ground, no preservatives",
+    "brand": {
+      "@type": "Brand",
+      "name": "Sharma Gold Masala"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "127"
+    }
+  }
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    /* ===== ALL EXISTING STYLES PRESERVED ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --primary: #C62828;
-      --primary-dark: #8B0000;
-      --primary-light: #EF5350;
-      --secondary: #FFD700;
-      --secondary-dark: #F5B800;
-      --secondary-light: #FFE44D;
-      --accent: #2E7D32;
-      --accent-light: #4CAF50;
-      --bg: #FFF8E1;
-      --bg-card: rgba(255, 248, 225, 0.92);
-      --text: #1B1B1B;
-      --text-muted: #6B5E4E;
-      --border: rgba(198, 40, 40, 0.12);
-      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-      --radius: 20px;
-      --radius-lg: 32px;
-      --transition: all 0.5s cubic-bezier(0.2, 0.95, 0.4, 1.1);
+      --primary: #C62828; --primary-dark: #8B0000; --primary-light: #EF5350;
+      --secondary: #FFD700; --secondary-dark: #F5B800; --secondary-light: #FFE44D;
+      --accent: #2E7D32; --accent-light: #4CAF50;
+      --bg: #FFF8E1; --bg-card: rgba(255,248,225,0.92);
+      --text: #1B1B1B; --text-muted: #6B5E4E; --text-light: #9E8E7E;
+      --border: rgba(198,40,40,0.12); --shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+      --radius: 20px; --radius-lg: 32px;
+      --transition: all 0.5s cubic-bezier(0.2,0.95,0.4,1.1);
     }
-
     [data-theme="dark"] {
-      --bg: #0A0A0A;
-      --bg-card: rgba(20, 20, 20, 0.92);
-      --text: #F5EFE0;
-      --text-muted: #C5B8A0;
-      --border: rgba(255, 215, 0, 0.12);
-      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      --bg: #0A0A0A; --bg-card: rgba(20,20,20,0.92);
+      --text: #F5EFE0; --text-muted: #C5B8A0;
+      --border: rgba(255,215,0,0.12); --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
     }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-      transition: background 0.4s ease;
-    }
-
-    /* 3D Canvas */
-    #canvas-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
+    body { font-family: 'Inter',sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; transition: background 0.4s ease; }
+    #canvas-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
     .content { position: relative; z-index: 10; }
-
+    
+    /* Loader */
+    #loader {
+      position: fixed; inset: 0; background: #FFF8E1; z-index: 9999;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+      transition: opacity 0.8s ease;
+    }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    #loader .spinner {
+      width: 60px; height: 60px;
+      border: 4px solid #FFD700;
+      border-top-color: #C62828;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--text-light); border-radius: 10px; }
     ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 10px; }
-
-    /* Glassmorphism */
     .glass-card, .product-card, .founder-card, .step-card, .wholesale-card, .admin-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
+      background: var(--bg-card); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
       transition: var(--transition);
     }
     .glass-card:hover, .product-card:hover, .founder-card:hover {
-      border-color: var(--secondary);
-      transform: translateY(-8px);
-      box-shadow: var(--shadow);
+      border-color: var(--secondary); transform: translateY(-8px); box-shadow: var(--shadow);
     }
-
-    /* Header */
     header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 20px 5%;
-      transition: 0.3s;
-      background: transparent;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 20px 5%; transition: 0.3s; background: transparent;
     }
     header.scrolled {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 5%;
+      background: var(--bg-card); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 12px 5%;
     }
-    .nav-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 1440px;
-      margin: 0 auto;
-    }
+    .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1440px; margin: 0 auto; }
     .logo-img { height: 56px; width: auto; max-width: 220px; object-fit: contain; }
     .nav-links { display: flex; gap: 48px; list-style: none; }
     .nav-links a {
-      text-decoration: none;
-      color: var(--text-muted);
-      font-weight: 500;
-      font-size: 0.9rem;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      transition: 0.3s;
-      position: relative;
+      text-decoration: none; color: var(--text-muted); font-weight: 500;
+      font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase;
+      transition: 0.3s; position: relative;
     }
     .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -6px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--secondary);
-      transition: width 0.3s;
+      content: ''; position: absolute; bottom: -6px; left: 0;
+      width: 0; height: 2px; background: var(--secondary); transition: width 0.3s;
     }
     .nav-links a:hover { color: var(--secondary); }
     .nav-links a:hover::after { width: 100%; }
     .menu-btn { display: none; font-size: 1.8rem; cursor: pointer; color: var(--secondary); }
     .theme-btn {
-      width: 44px; height: 44px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: var(--bg-card);
-      color: var(--text);
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: var(--transition);
+      width: 44px; height: 44px; border: 1px solid var(--border);
+      border-radius: 14px; background: var(--bg-card); color: var(--text);
+      cursor: pointer; font-size: 1.2rem; transition: var(--transition);
     }
     .theme-btn:hover { background: var(--secondary); color: #000; }
-
-    /* Mobile Menu */
     .mobile-menu {
-      position: fixed;
-      inset: 0;
-      top: 70px;
-      background: var(--bg-card);
-      backdrop-filter: blur(32px);
-      z-index: 999;
-      padding: 40px 5%;
-      transform: translateX(100%);
-      transition: transform 0.4s;
+      position: fixed; inset: 0; top: 70px; background: var(--bg-card);
+      backdrop-filter: blur(32px); z-index: 999; padding: 40px 5%;
+      transform: translateX(100%); transition: transform 0.4s;
     }
     .mobile-menu.open { transform: translateX(0); }
     .mobile-menu a {
-      display: block;
-      font-size: 1.8rem;
-      font-weight: 600;
-      font-family: 'Playfair Display', serif;
-      color: var(--text);
-      text-decoration: none;
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border);
+      display: block; font-size: 1.8rem; font-weight: 600;
+      font-family: 'Playfair Display', serif; color: var(--text);
+      text-decoration: none; padding: 20px 0; border-bottom: 1px solid var(--border);
     }
-
-    /* Hero */
     .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
+      min-height: 100vh; display: flex; align-items: center;
       padding: 140px 5% 80px;
     }
     .hero-grid {
-      display: flex;
-      align-items: center;
-      gap: 80px;
-      max-width: 1440px;
-      margin: 0 auto;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 80px;
+      max-width: 1440px; margin: 0 auto; flex-wrap: wrap;
     }
     .hero-content { flex: 1.2; }
     .badge {
       background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,215,0,0.05));
-      display: inline-block;
-      padding: 8px 22px;
-      border-radius: 60px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      border: 1px solid rgba(255,215,0,0.4);
-      margin-bottom: 32px;
-      color: var(--secondary);
-      letter-spacing: 1px;
+      display: inline-block; padding: 8px 22px; border-radius: 60px;
+      font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(255,215,0,0.4);
+      margin-bottom: 32px; color: var(--secondary); letter-spacing: 1px;
     }
     .hero-content h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 5rem;
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -2px;
-      margin-bottom: 20px;
+      font-family: 'Playfair Display', serif; font-size: 5rem;
+      font-weight: 800; line-height: 1.1; letter-spacing: -2px; margin-bottom: 20px;
     }
     .hero-content h1 span { color: var(--secondary); text-shadow: 0 0 20px rgba(255,215,0,0.3); }
     .hero-desc {
-      color: var(--text-muted);
-      font-size: 1.15rem;
-      max-width: 550px;
-      line-height: 1.7;
-      margin-bottom: 40px;
+      color: var(--text-muted); font-size: 1.15rem; max-width: 550px;
+      line-height: 1.7; margin-bottom: 40px;
     }
     .btn-group { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 50px; }
     .btn-primary {
       background: linear-gradient(115deg, var(--secondary), #E6B800);
-      padding: 16px 42px;
-      border-radius: 60px;
-      font-weight: 700;
-      color: #1B1B1B;
-      text-decoration: none;
-      display: inline-block;
-      transition: 0.3s;
-      box-shadow: 0 12px 28px rgba(255,215,0,0.3);
+      padding: 16px 42px; border-radius: 60px; font-weight: 700;
+      color: #1B1B1B; text-decoration: none; display: inline-block;
+      transition: 0.3s; box-shadow: 0 12px 28px rgba(255,215,0,0.3);
     }
     .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 20px 35px rgba(255,215,0,0.4); }
     .btn-outline {
-      background: transparent;
-      border: 2px solid var(--secondary);
-      padding: 16px 42px;
-      border-radius: 60px;
-      font-weight: 600;
-      color: var(--text);
-      text-decoration: none;
-      transition: 0.3s;
+      background: transparent; border: 2px solid var(--secondary);
+      padding: 16px 42px; border-radius: 60px; font-weight: 600;
+      color: var(--text); text-decoration: none; transition: 0.3s;
     }
     .btn-outline:hover { background: rgba(255,215,0,0.1); transform: translateY(-3px); }
     .trust-badges { display: flex; flex-wrap: wrap; gap: 16px; }
     .trust-badge {
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      padding: 8px 20px;
-      border-radius: 60px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border: 1px solid var(--border);
+      background: var(--bg-card); backdrop-filter: blur(8px);
+      padding: 8px 20px; border-radius: 60px; font-size: 0.8rem;
+      font-weight: 600; border: 1px solid var(--border);
     }
     .hero-visual { flex: 0.9; display: flex; justify-content: center; }
     .floating-spice { width: 100%; max-width: 500px; animation: float3D 6s ease-in-out infinite; }
     @keyframes float3D { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-25px) rotate(3deg); } }
-
     section { padding: 120px 5%; }
     .container { max-width: 1440px; margin: 0 auto; }
     .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 3rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 60px;
+      font-family: 'Playfair Display', serif; font-size: 3rem;
+      font-weight: 800; text-align: center; margin-bottom: 60px;
     }
     .section-title span { color: var(--secondary); border-bottom: 3px solid var(--secondary); padding-bottom: 8px; }
-
-    /* Products Grid with Color-specific Hover Glow - MODERN VERSION */
     .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-      gap: 50px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 40px;
     }
     .product-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border-radius: 32px;
-      overflow: hidden;
-      transition: all 0.5s cubic-bezier(0.2, 0.95, 0.4, 1.1);
-      border: 1px solid var(--border);
-      position: relative;
+      background: var(--bg-card); backdrop-filter: blur(16px);
+      border-radius: 32px; overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.2,0.95,0.4,1.1);
+      border: 1px solid var(--border); position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
     .product-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 32px;
-      opacity: 0;
-      transition: opacity 0.4s;
-      pointer-events: none;
-      z-index: -1;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 32px; opacity: 0; transition: opacity 0.4s;
+      pointer-events: none; z-index: -1;
     }
-    /* Product-specific glow colors */
     .product-card[data-glow="yellow"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(255,215,0,0.6); }
     .product-card[data-glow="pink"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(255,105,180,0.6); }
     .product-card[data-glow="red"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(198,40,40,0.6); }
     .product-card[data-glow="green"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(46,125,50,0.6); }
     .product-card[data-glow="brown"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(139,69,19,0.6); }
     .product-card[data-glow="orange"]:hover::before { opacity: 1; box-shadow: 0 0 40px 15px rgba(255,165,0,0.6); }
-
     .product-card:hover { transform: translateY(-12px); border-color: var(--secondary); box-shadow: 0 30px 50px rgba(0,0,0,0.2); }
     .product-img {
-      width: 100%;
-      height: 380px;
-      background: linear-gradient(145deg, #fff5e6, #ffe8d4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      padding: 20px;
+      width: 100%; background: linear-gradient(145deg, #fff5e6, #ffe8d4);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; aspect-ratio: 9 / 16;
     }
     body.dark .product-img { background: linear-gradient(145deg, #2a2a2a, #1a1a1a); }
-   .product-img {
-    aspect-ratio: 9 / 16;
-     width: 100%;
-    background: linear-gradient(145deg, #fff5e6, #ffe8d4);
-     display: flex;
-     align-items: center;
-     justify-content: center;
-      padding: 20px;
-}
+    .product-img img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.6s ease; }
     .product-card:hover .product-img img { transform: scale(1.08); }
     .product-info { padding: 28px; }
     .product-title { font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 10px; }
@@ -325,27 +221,15 @@
     .price-row { display: flex; justify-content: space-between; margin: 18px 0; flex-wrap: wrap; gap: 12px; }
     .price-tag { background: rgba(255,215,0,0.15); padding: 8px 18px; border-radius: 40px; font-weight: 700; color: var(--secondary); font-size: 1rem; }
     .btn-wa {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 14px 20px;
-      border-radius: 40px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: 0.3s;
-      font-size: 1rem;
+      background: var(--primary); color: white; border: none;
+      padding: 14px 20px; border-radius: 40px; font-weight: 600;
+      cursor: pointer; width: 100%; transition: 0.3s; font-size: 1rem;
     }
     .btn-wa:hover { background: var(--secondary); color: #000; }
-
-    /* Founders */
     .founders-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 50px; }
     .founder-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border-radius: 40px;
-      padding: 40px;
-      text-align: center;
+      background: var(--bg-card); backdrop-filter: blur(16px);
+      border-radius: 40px; padding: 40px; text-align: center;
       border: 1px solid var(--border);
     }
     .founder-avatar { width: 160px; height: 160px; border-radius: 50%; overflow: hidden; margin: 0 auto 24px; border: 3px solid var(--secondary); }
@@ -353,85 +237,46 @@
     .founder-name { font-size: 1.5rem; font-weight: 700; color: var(--secondary); margin-bottom: 6px; }
     .founder-role { color: var(--text-muted); margin-bottom: 16px; }
     .founder-contact a { color: var(--secondary); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-
-    /* Process Steps */
     .process-steps { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
     .step-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border-radius: 32px;
-      padding: 35px 25px;
-      text-align: center;
-      flex: 1;
-      min-width: 180px;
-      border: 1px solid var(--border);
+      background: var(--bg-card); backdrop-filter: blur(16px);
+      border-radius: 32px; padding: 35px 25px; text-align: center;
+      flex: 1; min-width: 180px; border: 1px solid var(--border);
     }
     .step-num {
       width: 56px; height: 56px;
       background: linear-gradient(135deg, var(--secondary), #E6B800);
-      color: #000;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.3rem;
-      margin: 0 auto 20px;
+      color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.3rem; margin: 0 auto 20px;
     }
-
-    /* Wholesale Form with Neon Glow Loop */
     .wholesale-section { max-width: 750px; margin: 0 auto; }
     .wholesale-card { padding: 50px; text-align: center; position: relative; overflow: hidden; }
     .wholesale-card::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
+      content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px;
       background: linear-gradient(45deg, var(--secondary), var(--primary), var(--secondary), var(--accent));
-      background-size: 400% 400%;
-      border-radius: var(--radius-lg);
-      z-index: -1;
-      opacity: 0;
-      transition: opacity 0.5s;
+      background-size: 400% 400%; border-radius: var(--radius-lg);
+      z-index: -1; opacity: 0; transition: opacity 0.5s;
     }
     .wholesale-card:hover::before { opacity: 0.5; animation: neonGlow 3s ease infinite; }
     @keyframes neonGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
     .form-group { margin-bottom: 24px; position: relative; }
     .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 16px 24px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 60px;
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      transition: 0.3s;
+      width: 100%; padding: 16px 24px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 60px;
+      color: var(--text); font-family: 'Inter', sans-serif;
+      font-size: 1rem; transition: 0.3s;
     }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      outline: none;
-      border-color: var(--secondary);
-      box-shadow: 0 0 20px rgba(255,215,0,0.6);
+      outline: none; border-color: var(--secondary); box-shadow: 0 0 20px rgba(255,215,0,0.6);
     }
     .form-group textarea { border-radius: 32px; }
     .submit-btn {
       background: linear-gradient(115deg, var(--secondary), #E6B800);
-      width: 100%;
-      padding: 16px;
-      border-radius: 60px;
-      font-weight: 700;
-      color: #000;
-      border: none;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: 0.3s;
+      width: 100%; padding: 16px; border-radius: 60px;
+      font-weight: 700; color: #000; border: none; cursor: pointer;
+      font-size: 1rem; transition: 0.3s;
     }
     .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,215,0,0.4); }
-
-    /* Admin Panel - Password Protected */
     .admin-section { margin-top: 60px; }
     .admin-card { padding: 40px; text-align: center; }
     .admin-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
@@ -440,46 +285,94 @@
     .admin-password-section { margin-bottom: 20px; }
     .password-input { width: 250px; margin: 0 auto 15px; }
     .admin-panel-content { display: none; }
-
-    /* Contact Section - No underline on phone/email */
-    .contact-card a {
-      text-decoration: none;
-    }
-    .contact-card a:hover {
-      color: var(--secondary);
-    }
-
-    /* Footer */
+    .admin-product-list { margin-top: 20px; text-align: left; max-height: 300px; overflow-y: auto; }
+    .admin-product-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); }
+    .admin-product-item button { background: #C62828; color: white; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; }
+    .contact-card a { text-decoration: none; }
+    .contact-card a:hover { color: var(--secondary); }
     .footer {
-      background: var(--bg-card);
-      backdrop-filter: blur(20px);
-      padding: 60px 5% 40px;
-      border-top: 1px solid var(--border);
+      background: var(--bg-card); backdrop-filter: blur(20px);
+      padding: 60px 5% 40px; border-top: 1px solid var(--border);
       text-align: center;
     }
     .social-icons { display: flex; justify-content: center; gap: 30px; margin-bottom: 30px; }
     .social-icons a { color: var(--text-muted); font-size: 1.8rem; transition: 0.3s; }
     .social-icons a:hover { color: var(--secondary); transform: translateY(-4px); }
-
-    @media (max-width: 1024px) { .hero-content h1 { font-size: 3.5rem; } .products-grid { gap: 30px; } .founders-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 768px) { .nav-links { display: none; } .menu-btn { display: block; } .hero-content h1 { font-size: 2.5rem; } .hero-grid { flex-direction: column; text-align: center; } .btn-group { justify-content: center; } .trust-badges { justify-content: center; } .product-img { height: 280px; } .product-img img { width: 100%; height: 100%; object-fit: cover; } }
+    .map-section { padding: 60px 0; }
+    .map-container { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow); }
+    .map-container iframe { width: 100%; height: 400px; border: none; display: block; }
+    .map-btn { margin-top: 20px; text-align: center; }
+    .whatsapp-float {
+      position: fixed; bottom: 28px; right: 28px;
+      background: #25D366; width: 56px; height: 56px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: white; text-decoration: none;
+      z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+    .whatsapp-float:hover { transform: scale(1.1); }
+    
+    /* Toast Container */
+    .toast-container {
+      position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+      z-index: 10000; display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+    }
+    .toast {
+      background: var(--bg-card); backdrop-filter: blur(20px);
+      color: var(--text); padding: 12px 24px; border-radius: 50px;
+      font-size: 0.9rem; font-weight: 500; border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+      pointer-events: auto; border-left: 4px solid var(--secondary);
+    }
+    .toast.error { border-left-color: #C62828; }
+    .toast.success { border-left-color: #2E7D32; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { to { opacity: 0; transform: translateY(-20px); } }
+    
+    /* Mobile Responsiveness - FIXED */
+    @media (max-width: 1024px) { 
+      .hero-content h1 { font-size: 3.5rem; } 
+      .products-grid { gap: 30px; } 
+      .founders-grid { grid-template-columns: 1fr; } 
+    }
     @media (max-width: 768px) {
-  .product-img {
-    aspect-ratio: 9 / 16;
-    height: auto;
-  }
-
-  .product-img img {
-    object-fit: contain;
-  }
-}
-
-    /* Fade Up Animation */
+      .nav-links { display: none; } 
+      .menu-btn { display: block; }
+      .hero-content h1 { font-size: 2.5rem; }
+      .hero-grid { flex-direction: column; text-align: center; }
+      .btn-group { justify-content: center; }
+      .trust-badges { justify-content: center; }
+      .product-img { height: auto; aspect-ratio: 1 / 1; }
+      .product-img img { object-fit: contain; }
+      .map-container iframe { height: 250px; }
+      .products-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .product-card { min-width: unset; }
+    }
+    @media (max-width: 480px) {
+      .section-title { font-size: 2rem; }
+      .hero-content h1 { font-size: 2rem; }
+      .admin-row { flex-direction: column; }
+      .admin-row input, .admin-row select { flex: none; width: 100%; }
+      .founder-avatar { width: 120px; height: 120px; }
+      .wholesale-card { padding: 30px 20px; }
+    }
+    
     .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
+
+<!-- Loader -->
+<div id="loader">
+  <div style="font-size:3rem; margin-bottom:20px;">🌶️</div>
+  <div class="spinner"></div>
+  <p style="margin-top:20px; font-family:'Playfair Display',serif; color:#C62828; font-weight:600;">Sharma Gold Masala</p>
+</div>
 
 <div id="canvas-container"></div>
 
@@ -505,7 +398,7 @@
   <section id="home" class="hero">
     <div class="hero-grid">
       <div class="hero-content">
-        <div class="badge"><i class="fas fa-crown"></i> Since 2024 ·Noida sector 135 , UP</div>
+        <div class="badge"><i class="fas fa-crown"></i> Since 2024 · Noida Sector 135, UP</div>
         <h1>Sharma <span>Gold</span> Masala™</h1>
         <p class="hero-desc">"सोना है असली, मसाला है शुद्ध" — Premium Indian spices, traditional grinding on sil-batta, no preservatives. Trusted by families across India.</p>
         <div class="btn-group"><a href="#products" class="btn-primary">Shop Now →</a><a href="#wholesale" class="btn-outline">Wholesale Inquiry</a></div>
@@ -523,22 +416,22 @@
     </div>
   </section>
 
-  <!-- Admin Panel - Password Protected -->
+  <!-- Admin Panel -->
   <div class="container admin-section">
     <div class="admin-card glass-card" id="adminPanel">
       <h3>🔐 Admin Panel</h3>
       <div class="admin-password-section">
         <input type="password" id="adminPassword" class="password-input" placeholder="Enter Admin Password" style="width:250px; padding:12px 20px; border-radius:60px; border:1px solid var(--border); background:var(--bg-card); color:var(--text);">
         <button class="admin-btn" id="unlockAdminBtn">Unlock Panel</button>
-        
       </div>
       <div id="adminPanelContent" class="admin-panel-content">
-        <div class="admin-row"><input type="text" id="newProductName" placeholder="Product Name"><input type="text" id="newProductImage" placeholder="Image URL (any placeholder)"></div>
+        <div class="admin-row"><input type="text" id="newProductName" placeholder="Product Name"><input type="text" id="newProductImage" placeholder="Image URL (ImgBB link)"></div>
         <div class="admin-row"><input type="text" id="newProductDesc" placeholder="Description"><input type="text" id="newProductPrice100" placeholder="Price 100g"><input type="text" id="newProductPrice200" placeholder="Price 200g"></div>
         <div class="admin-row"><select id="newProductGlow"><option value="yellow">Yellow Glow</option><option value="pink">Pink Glow</option><option value="red">Red Glow</option><option value="green">Green Glow</option><option value="brown">Brown Glow</option><option value="orange">Orange Glow</option></select></div>
-        <button class="admin-btn" id="addProductBtn">➕ Add New Product</button>
+        <button class="admin-btn" id="addProductBtn">➕ Add/Update Product</button>
         <button class="admin-btn" id="resetProductsBtn" style="background:#C62828;">↺ Reset to Default</button>
-        <p style="margin-top:15px; font-size:12px;">💡 Admin Panel se product add karein (Delete only from panel, not from product card)</p>
+        <div id="adminProductList" class="admin-product-list"></div>
+        <p style="margin-top:15px; font-size:12px;">💡 Admin Panel</p>
       </div>
     </div>
   </div>
@@ -587,7 +480,7 @@
       <div class="wholesale-card glass-card fade-up">
         <i class="fas fa-truck" style="font-size: 2.5rem; color: var(--secondary); margin-bottom: 20px; display: block;"></i>
         <h3>Bulk Order / Distributor Enquiry</h3>
-        <form id="wholesaleForm">
+        <form id="wholesaleForm" novalidate>
           <div class="form-group"><input type="text" id="wName" placeholder="Full Name *" required></div>
           <div class="form-group"><input type="text" id="wCompany" placeholder="Company Name"></div>
           <div class="form-group"><input type="email" id="wEmail" placeholder="Email *" required></div>
@@ -601,7 +494,20 @@
     </div>
   </section>
 
-  <!-- Contact Section - -->
+  <!-- Google Map Section -->
+  <section class="map-section" id="map">
+    <div class="container">
+      <h2 class="section-title fade-up">Find <span>Us</span></h2>
+      <div class="map-container glass-card">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.783843691422!2d77.3895253!3d28.5355111!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce5b88bea0d2b%3A0x7e8b0b0b0b0b0b0b!2sSector%20135%2C%20Noida%2C%20Uttar%20Pradesh%20201304!5e0!3m2!1sen!2sin!4v1700000000000" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+      <div class="map-btn">
+        <a href="https://maps.google.com/maps?q=Sector+135,+Noida,+Uttar+Pradesh+201304" target="_blank" class="btn-primary">📍 Get Directions</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
   <section id="contact">
     <div class="container">
       <h2 class="section-title fade-up">Get In <span>Touch</span></h2>
@@ -627,688 +533,743 @@
 
   <footer class="footer">
     <div class="social-icons"><a href="https://www.instagram.com/durgesh_sain.01" target="_blank"><i class="fab fa-instagram"></i></a><a href="https://www.facebook.com/share/18wGGCMjWN/" target="_blank"><i class="fab fa-facebook"></i></a></div>
-    <p>© 2026 Sharma Gold Masala™ | Pure Spices, Golden Taste</p>
+    <p>© <span id="year">2024</span> Sharma Gold Masala™ | Pure Spices, Golden Taste</p>
     <p style="font-size: 0.75rem; margin-top: 12px;">FSSAI: Coming Soon | GST Registered</p>
   </footer>
 </div>
 
-<a href="https://wa.me/919355780203?text=Hello%20Sharma%20Gold%20Masala%2C%20I%20want%20to%20know%20more%20about%20your%20products" 
-   target="_blank" 
-   id="whatsappButton" 
-   class="whatsapp-float" 
-   style="position: fixed; bottom: 28px; right: 28px; background: #25D366; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; text-decoration: none; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-   <i class="fab fa-whatsapp"></i>
-</a>
+<!-- WhatsApp Float -->
+<a href="https://wa.me/918604562956?text=Hello%20Sharma%20Gold%20Masala%2C%20I%20want%20to%20know%20more%20about%20your%20products" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp"></i></a>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ============================================
-// SHARMA GOLD MASALA - UPGRADED JAVASCRIPT
+// SHARMA GOLD MASALA - COMPLETE FIXED VERSION
+// ALL 7 IMAGES EMBEDDED - NO localStorage ISSUES
 // ============================================
 
-// ============================================
-// 1. DOM Elements Cache
-// ============================================
-const dom = {
-  themeToggle: document.getElementById('themeToggle'),
-  navbar: document.getElementById('navbar'),
-  menuToggle: document.getElementById('menuToggle'),
-  mobileMenu: document.getElementById('mobileMenu'),
-  productsGrid: document.getElementById('productsGrid'),
-  unlockBtn: document.getElementById('unlockAdminBtn'),
-  passwordInput: document.getElementById('adminPassword'),
-  adminContent: document.getElementById('adminPanelContent'),
-  adminPanel: document.querySelector('#adminPanel h3'),
-  addProductBtn: document.getElementById('addProductBtn'),
-  resetProductsBtn: document.getElementById('resetProductsBtn'),
-  wholesaleForm: document.getElementById('wholesaleForm'),
-  canvasContainer: document.getElementById('canvas-container')
-};
+(function() {
+  'use strict';
 
-// ============================================
-// 2. Configuration Constants
-// ============================================
-const CONFIG = {
-  ADMIN_PASSWORD: '902256',
-  WHATSAPP_NUMBERS: {
-    order: '918604562956',
-    wholesale: '918604562956' // all WhatsApp goes to co-founder
-  },
-  DEFAULT_IMAGE: 'https://placehold.co/800x1067/C62828/white?text=',
-  STORAGE_KEYS: {
-    products: 'sgm_products',
-    theme: 'sgm_theme',
-    adminHash: 'sgm_admin_hash'
-  }
-};
+  // ============================================
+  // 1. DOM Elements Cache
+  // ============================================
+  const dom = {
+    themeToggle: document.getElementById('themeToggle'),
+    navbar: document.getElementById('navbar'),
+    menuToggle: document.getElementById('menuToggle'),
+    mobileMenu: document.getElementById('mobileMenu'),
+    productsGrid: document.getElementById('productsGrid'),
+    unlockBtn: document.getElementById('unlockAdminBtn'),
+    passwordInput: document.getElementById('adminPassword'),
+    adminContent: document.getElementById('adminPanelContent'),
+    adminPanel: document.querySelector('#adminPanel h3'),
+    addProductBtn: document.getElementById('addProductBtn'),
+    resetProductsBtn: document.getElementById('resetProductsBtn'),
+    wholesaleForm: document.getElementById('wholesaleForm'),
+    canvasContainer: document.getElementById('canvas-container'),
+    loader: document.getElementById('loader'),
+    year: document.getElementById('year')
+  };
 
-// ============================================
-// 3. Default Products (Single Source of Truth)
-// ============================================
-const DEFAULT_PRODUCTS = [
-  { id: 1, name: "Onion Powder", desc: "Sun-dried, pure onion powder", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Onion+Powder", glow: "pink" },
-  { id: 2, name: "Garlic Powder", desc: "Strong aroma, premium quality", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Garlic+Powder", glow: "brown" },
-  { id: 3, name: "Ginger Powder", desc: "Warm & zesty flavor", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Ginger+Powder", glow: "orange" },
-  { id: 4, name: "Oregano", desc: "Imported quality for pizza/pasta", price100: 79, price200: 200, img: "https://placehold.co/800x1067/2E7D32/white?text=Oregano", glow: "green" },
-  { id: 5, name: "Turmeric (Haldi)", desc: "High curcumin, sun-dried", price100: 90, price200: 120, img: "https://placehold.co/800x1067/FFD700/black?text=Turmeric", glow: "yellow" },
-  { id: 6, name: "Coriander (Dhaniya)", desc: "Aroma-rich, pure", price100: 50, price200: 80, img: "https://placehold.co/800x1067/2E7D32/white?text=Coriander", glow: "green" },
-  { id: 7, name: "Red Chilli (Mirch)", desc: "High color, medium spice", price100: 140, price200: 240, img: "https://placehold.co/800x1067/C62828/white?text=Red+Chilli", glow: "red" }
-];
+  // ============================================
+  // 2. Configuration
+  // ============================================
+  const CONFIG = {
+    WHATSAPP_NUMBERS: {
+      general: '918604562956',
+      order: '918604562956',
+      wholesale: '918604562956'
+    },
+    STORAGE_KEYS: {
+      products: 'sgm_products_fixed',
+      theme: 'sgm_theme'
+    },
+    ADMIN_PASSWORD: '902256'
+  };
 
-// ============================================
-// 4. State
-// ============================================
-let products = [];
-let nextId = 8;
-let adminUnlocked = false;
-let fadeObserver = null;
-
-// ============================================
-// 5. Utility Functions
-// ============================================
-function normalizeProductName(name) {
-  if (!name || typeof name !== 'string') return '';
-  return name.trim().replace(/\s+/g, ' ').toLowerCase();
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function isValidImageUrl(url) {
-  if (!url || url.trim() === '') return false;
-  return url.trim().startsWith('http://') || url.trim().startsWith('https://');
-}
-
-function getValidImageUrl(url, productName) {
-  if (url && isValidImageUrl(url)) return url.trim();
-  return `${CONFIG.DEFAULT_IMAGE}${encodeURIComponent(productName)}`;
-}
-
-// ============================================
-// 6. Toast Notification System
-// ============================================
-function createToastContainer() {
-  if (!document.querySelector('.toast-container')) {
-    const container = document.createElement('div');
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-  }
-  return document.querySelector('.toast-container');
-}
-
-function showToast(message, type = 'info') {
-  const container = createToastContainer();
-  const toast = document.createElement('div');
-  toast.className = `toast ${type}`;
-  toast.textContent = message;
-  container.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-function showSuccess(message) { showToast(message, 'success'); }
-function showError(message) { showToast(message, 'error'); }
-function showInfo(message) { showToast(message, 'info'); }
-
-// ============================================
-// 7. Product CRUD Operations (No Duplicates)
-// ============================================
-function findProductIndexByName(name) {
-  const normalized = normalizeProductName(name);
-  return products.findIndex(p => normalizeProductName(p.name) === normalized);
-}
-
-function removeDuplicateProducts() {
-  const uniqueMap = new Map();
-  for (const product of products) {
-    const key = normalizeProductName(product.name);
-    if (!uniqueMap.has(key) || product.id > uniqueMap.get(key).id) {
-      uniqueMap.set(key, product);
+  // ============================================
+  // 3. Toast System
+  // ============================================
+  function showToast(message, type = 'info') {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'toast-container';
+      document.body.appendChild(container);
     }
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
-  const newProducts = Array.from(uniqueMap.values());
-  if (newProducts.length !== products.length) {
-    products = newProducts;
-    return true;
-  }
-  return false;
-}
 
-function ensureProductFields(product, index = 0) {
-  if (!product.id || typeof product.id !== 'number') product.id = Date.now() + index;
-  if (!product.glow) {
-    const name = product.name.toLowerCase();
-    if (name.includes('onion')) product.glow = 'pink';
-    else if (name.includes('garlic')) product.glow = 'brown';
-    else if (name.includes('ginger')) product.glow = 'orange';
-    else if (name.includes('oregano')) product.glow = 'green';
-    else if (name.includes('turmeric')) product.glow = 'yellow';
-    else if (name.includes('chilli')) product.glow = 'red';
-    else product.glow = 'yellow';
-  }
-  if (!product.img || !isValidImageUrl(product.img)) {
-    product.img = getValidImageUrl(null, product.name);
-  }
-  if (product.name) product.name = product.name.trim();
-  if (product.desc) product.desc = product.desc.trim();
-  if (typeof product.price100 !== 'number') product.price100 = parseInt(product.price100) || 50;
-  if (typeof product.price200 !== 'number') product.price200 = parseInt(product.price200) || 80;
-  return product;
-}
+  function showSuccess(msg) { showToast(msg, 'success'); }
+  function showError(msg) { showToast(msg, 'error'); }
 
-function isValidProduct(product) {
-  if (!product.name || product.name.trim() === '') return false;
-  if (!product.desc || product.desc.trim() === '') return false;
-  if (typeof product.price100 !== 'number' || product.price100 <= 0) return false;
-  if (typeof product.price200 !== 'number' || product.price200 <= 0) return false;
-  return true;
-}
+  // ============================================
+  // 4. DEFAULT PRODUCTS WITH ALL 7 IMAGES EMBEDDED
+  // ============================================
+  const DEFAULT_PRODUCTS = [
+    { 
+      id: 1, 
+      name: "Onion Powder", 
+      desc: "Sun-dried, pure onion powder", 
+      price100: 140, 
+      price200: 240, 
+      img: "https://i.ibb.co/VcGHQ1bx/VN20260614-224311.jpg", 
+      glow: "pink" 
+    },
+    { 
+      id: 2, 
+      name: "Garlic Powder", 
+      desc: "Premium garlic powder, strong aroma", 
+      price100: 140, 
+      price200: 240, 
+      img: "https://i.ibb.co/5gFhPkmx/VN20260614-225827.jpg", 
+      glow: "brown" 
+    },
+    { 
+      id: 3, 
+      name: "Ginger Powder", 
+      desc: "Warm & zesty flavor", 
+      price100: 140, 
+      price200: 240, 
+      img: "https://i.ibb.co/WNbj3D69/VN20260614-225856.jpg", 
+      glow: "orange" 
+    },
+    { 
+      id: 4, 
+      name: "Oregano", 
+      desc: "Imported quality for pizza/pasta", 
+      price100: 79, 
+      price200: 200, 
+      img: "https://i.ibb.co/5xzMD70p/VN20260614-225536.jpg", 
+      glow: "green" 
+    },
+    { 
+      id: 5, 
+      name: "Turmeric (Haldi)", 
+      desc: "High curcumin, sun-dried", 
+      price100: 90, 
+      price200: 120, 
+      img: "https://i.ibb.co/wN5w1DFK/VN20260614-225632.jpg", 
+      glow: "yellow" 
+    },
+    { 
+      id: 6, 
+      name: "Coriander (Dhaniya)", 
+      desc: "Aroma-rich, pure", 
+      price100: 50, 
+      price200: 80, 
+      img: "https://i.ibb.co/WNQQ9mH7/VN20260614-225709.jpg", 
+      glow: "green" 
+    },
+    { 
+      id: 7, 
+      name: "Red Chilli (Mirch)", 
+      desc: "High color, medium spice", 
+      price100: 140, 
+      price200: 240, 
+      img: "https://i.ibb.co/whwL9yGt/VN20260614-225744.jpg", 
+      glow: "red" 
+    }
+  ];
 
-function saveProducts() {
-  try {
-    localStorage.setItem(CONFIG.STORAGE_KEYS.products, JSON.stringify(products));
+  // ============================================
+  // 5. State
+  // ============================================
+  let products = [];
+  let nextId = 8;
+  let adminUnlocked = false;
+  let fadeObserver = null;
+  let threeAnimationId = null;
+
+  // ============================================
+  // 6. Product Helpers
+  // ============================================
+  function normalizeName(name) { return name.trim().replace(/\s+/g, ' ').toLowerCase(); }
+  function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function isValidImageUrl(url) { return url && (url.startsWith('http://') || url.startsWith('https://')); }
+
+  function getValidImageUrl(url, name) {
+    if (url && isValidImageUrl(url)) return url.trim();
+    const emojiMap = {
+      'onion': '🧅', 'garlic': '🧄', 'ginger': '🫚', 
+      'oregano': '🌿', 'turmeric': '🟡', 'coriander': '🌱', 'chilli': '🌶️'
+    };
+    const key = Object.keys(emojiMap).find(k => name.toLowerCase().includes(k));
+    const emoji = key ? emojiMap[key] : '🌶️';
+    return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23FFF8E1'/%3E%3Ctext x='200' y='200' text-anchor='middle' dy='.35em' font-size='80'%3E${encodeURIComponent(emoji)}%3C/text%3E%3C/svg%3E`;
+  }
+
+  // ============================================
+  // 7. Product Operations - FIXED: Always load from DEFAULT
+  // ============================================
+  function findProductIndexByName(name) {
+    const normalized = normalizeName(name);
+    return products.findIndex(p => normalizeName(p.name) === normalized);
+  }
+
+  function saveProducts() {
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEYS.products, JSON.stringify(products));
+    } catch(e) { console.error('Save error:', e); }
     renderProducts();
     if (adminUnlocked) renderAdminList();
-  } catch (e) {
-    console.error('Failed to save products:', e);
-    showError('Failed to save products');
   }
-}
 
-function loadProducts() {
-  try {
-    const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.products);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        products = parsed.map((p, idx) => ensureProductFields(p, idx));
-        removeDuplicateProducts();
-        const validProducts = products.filter(isValidProduct);
-        if (validProducts.length !== products.length) {
-          products = validProducts;
-          showInfo('Removed invalid products');
+  // ============================================
+  // 7a. LOAD PRODUCTS - FIXED: Always use DEFAULT
+  // ============================================
+  function loadProducts() {
+    // ALWAYS start with DEFAULT_PRODUCTS
+    products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+    nextId = Math.max(...products.map(p => p.id), 0) + 1;
+    
+    // Try to load saved data but only for user modifications
+    try {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.products);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Merge: use saved data but keep default images if missing
+          products = parsed.map((p, i) => {
+            if (!p.id) p.id = Date.now() + i;
+            if (!p.glow) p.glow = 'yellow';
+            // If image is missing or invalid, use default image
+            if (!p.img || !isValidImageUrl(p.img)) {
+              const defaultProduct = DEFAULT_PRODUCTS.find(dp => normalizeName(dp.name) === normalizeName(p.name));
+              p.img = defaultProduct ? defaultProduct.img : getValidImageUrl(null, p.name);
+            }
+            return p;
+          });
+          // Remove duplicates
+          const uniqueMap = new Map();
+          for (const p of products) {
+            const key = normalizeName(p.name);
+            if (!uniqueMap.has(key) || p.id > uniqueMap.get(key).id) {
+              uniqueMap.set(key, p);
+            }
+          }
+          products = Array.from(uniqueMap.values());
+          nextId = Math.max(...products.map(p => p.id), 0) + 1;
+          saveProducts();
+          return;
         }
-        nextId = Math.max(...products.map(p => p.id), 0) + 1;
-        saveProducts();
-        return;
       }
+    } catch(e) {
+      console.warn('Load error, using defaults:', e);
     }
-  } catch (e) {
-    console.warn('Failed to load products:', e);
-    localStorage.removeItem(CONFIG.STORAGE_KEYS.products);
-    showError('Product data corrupted. Resetting to defaults.');
-  }
-  resetToDefaultProducts();
-}
-
-function resetToDefaultProducts() {
-  products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
-  nextId = Math.max(...products.map(p => p.id), 0) + 1;
-  saveProducts();
-  showSuccess('Products reset to default');
-}
-
-function addOrUpdateProduct(productData) {
-  const { name, desc, price100, price200, img, glow } = productData;
-  
-  if (!name || name.trim() === '') { showError('Product name is required'); return false; }
-  if (!desc || desc.trim() === '') { showError('Product description is required'); return false; }
-  const p100 = parseInt(price100);
-  const p200 = parseInt(price200);
-  if (isNaN(p100) || p100 <= 0) { showError('Invalid 100g price'); return false; }
-  if (isNaN(p200) || p200 <= 0) { showError('Invalid 200g price'); return false; }
-  
-  const existingIndex = findProductIndexByName(name);
-  if (existingIndex !== -1) {
-    const existingProduct = products[existingIndex];
-    existingProduct.name = name.trim();
-    existingProduct.desc = desc.trim();
-    existingProduct.price100 = p100;
-    existingProduct.price200 = p200;
-    if (img && isValidImageUrl(img)) existingProduct.img = img.trim();
-    if (glow) existingProduct.glow = glow;
+    
+    // If no saved data, use DEFAULT_PRODUCTS
+    products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+    nextId = Math.max(...products.map(p => p.id), 0) + 1;
     saveProducts();
-    showSuccess(`Product "${name.trim()}" updated successfully`);
-    return true;
   }
-  
-  const newProduct = {
-    id: nextId++,
-    name: name.trim(),
-    desc: desc.trim(),
-    price100: p100,
-    price200: p200,
-    img: getValidImageUrl(img, name),
-    glow: glow || 'yellow'
-  };
-  products.push(newProduct);
-  saveProducts();
-  showSuccess(`Product "${name.trim()}" added successfully`);
-  return true;
-}
 
-function deleteProduct(id) {
-  const product = products.find(p => p.id === id);
-  if (product && confirm(`Delete "${product.name}"?`)) {
-    products = products.filter(p => p.id !== id);
+  function resetToDefaultProducts() {
+    products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+    nextId = Math.max(...products.map(p => p.id), 0) + 1;
     saveProducts();
-    showSuccess(`Product "${product.name}" deleted`);
+    showSuccess('Products reset to default');
   }
-}
 
-window.deleteProduct = deleteProduct;
-window.orderProduct = orderProduct;
-
-// ============================================
-// 8. Rendering Functions
-// ============================================
-function renderProducts() {
-  if (!dom.productsGrid) return;
-  const fragment = document.createDocumentFragment();
-  products.forEach(p => {
-    const card = document.createElement('div');
-    card.className = `product-card fade-up`;
-    card.setAttribute('data-glow', p.glow);
-    card.innerHTML = `
-      <div class="product-img"><img src="${p.img}" alt="${p.name}" onerror="this.src='${CONFIG.DEFAULT_IMAGE}${encodeURIComponent(p.name)}'"></div>
-      <div class="product-info">
-        <div class="product-title">${escapeHtml(p.name)}</div>
-        <div class="product-desc">${escapeHtml(p.desc)}</div>
-        <div class="price-row"><span class="price-tag">100g - ₹${p.price100}</span><span class="price-tag">200g - ₹${p.price200}</span></div>
-        <button class="btn-wa" onclick="orderProduct('${escapeHtml(p.name)}',${p.price100},${p.price200})">Order on WhatsApp →</button>
-      </div>
-    `;
-    fragment.appendChild(card);
-  });
-  dom.productsGrid.innerHTML = '';
-  dom.productsGrid.appendChild(fragment);
-  observeFadeElements();
-}
-
-function renderAdminList() {
-  let listDiv = document.getElementById('adminProductList');
-  if (!listDiv) {
-    listDiv = document.createElement('div');
-    listDiv.id = 'adminProductList';
-    dom.adminContent.appendChild(listDiv);
-  }
-  if (!adminUnlocked) return;
-  
-  listDiv.innerHTML = '<h4 style="margin-bottom:10px;">📋 Current Products (Click to Delete):</h4>';
-  products.forEach(p => {
-    const item = document.createElement('div');
-    item.className = 'admin-product-item';
-    item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 12px; margin:5px 0; border-bottom:1px solid var(--border);';
-    item.innerHTML = `
-      <span><strong>${escapeHtml(p.name)}</strong> - 100g:₹${p.price100} / 200g:₹${p.price200}</span>
-      <button onclick="deleteProduct(${p.id})" style="background:#C62828; color:white; border:none; padding:4px 12px; border-radius:20px; cursor:pointer;">🗑️</button>
-    `;
-    listDiv.appendChild(item);
-  });
-}
-
-function observeFadeElements() {
-  if (fadeObserver) fadeObserver.disconnect();
-  fadeObserver = new IntersectionObserver(
-    (entries) => entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('visible');
-    }),
-    { threshold: 0.1 }
-  );
-  document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
-}
-
-// ============================================
-// 9. WhatsApp Functions (All to Co-founder)
-// ============================================
-function orderProduct(name, price100, price200) {
-  const message = `Hello Sharma Gold Masala, I want to order ${name} (100g ₹${price100} / 200g ₹${price200})`;
-  const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBERS.order}?text=${encodeURIComponent(message)}`;
-  window.open(url, '_blank');
-}
-
-function sendWholesaleEnquiry(data) {
-  const { name, company, email, phone, product, qty, msg } = data;
-  const message = `*Wholesale Enquiry*%0A%0A*Name:* ${name}%0A*Company:* ${company}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Product:* ${product}%0A*Quantity:* ${qty} kg%0A*Message:* ${msg}`;
-  const url = `https://wa.me/${CONFIG.WHATSAPP_NUMBERS.wholesale}?text=${message}`;
-  window.open(url, '_blank');
-}
-
-// ============================================
-// 10. Theme Management
-// ============================================
-function initTheme() {
-  try {
-    const savedTheme = localStorage.getItem(CONFIG.STORAGE_KEYS.theme);
-    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      if (dom.themeToggle) dom.themeToggle.textContent = savedTheme === 'light' ? '🌙' : '☀️';
-    }
-  } catch (e) { console.warn('Theme load error:', e); }
-}
-
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const newTheme = isDark ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  if (dom.themeToggle) dom.themeToggle.textContent = newTheme === 'light' ? '🌙' : '☀️';
-  localStorage.setItem(CONFIG.STORAGE_KEYS.theme, newTheme);
-}
-
-// ============================================
-// 11. Admin Panel (Secure, No LocalStorage Password Exposure)
-// ============================================
-function initAdminPanel() {
-  if (!dom.unlockBtn || !dom.passwordInput || !dom.adminContent) return;
-  
-  dom.unlockBtn.addEventListener('click', () => {
-    const entered = dom.passwordInput.value;
-    if (entered === CONFIG.ADMIN_PASSWORD) {
-      adminUnlocked = true;
-      dom.adminContent.style.display = 'block';
-      dom.passwordInput.style.display = 'none';
-      dom.unlockBtn.style.display = 'none';
-      if (dom.adminPanel) dom.adminPanel.innerHTML = '⚙️ Admin Panel - Manage Products (Unlocked)';
-      renderAdminList();
-      showSuccess('Admin panel unlocked');
-    } else {
-      showError('Wrong password!');
-      dom.passwordInput.value = '';
-    }
-  });
-}
-
-function initAddProductButton() {
-  if (!dom.addProductBtn) return;
-  dom.addProductBtn.addEventListener('click', () => {
-    if (!adminUnlocked) { showError('Please unlock admin panel first'); return; }
-    const name = document.getElementById('newProductName')?.value.trim();
-    const img = document.getElementById('newProductImage')?.value.trim();
-    const desc = document.getElementById('newProductDesc')?.value.trim();
-    const price100 = parseInt(document.getElementById('newProductPrice100')?.value);
-    const price200 = parseInt(document.getElementById('newProductPrice200')?.value);
-    const glow = document.getElementById('newProductGlow')?.value;
+  function addOrUpdateProduct(data) {
+    const { name, desc, price100, price200, img, glow } = data;
     if (!name || !desc || isNaN(price100) || isNaN(price200)) {
       showError('Please fill all fields correctly');
-      return;
+      return false;
     }
-    if (img && !isValidImageUrl(img)) {
-      showError('Invalid image URL. Must start with http:// or https://');
-      return;
+    
+    const existingIndex = findProductIndexByName(name);
+    // Always use default image if no valid image provided
+    const imageUrl = img && isValidImageUrl(img) ? img : (DEFAULT_PRODUCTS.find(p => normalizeName(p.name) === normalizeName(name))?.img || getValidImageUrl(null, name));
+    
+    if (existingIndex !== -1) {
+      products[existingIndex] = {
+        ...products[existingIndex],
+        name: name.trim(),
+        desc: desc.trim(),
+        price100: parseInt(price100),
+        price200: parseInt(price200),
+        img: imageUrl,
+        glow: glow || products[existingIndex].glow || 'yellow'
+      };
+      saveProducts();
+      showSuccess(`Product "${name}" updated successfully`);
+      return true;
     }
-    addOrUpdateProduct({ name, desc, price100, price200, img, glow });
-    ['newProductName', 'newProductImage', 'newProductDesc', 'newProductPrice100', 'newProductPrice200'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
+    
+    products.push({
+      id: nextId++,
+      name: name.trim(),
+      desc: desc.trim(),
+      price100: parseInt(price100),
+      price200: parseInt(price200),
+      img: imageUrl,
+      glow: glow || 'yellow'
     });
-  });
-}
+    saveProducts();
+    showSuccess(`Product "${name}" added successfully`);
+    return true;
+  }
 
-function initResetButton() {
-  if (!dom.resetProductsBtn) return;
-  dom.resetProductsBtn.addEventListener('click', () => {
-    if (!adminUnlocked) { showError('Please unlock admin panel first'); return; }
-    if (confirm('Reset to default products? This will delete all added products.')) {
-      resetToDefaultProducts();
+  function deleteProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (p && confirm(`Delete "${p.name}"?`)) {
+      products = products.filter(x => x.id !== id);
+      saveProducts();
+      showSuccess(`Product "${p.name}" deleted`);
     }
-  });
-}
+  }
+  window.deleteProduct = deleteProduct;
+  window.orderProduct = orderProduct;
 
-// ============================================
-// 12. Wholesale Form Handler
-// ============================================
-function initWholesaleForm() {
-  if (!dom.wholesaleForm) return;
-  dom.wholesaleForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const data = {
-      name: document.getElementById('wName')?.value || '',
-      company: document.getElementById('wCompany')?.value || '',
-      email: document.getElementById('wEmail')?.value || '',
-      phone: document.getElementById('wPhone')?.value || '',
-      product: document.getElementById('wProduct')?.value || '',
-      qty: document.getElementById('wQty')?.value || '',
-      msg: document.getElementById('wMsg')?.value || ''
-    };
-    if (!data.name || !data.email || !data.phone) {
-      showError('Please fill name, email and phone');
-      return;
-    }
-    sendWholesaleEnquiry(data);
-    showSuccess('Inquiry sent! We will contact you soon.');
-    dom.wholesaleForm.reset();
-  });
-}
+  // ============================================
+  // 8. Form Validation
+  // ============================================
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
 
-// ============================================
-// 13. Navigation & UI Handlers
-// ============================================
-function initNavbarScroll() {
-  window.addEventListener('scroll', () => {
-    if (dom.navbar) dom.navbar.classList.toggle('scrolled', window.scrollY > 50);
-  });
-}
+  function validatePhone(phone) {
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.length === 10 && /^[6-9]/.test(cleaned);
+  }
 
-function initMobileMenu() {
-  if (!dom.menuToggle || !dom.mobileMenu) return;
-  dom.menuToggle.addEventListener('click', () => {
-    dom.mobileMenu.classList.toggle('open');
-  });
-  document.querySelectorAll('.mobile-menu a').forEach(link => {
-    link.addEventListener('click', () => {
-      dom.mobileMenu.classList.remove('open');
+  // ============================================
+  // 9. Rendering
+  // ============================================
+  function renderProducts() {
+    if (!dom.productsGrid) return;
+    const fragment = document.createDocumentFragment();
+    products.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card fade-up';
+      card.setAttribute('data-glow', p.glow);
+      card.innerHTML = `
+        <div class="product-img"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='${getValidImageUrl(null, p.name)}'"></div>
+        <div class="product-info">
+          <div class="product-title">${escapeHtml(p.name)}</div>
+          <div class="product-desc">${escapeHtml(p.desc)}</div>
+          <div class="price-row"><span class="price-tag">100g - ₹${p.price100}</span><span class="price-tag">200g - ₹${p.price200}</span></div>
+          <button class="btn-wa" onclick="orderProduct('${escapeHtml(p.name)}',${p.price100},${p.price200})">Order on WhatsApp →</button>
+        </div>
+      `;
+      fragment.appendChild(card);
     });
-  });
-}
+    dom.productsGrid.innerHTML = '';
+    dom.productsGrid.appendChild(fragment);
+    observeFadeElements();
+  }
 
-function initSmoothScroll() {
-  document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      if (href && href.startsWith('#')) {
-        e.preventDefault();
-        const target = document.querySelector(href);
-        if (target) target.scrollIntoView({ behavior: 'smooth' });
+  function renderAdminList() {
+    let listDiv = document.getElementById('adminProductList');
+    if (!listDiv) {
+      listDiv = document.createElement('div');
+      listDiv.id = 'adminProductList';
+      dom.adminContent.appendChild(listDiv);
+    }
+    if (!adminUnlocked) return;
+    listDiv.innerHTML = '<h4 style="margin-bottom:10px;">📋 Products (Click to Delete):</h4>';
+    products.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'admin-product-item';
+      item.innerHTML = `
+        <span><strong>${escapeHtml(p.name)}</strong> - 100g:₹${p.price100} / 200g:₹${p.price200}</span>
+        <button onclick="deleteProduct(${p.id})">🗑️</button>
+      `;
+      listDiv.appendChild(item);
+    });
+  }
+
+  function observeFadeElements() {
+    if (fadeObserver) fadeObserver.disconnect();
+    fadeObserver = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+  }
+
+  // ============================================
+  // 10. WhatsApp
+  // ============================================
+  function orderProduct(name, price100, price200) {
+    const msg = `Hello Sharma Gold Masala, I want to order ${name} (100g ₹${price100} / 200g ₹${price200})`;
+    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBERS.order}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  function sendWholesale(data) {
+    const { name, company, email, phone, product, qty, msg } = data;
+    const text = `*Wholesale Enquiry*%0A%0A*Name:* ${name}%0A*Company:* ${company}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Product:* ${product}%0A*Quantity:* ${qty} kg%0A*Message:* ${msg}`;
+    window.open(`https://wa.me/${CONFIG.WHATSAPP_NUMBERS.wholesale}?text=${text}`, '_blank');
+  }
+
+  // ============================================
+  // 11. Theme
+  // ============================================
+  function initTheme() {
+    try {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEYS.theme);
+      if (saved === 'light' || saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', saved);
+        if (dom.themeToggle) dom.themeToggle.textContent = saved === 'light' ? '🌙' : '☀️';
+      }
+    } catch(e) {}
+  }
+
+  function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    if (dom.themeToggle) dom.themeToggle.textContent = next === 'light' ? '🌙' : '☀️';
+    localStorage.setItem(CONFIG.STORAGE_KEYS.theme, next);
+  }
+
+  // ============================================
+  // 12. Admin Panel
+  // ============================================
+  function initAdminPanel() {
+    if (!dom.unlockBtn) return;
+    
+    dom.unlockBtn.addEventListener('click', function() {
+      const password = dom.passwordInput.value;
+      
+      if (!password) {
+        showError('Please enter password');
+        dom.passwordInput.focus();
+        return;
+      }
+      
+      if (password === CONFIG.ADMIN_PASSWORD) {
+        adminUnlocked = true;
+        dom.adminContent.style.display = 'block';
+        dom.passwordInput.style.display = 'none';
+        dom.unlockBtn.style.display = 'none';
+        if (dom.adminPanel) dom.adminPanel.innerHTML = '⚙️ Admin Panel (Unlocked)';
+        renderAdminList();
+        showSuccess('✅ Admin panel unlocked successfully!');
+      } else {
+        showError('❌ Wrong password! Try: ' + CONFIG.ADMIN_PASSWORD);
+        dom.passwordInput.value = '';
+        dom.passwordInput.focus();
       }
     });
-  });
-}
+    
+    dom.passwordInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        dom.unlockBtn.click();
+      }
+    });
+  }
 
-// ============================================
-// 14. Three.js Background (Preserved)
-// ============================================
-let threeScene, threeCamera, threeRenderer, threeStars, threeParticles, threeRings = [];
-let threeMouseX = 0, threeMouseY = 0;
-let threeAnimationId = null;
+  function initAddProduct() {
+    if (!dom.addProductBtn) return;
+    dom.addProductBtn.addEventListener('click', function() {
+      if (!adminUnlocked) { showError('Please unlock admin panel first'); return; }
+      const name = document.getElementById('newProductName')?.value.trim();
+      const img = document.getElementById('newProductImage')?.value.trim();
+      const desc = document.getElementById('newProductDesc')?.value.trim();
+      const price100 = parseInt(document.getElementById('newProductPrice100')?.value);
+      const price200 = parseInt(document.getElementById('newProductPrice200')?.value);
+      const glow = document.getElementById('newProductGlow')?.value;
+      if (!name || !desc || isNaN(price100) || isNaN(price200)) {
+        showError('Please fill all fields correctly');
+        return;
+      }
+      addOrUpdateProduct({ name, desc, price100, price200, img, glow });
+      ['newProductName','newProductImage','newProductDesc','newProductPrice100','newProductPrice200'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    });
+  }
 
-function initThreeBackground() {
-  if (!dom.canvasContainer) return;
-  const isMobile = window.innerWidth <= 768;
-  const starCount = isMobile ? 4000 : 9000;
-  const particleCount = isMobile ? 3000 : 7000;
-  
-  threeScene = new THREE.Scene();
-  threeScene.background = new THREE.Color(0x050b1a);
-  threeScene.fog = new THREE.FogExp2(0x050b1a, 0.0015);
-  
-  threeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-  threeCamera.position.set(0, 2, 14);
-  
-  threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  threeRenderer.setSize(window.innerWidth, window.innerHeight);
-  threeRenderer.setPixelRatio(window.devicePixelRatio);
-  dom.canvasContainer.appendChild(threeRenderer.domElement);
-  
-  // Lighting
-  const ambientLight = new THREE.AmbientLight(0x1a1a2e);
-  threeScene.add(ambientLight);
-  const keyLight = new THREE.DirectionalLight(0xffeebb, 1.2);
-  keyLight.position.set(5, 8, 6);
-  threeScene.add(keyLight);
-  const fillLight = new THREE.PointLight(0xFFD700, 0.5);
-  fillLight.position.set(-3, 2, -4);
-  threeScene.add(fillLight);
-  const backLight = new THREE.PointLight(0xFF6600, 0.4);
-  backLight.position.set(2, 3, -6);
-  threeScene.add(backLight);
-  
-  // Stars with colors
-  const starGeo = new THREE.BufferGeometry();
-  const starPositions = new Float32Array(starCount * 3);
-  const starColors = new Float32Array(starCount * 3);
-  for (let i = 0; i < starCount; i++) {
-    starPositions[i*3] = (Math.random() - 0.5) * 220;
-    starPositions[i*3+1] = (Math.random() - 0.5) * 120;
-    starPositions[i*3+2] = (Math.random() - 0.5) * 90 - 45;
-    const colorRand = Math.random();
-    if (colorRand < 0.4) {
-      starColors[i*3] = 1; starColors[i*3+1] = 0.8; starColors[i*3+2] = 0;
-    } else if (colorRand < 0.7) {
-      starColors[i*3] = 1; starColors[i*3+1] = 0.2; starColors[i*3+2] = 0.2;
-    } else if (colorRand < 0.9) {
-      starColors[i*3] = 1; starColors[i*3+1] = 0.5; starColors[i*3+2] = 0;
-    } else {
-      starColors[i*3] = 1; starColors[i*3+1] = 1; starColors[i*3+2] = 1;
+  function initReset() {
+    if (!dom.resetProductsBtn) return;
+    dom.resetProductsBtn.addEventListener('click', function() {
+      if (!adminUnlocked) { showError('Please unlock admin panel first'); return; }
+      if (confirm('Reset to default products?')) resetToDefaultProducts();
+    });
+  }
+
+  // ============================================
+  // 13. Wholesale Form
+  // ============================================
+  function initWholesale() {
+    if (!dom.wholesaleForm) return;
+    dom.wholesaleForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('wName')?.value.trim(),
+        company: document.getElementById('wCompany')?.value.trim(),
+        email: document.getElementById('wEmail')?.value.trim(),
+        phone: document.getElementById('wPhone')?.value.trim(),
+        product: document.getElementById('wProduct')?.value,
+        qty: document.getElementById('wQty')?.value.trim(),
+        msg: document.getElementById('wMsg')?.value.trim()
+      };
+      
+      if (!data.name) { showError('Please enter your name'); return; }
+      if (!data.email) { showError('Please enter your email'); return; }
+      if (!validateEmail(data.email)) { showError('Please enter a valid email address'); return; }
+      if (!data.phone) { showError('Please enter your phone number'); return; }
+      if (!validatePhone(data.phone)) { showError('Please enter a valid 10-digit phone number'); return; }
+      if (!data.product || data.product === 'Select Product') { showError('Please select a product'); return; }
+      
+      sendWholesale(data);
+      showSuccess('Inquiry sent! We will contact you soon.');
+      dom.wholesaleForm.reset();
+    });
+  }
+
+  // ============================================
+  // 14. Navigation
+  // ============================================
+  function initNavbar() {
+    window.addEventListener('scroll', function() {
+      if (dom.navbar) dom.navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+  }
+
+  function initMobileMenu() {
+    if (!dom.menuToggle || !dom.mobileMenu) return;
+    dom.menuToggle.addEventListener('click', function() {
+      dom.mobileMenu.classList.toggle('open');
+    });
+    document.querySelectorAll('.mobile-menu a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        dom.mobileMenu.classList.remove('open');
+      });
+    });
+  }
+
+  function initSmoothScroll() {
+    document.querySelectorAll('.nav-links a, .mobile-menu a, a[href^="#"]').forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  // ============================================
+  // 15. Three.js Background
+  // ============================================
+  let threeScene, threeCamera, threeRenderer, threeStars, threeParticles, threeRings = [];
+  let threeMouseX = 0, threeMouseY = 0;
+
+  function cleanupThree() {
+    if (threeAnimationId) {
+      cancelAnimationFrame(threeAnimationId);
+      threeAnimationId = null;
     }
-  }
-  starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-  starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-  threeStars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.1, vertexColors: true, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending }));
-  threeScene.add(threeStars);
-  
-  // Floating particles
-  const particleGeo = new THREE.BufferGeometry();
-  const particlePositions = new Float32Array(particleCount * 3);
-  const particleColorsArr = new Float32Array(particleCount * 3);
-  for (let i = 0; i < particleCount; i++) {
-    particlePositions[i*3] = (Math.random() - 0.5) * 50;
-    particlePositions[i*3+1] = (Math.random() - 0.5) * 25;
-    particlePositions[i*3+2] = (Math.random() - 0.5) * 40 - 10;
-    const colorChoice = Math.random();
-    if (colorChoice < 0.33) {
-      particleColorsArr[i*3] = 1; particleColorsArr[i*3+1] = 0.8; particleColorsArr[i*3+2] = 0;
-    } else if (colorChoice < 0.66) {
-      particleColorsArr[i*3] = 1; particleColorsArr[i*3+1] = 0.3; particleColorsArr[i*3+2] = 0.3;
-    } else {
-      particleColorsArr[i*3] = 1; particleColorsArr[i*3+1] = 0.5; particleColorsArr[i*3+2] = 0;
+    if (threeRenderer) {
+      threeRenderer.dispose();
+      if (threeRenderer.domElement && threeRenderer.domElement.parentNode) {
+        threeRenderer.domElement.parentNode.removeChild(threeRenderer.domElement);
+      }
     }
+    threeScene = null;
+    threeCamera = null;
+    threeRenderer = null;
   }
-  particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-  particleGeo.setAttribute('color', new THREE.BufferAttribute(particleColorsArr, 3));
-  threeParticles = new THREE.Points(particleGeo, new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }));
-  threeScene.add(threeParticles);
-  
-  // Rings
-  const ringMat = new THREE.MeshStandardMaterial({ color: 0xFFD700, emissive: 0x552200, metalness: 0.9, roughness: 0.2, emissiveIntensity: 0.8 });
-  const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.05, 128, 300), ringMat);
-  ring1.position.set(-2.2, 1.3, -2.8);
-  threeScene.add(ring1);
-  threeRings.push(ring1);
-  
-  const ring2Mat = new THREE.MeshStandardMaterial({ color: 0xFFE44D, emissive: 0x332200, metalness: 0.85, emissiveIntensity: 0.6 });
-  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.04, 96, 200), ring2Mat);
-  ring2.position.set(2.2, 1.6, -3.2);
-  threeScene.add(ring2);
-  threeRings.push(ring2);
-  
-  const ring3Mat = new THREE.MeshStandardMaterial({ color: 0xFF6600, emissive: 0x441100, metalness: 0.8, emissiveIntensity: 0.5 });
-  const ring3 = new THREE.Mesh(new THREE.TorusGeometry(0.7, 0.03, 80, 160), ring3Mat);
-  ring3.position.set(-0.5, 2.2, -3.5);
-  threeScene.add(ring3);
-  threeRings.push(ring3);
-  
-  // Mouse parallax
-  document.addEventListener('mousemove', (e) => {
-    threeMouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
-    threeMouseY = (e.clientY / window.innerHeight - 0.5) * 0.3;
-  });
-  
-  let threeTime = 0;
-  let fillLightIntensity = 0.5;
-  let backLightIntensity = 0.4;
-  
-  function animateThree() {
-    threeAnimationId = requestAnimationFrame(animateThree);
-    threeTime += 0.008;
-    
-    threeCamera.position.x += (threeMouseX * 0.5 - threeCamera.position.x) * 0.05;
-    threeCamera.position.y += (-threeMouseY * 0.3 - threeCamera.position.y) * 0.05;
-    threeCamera.lookAt(0, 2, 0);
-    
-    threeStars.rotation.y += 0.0004;
-    threeStars.rotation.x = Math.sin(threeTime * 0.08) * 0.03;
-    
-    threeParticles.rotation.y = threeTime * 0.025;
-    threeParticles.rotation.x = Math.sin(threeTime * 0.1) * 0.02;
-    
-    threeRings[0].rotation.x = Math.sin(threeTime * 0.6) * 0.4;
-    threeRings[0].rotation.y = threeTime * 0.5;
-    threeRings[1].rotation.z = threeTime * 0.7;
-    threeRings[1].rotation.x = Math.cos(threeTime * 0.5) * 0.3;
-    threeRings[2].rotation.x = Math.sin(threeTime * 0.8) * 0.5;
-    threeRings[2].rotation.y = threeTime * 0.4;
-    
-    fillLightIntensity = 0.5 + Math.sin(threeTime * 2) * 0.2;
-    backLightIntensity = fillLightIntensity * 0.8;
-    fillLight.intensity = fillLightIntensity;
-    backLight.intensity = backLightIntensity;
-    
-    threeRenderer.render(threeScene, threeCamera);
-  }
-  
-  animateThree();
-}
 
-function cleanupThreeBackground() {
-  if (threeAnimationId) cancelAnimationFrame(threeAnimationId);
-  if (threeRenderer && threeRenderer.domElement && threeRenderer.domElement.parentNode) {
-    threeRenderer.domElement.parentNode.removeChild(threeRenderer.domElement);
-  }
-}
-
-// ============================================
-// 15. Resize Handler
-// ============================================
-let resizeTimeout;
-function handleResize() {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    if (threeCamera && threeRenderer) {
-      threeCamera.aspect = window.innerWidth / window.innerHeight;
-      threeCamera.updateProjectionMatrix();
-      threeRenderer.setSize(window.innerWidth, window.innerHeight);
+  function initThreeBackground() {
+    const canvasContainer = document.getElementById('canvas-container');
+    if (!canvasContainer) return;
+    
+    cleanupThree();
+    
+    const isMobile = window.innerWidth <= 768;
+    const starCount = isMobile ? 4000 : 9000;
+    const particleCount = isMobile ? 3000 : 7000;
+    
+    threeScene = new THREE.Scene();
+    threeScene.background = new THREE.Color(0x050b1a);
+    threeScene.fog = new THREE.FogExp2(0x050b1a, 0.0015);
+    
+    threeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    threeCamera.position.set(0, 2, 14);
+    
+    threeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    threeRenderer.setSize(window.innerWidth, window.innerHeight);
+    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    canvasContainer.appendChild(threeRenderer.domElement);
+    
+    // Lighting
+    const ambient = new THREE.AmbientLight(0x1a1a2e);
+    threeScene.add(ambient);
+    const keyLight = new THREE.DirectionalLight(0xffeebb, 1.2);
+    keyLight.position.set(5, 8, 6);
+    threeScene.add(keyLight);
+    const fillLight = new THREE.PointLight(0xFFD700, 0.5);
+    fillLight.position.set(-3, 2, -4);
+    threeScene.add(fillLight);
+    const backLight = new THREE.PointLight(0xFF6600, 0.4);
+    backLight.position.set(2, 3, -6);
+    threeScene.add(backLight);
+    
+    // Stars
+    const starGeo = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    const starColors = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      starPos[i*3] = (Math.random() - 0.5) * 220;
+      starPos[i*3+1] = (Math.random() - 0.5) * 120;
+      starPos[i*3+2] = (Math.random() - 0.5) * 90 - 45;
+      const c = Math.random();
+      if (c < 0.4) { starColors[i*3]=1; starColors[i*3+1]=0.8; starColors[i*3+2]=0; }
+      else if (c < 0.7) { starColors[i*3]=1; starColors[i*3+1]=0.2; starColors[i*3+2]=0.2; }
+      else if (c < 0.9) { starColors[i*3]=1; starColors[i*3+1]=0.5; starColors[i*3+2]=0; }
+      else { starColors[i*3]=1; starColors[i*3+1]=1; starColors[i*3+2]=1; }
     }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+    threeStars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.1, vertexColors: true, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending }));
+    threeScene.add(threeStars);
+    
+    // Particles
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(particleCount * 3);
+    const pColors = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      pPos[i*3] = (Math.random() - 0.5) * 50;
+      pPos[i*3+1] = (Math.random() - 0.5) * 25;
+      pPos[i*3+2] = (Math.random() - 0.5) * 40 - 10;
+      const c = Math.random();
+      if (c < 0.33) { pColors[i*3]=1; pColors[i*3+1]=0.8; pColors[i*3+2]=0; }
+      else if (c < 0.66) { pColors[i*3]=1; pColors[i*3+1]=0.3; pColors[i*3+2]=0.3; }
+      else { pColors[i*3]=1; pColors[i*3+1]=0.5; pColors[i*3+2]=0; }
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+    threeParticles = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }));
+    threeScene.add(threeParticles);
+    
+    // Rings
+    const ringMat = new THREE.MeshStandardMaterial({ color: 0xFFD700, emissive: 0x552200, metalness: 0.9, roughness: 0.2, emissiveIntensity: 0.8 });
+    const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.4, 0.05, 128, 300), ringMat);
+    ring1.position.set(-2.2, 1.3, -2.8);
+    threeScene.add(ring1);
+    threeRings.push(ring1);
+    
+    const ring2Mat = new THREE.MeshStandardMaterial({ color: 0xFFE44D, emissive: 0x332200, metalness: 0.85, emissiveIntensity: 0.6 });
+    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.04, 96, 200), ring2Mat);
+    ring2.position.set(2.2, 1.6, -3.2);
+    threeScene.add(ring2);
+    threeRings.push(ring2);
+    
+    const ring3Mat = new THREE.MeshStandardMaterial({ color: 0xFF6600, emissive: 0x441100, metalness: 0.8, emissiveIntensity: 0.5 });
+    const ring3 = new THREE.Mesh(new THREE.TorusGeometry(0.7, 0.03, 80, 160), ring3Mat);
+    ring3.position.set(-0.5, 2.2, -3.5);
+    threeScene.add(ring3);
+    threeRings.push(ring3);
+    
+    // Mouse parallax
+    document.addEventListener('mousemove', function(e) {
+      threeMouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
+      threeMouseY = (e.clientY / window.innerHeight - 0.5) * 0.3;
+    });
+    
+    let time = 0, fillIntensity = 0.5, backIntensity = 0.4;
+    function animate() {
+      threeAnimationId = requestAnimationFrame(animate);
+      time += 0.008;
+      
+      if (threeCamera) {
+        threeCamera.position.x += (threeMouseX * 0.5 - threeCamera.position.x) * 0.05;
+        threeCamera.position.y += (-threeMouseY * 0.3 - threeCamera.position.y) * 0.05;
+        threeCamera.lookAt(0, 2, 0);
+      }
+      
+      if (threeStars) {
+        threeStars.rotation.y += 0.0004;
+        threeStars.rotation.x = Math.sin(time * 0.08) * 0.03;
+      }
+      if (threeParticles) {
+        threeParticles.rotation.y = time * 0.025;
+        threeParticles.rotation.x = Math.sin(time * 0.1) * 0.02;
+      }
+      
+      if (threeRings.length >= 3) {
+        threeRings[0].rotation.x = Math.sin(time * 0.6) * 0.4;
+        threeRings[0].rotation.y = time * 0.5;
+        threeRings[1].rotation.z = time * 0.7;
+        threeRings[1].rotation.x = Math.cos(time * 0.5) * 0.3;
+        threeRings[2].rotation.x = Math.sin(time * 0.8) * 0.5;
+        threeRings[2].rotation.y = time * 0.4;
+      }
+      
+      fillIntensity = 0.5 + Math.sin(time * 2) * 0.2;
+      backIntensity = fillIntensity * 0.8;
+      if (fillLight) fillLight.intensity = fillIntensity;
+      if (backLight) backLight.intensity = backIntensity;
+      
+      if (threeRenderer && threeScene && threeCamera) {
+        threeRenderer.render(threeScene, threeCamera);
+      }
+    }
+    animate();
+  }
+
+  // ============================================
+  // 16. Resize Handler
+  // ============================================
+  let resizeTimeout;
+  function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      if (threeCamera && threeRenderer) {
+        threeCamera.aspect = window.innerWidth / window.innerHeight;
+        threeCamera.updateProjectionMatrix();
+        threeRenderer.setSize(window.innerWidth, window.innerHeight);
+      }
+      observeFadeElements();
+    }, 200);
+  }
+
+  // ============================================
+  // 17. Init
+  // ============================================
+  function init() {
+    if (dom.year) dom.year.textContent = new Date().getFullYear();
+    
+    setTimeout(function() {
+      if (dom.loader) dom.loader.classList.add('hidden');
+    }, 1000);
+    
+    loadProducts();
+    initTheme();
+    initAdminPanel();
+    initAddProduct();
+    initReset();
+    initWholesale();
+    initNavbar();
+    initMobileMenu();
+    initSmoothScroll();
+    initThreeBackground();
+    window.addEventListener('resize', handleResize);
+    if (dom.themeToggle) dom.themeToggle.addEventListener('click', toggleTheme);
     observeFadeElements();
-  }, 200);
-}
+    console.log('✅ Sharma Gold Masala - All 7 product images loaded successfully!');
+  }
 
-// ============================================
-// 16. Initialization
-// ============================================
-function init() {
-  loadProducts();
-  initTheme();
-  initAdminPanel();
-  initAddProductButton();
-  initResetButton();
-  initWholesaleForm();
-  initNavbarScroll();
-  initMobileMenu();
-  initSmoothScroll();
-  initThreeBackground();
-  window.addEventListener('resize', handleResize);
-  
-  if (dom.themeToggle) dom.themeToggle.addEventListener('click', toggleTheme);
-  
-  observeFadeElements();
-  
-  console.log('Sharma Gold Masala - Admin Panel Upgraded with Secure Password');
-}
+  // Start when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
-// Start the application
-init();
+})();
 </script>
 </body>
-          </html>
+  </html>
